@@ -97,7 +97,6 @@ public class SchedulerConfig {
 	private CronTriggerFactoryBean createCronTrigger(JobDetail jobDetail, long cronExpression) {
 		CronTriggerFactoryBean factoryBean = new CronTriggerFactoryBean();
 		factoryBean.setJobDetail(jobDetail);
-		factoryBean.setStartDelay(20000L);
 		factoryBean.setCronExpression(crosExp);
 		factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
 		return factoryBean;
