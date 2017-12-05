@@ -1,0 +1,9 @@
+<!-- Sidebar -->
+<div id="sidebar-wrapper">
+	<ul class="sidebar-nav" style="margin-left: 0;">
+		<li ng-repeat="menuItem in menuItems"><a href="#"
+			ng-click="setTemplateUrl(menuItem.path)"><i
+				class="{{menuItem.icon}}" style="font-size: 1.5em;"
+				aria-hidden="false"> </i> <span style="margin-left: 15px;">{{menuItem.menu}}</span></a></li>
+	</ul>
+</div>
