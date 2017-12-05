@@ -1,0 +1,41 @@
+<nav ng-class="getNavStyle(scroll)">
+	<button class="btn btn-default" ng-click="goPrevious()" title="Previous">
+		<i class="fa fa-hand-o-left fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	</button>
+	<button class="btn btn-default" ng-click="goNext()" title="Next">
+		<i class="fa fa-hand-o-right fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	</button>
+
+	<button class="btn btn-default" ng-click="zoomIn()">
+		<i class="fa fa-search-plus fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	</button>
+	<button class="btn btn-default" ng-click="fit()">
+		<span>Zoom</span>
+	</button>
+	<button class="btn btn-default" ng-click="zoomOut()">
+		<i class="fa fa-search-minus fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	</button>
+
+	<button class="btn btn-default" ng-click="rotate()" title="Rotate">
+		<i class="fa fa-repeat fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	</button>
+	
+	<button class="btn btn-default" ng-click="print()" title="Print">
+		<i class="fa fa-print fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	</button>
+	
+	<div class="col-lg-2" style="float: right; right: 10px;">
+		<div class="row">
+			<div class="col-xs-4" style="top:5px;">
+				<p>Page:</p>
+			</div>
+			<div class="col-xs-4">
+				<input type="text" min=1 ng-model="pageNum" style="width: 40px;"
+					class="form-control" />
+			</div>
+			<div class="col-xs-4" style="top:5px;">
+				<p>/ {{pageCount}}</p>
+			</div>
+		</div>
+	</div>
+</nav>

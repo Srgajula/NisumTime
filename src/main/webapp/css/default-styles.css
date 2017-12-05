@@ -1,0 +1,52 @@
+#header {
+	width: 100%;
+	height: 8%;
+}
+
+#sidebar-left {
+	float: left;
+	width: 20%;
+	height: 84%;
+}
+#main {
+	float: left;
+	width: 80%;
+	height: 84%;
+}
+
+#footer {
+	height: 8%;
+	width: 100%;
+}
+
+.myGrid {
+	width:98.5%;
+	height: 230px;
+	margin-left:5px;
+}
+#gridTest,#gridTest1 .ui-grid-cell-contents{
+	text-align:center;
+}
+.watermark {
+    position: absolute;
+    top: 50%;                    
+    transform: translateY(-50%); 
+    opacity: 0.75;
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+}
+
+.md-button {    
+    text-transform: capitalize !important;/*For Lower case use lowercase*/
+}
+
+.carousel-indicators li{
+	background-color:orange;
+	border-color:#ff9200;
+}
+
+.carousel-indicators .active{
+	background-color:orange;
+	border-color:#ff9200;
+}

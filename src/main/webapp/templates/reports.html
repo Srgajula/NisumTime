@@ -1,0 +1,63 @@
+<div class="md-padding" style="width: 100%; padding: 3px;"
+	id="popupContainer" ng-controller="reportsController">
+	<div class="container-fluid"
+		style="text-align: center; background: rgba(0, 178, 226, .6) !important; color: floralwhite; border-radius: 5px;">
+		<div class="row">
+			<div>
+				<p align="center"
+					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Reports</p>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<br />
+	<div class="container" style="text-align: center; padding-left: 25px;">
+		<div class="row col-lg-12">
+			<div class="col-xs-2">
+				<input type="text" ng-model="searchId" id="searchId"
+					placeholder="Employee ID" class="form-control" min-length="5" />
+			</div>
+			<div class="col-xs-4" style="margin-left: -21px;">
+				<p>
+					<b>From Date:</b>
+					<md-datepicker ng-model="fromDate" md-placeholder="Enter date"
+						md-min-date="minDate" md-max-date="maxDate"
+						onkeydown="return false"
+						ng-change="validateDates(fromDate, 'FromDate')"></md-datepicker>
+				</p>
+			</div>
+			<div class="col-xs-4" style="margin-left: -50px;">
+				<p>
+					<b>To Date:</b>
+
+					<md-datepicker ng-model="toDate" md-placeholder="Enter date"
+						md-min-date="minDate" md-max-date="maxDate"
+						onkeydown="return false"
+						ng-change="validateDates(toDate, 'ToDate')"></md-datepicker>
+				</p>
+			</div>
+			<div class="col-xs-2" style="cursor: pointer; margin-left: -60px;"
+				align="left">
+				<md-button class="md-raised md-primary"
+					style="width:100px;background: rgba(0, 178, 226, .6) !important;"
+					ng-click="getEmployeeData('click');"> <i
+					class="fa fa-print fa-2x"
+					style="margin-top: 5px; font-size: 1.5em; float: left"></i>
+				Generate</md-button>
+			</div>
+		</div>
+	</div>
+	<div class="wrapper"
+		style="height: 370px; width: 950px; background-color: #888; overflow: scroll;">
+		<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf"
+			scale="page-fit" page=1 style="width:940px;border-radius:5px;"></ng-pdf>
+	</div>
+	<div style="height: 5px;"></div>
+	<div style="text-align: center; cursor: pointer;">
+		<md-button class="md-raised md-primary"
+			style="width:120px;background: rgba(0, 178, 226, .6) !important;"
+			ng-click=""> <i class="fa fa-envelope-o fa-2x"
+			style="margin-top: 5px; font-size: 1.5em; float: left"></i> Send
+		Email</md-button>
+	</div>
+</div>

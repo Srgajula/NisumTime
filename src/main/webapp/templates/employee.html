@@ -1,0 +1,84 @@
+
+<div class="md-padding" style="width: 100%; padding: 3px;"
+	id="popupContainer" ng-controller="employeeController" ng-init="getEmployeeData()">
+	<div class="container-fluid"
+		style="text-align: center; background: rgba(0, 178, 226, .6) !important; color: floralwhite; border-radius: 5px;">
+		<div class="row">
+			<div>
+				<p align="center"
+					style="vertical-align: middle; font-weight: bold; font-size: 30px;">My
+					Login Details</p>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<br />
+	<div class="container" style="text-align: center; padding-left: 75px;">
+		<div class="row col-lg-12">
+			<div class="col-xs-2">
+				<p>
+					<b>Employee ID:</b> {{empId}}
+				</p>
+			</div>
+			<div class="col-xs-4" style="margin-left: 100px;">
+				<p>
+					<b>Employee Name:</b>&nbsp;&nbsp;&nbsp;{{empName}}
+				</p>
+			</div>
+			<div class="col-xs-4" style="margin-left: -30px;">
+				<p>
+					<b>Email:</b> {{empEmailId}}
+				</p>
+			</div>
+		</div>
+		<div class="row col-lg-12" style="height: 15px;"></div>
+		<div class="row col-lg-12">
+			<div class="col-xs-4" style="margin-left: -21px;">
+				<p>
+					<b>From Date:</b>
+					<md-datepicker ng-model="fromDate" md-placeholder="Enter date"
+						md-max-date="maxDate"
+						onkeydown="return false"
+						ng-change="validateDates(fromDate, 'FromDate')"></md-datepicker>
+				</p>
+			</div>
+			<div class="col-xs-4" style="margin-left: -50px;">
+				<p>
+					<b>To Date:</b>
+
+					<md-datepicker ng-model="toDate" md-placeholder="Enter date"
+						md-max-date="maxDate"
+						onkeydown="return false"
+						ng-change="validateDates(toDate, 'ToDate')"></md-datepicker>
+				</p>
+			</div>
+			<div class="col-xs-2" style="cursor: pointer;" align="right">
+				<md-button class="md-raised md-primary"
+					style="width:100px;background: rgba(0, 178, 226, .6) !important;" ng-click="getEmployeeData()">
+				<i class="fa fa-search fa-2x"
+					style="margin-top: 5px; font-size: 1.5em; float: left"></i> Search</md-button>
+			</div>
+		</div>
+		<div class="row col-lg-12" style="height: 15px;"></div>
+		<div class="row col-lg-12">
+			<div class="col-xs-3"></div>
+			<div class="col-xs-1">
+				<p></p>
+			</div>
+			<div class="col-xs-2">
+				<p></p>
+			</div>
+			<div class="col-xs-2">
+				<p></p>
+			</div>
+		</div>
+	</div>
+	<p style="margin-left: 100px;">
+		<b>Period:&nbsp;&nbsp;</b> {{startDate}} <b>-</b> {{endDate}}
+	</p>
+	<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination
+		class="myGrid">
+		<div class="watermark" ng-show="!gridOptions.data.length">No
+			data available</div>
+	</div>
+</div>
