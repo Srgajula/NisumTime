@@ -19,7 +19,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")
@@ -27,7 +26,7 @@ public class SchedulerConfig {
 
 	@Value("${cron.expression}")
 	private String crosExp;
-	
+
 	@Bean
 	public JobFactory jobFactory(ApplicationContext applicationContext) {
 		AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
@@ -37,10 +36,8 @@ public class SchedulerConfig {
 
 	@Bean
 	public Scheduler schedulerFactoryBean(JobFactory jobFactory,
-			@Qualifier("sampleJobTrigger") Trigger sampleJobTrigger) throws Exception {
+			@Qualifier("myTimeJobTrigger") Trigger myTimeJobTrigger) throws Exception {
 		SchedulerFactoryBean factory = new SchedulerFactoryBean();
-		// this allows to update triggers in DB when updating settings in config
-		// file:
 		factory.setOverwriteExistingJobs(true);
 		factory.setJobFactory(jobFactory);
 
@@ -49,7 +46,7 @@ public class SchedulerConfig {
 
 		Scheduler scheduler = factory.getScheduler();
 		scheduler.setJobFactory(jobFactory);
-		scheduler.scheduleJob((JobDetail) sampleJobTrigger.getJobDataMap().get("jobDetail"), sampleJobTrigger);
+		scheduler.scheduleJob((JobDetail) myTimeJobTrigger.getJobDataMap().get("jobDetail"), myTimeJobTrigger);
 
 		scheduler.start();
 		return scheduler;
@@ -64,36 +61,23 @@ public class SchedulerConfig {
 	}
 
 	@Bean
-	public JobDetailFactoryBean sampleJobDetail() {
-		return createJobDetail(CronSchedularJob.class);
+	public JobDetailFactoryBean myTimeJobDetail() {
+		return createJobDetail(MyTimeCronSchedularJob.class);
 	}
 
-	@Bean(name = "sampleJobTrigger")
-	public CronTriggerFactoryBean sampleJobTrigger(@Qualifier("sampleJobDetail") JobDetail jobDetail,
-			@Value("${samplejob.frequency}") long frequency) {
+	@Bean(name = "myTimeJobTrigger")
+	public CronTriggerFactoryBean myTimeJobTrigger(@Qualifier("myTimeJobDetail") JobDetail jobDetail,
+			@Value("${myTimejob.frequency}") long frequency) {
 		return createCronTrigger(jobDetail, frequency);
 	}
 
-	private JobDetailFactoryBean createJobDetail(Class jobClass) {
+	private JobDetailFactoryBean createJobDetail(Class<MyTimeCronSchedularJob> jobClass) {
 		JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();
 		factoryBean.setJobClass(jobClass);
-		// job has to be durable to be stored in DB:
 		factoryBean.setDurability(true);
 		return factoryBean;
 	}
 
-	private SimpleTriggerFactoryBean createTrigger(JobDetail jobDetail, long pollFrequencyMs) {
-		SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
-		factoryBean.setJobDetail(jobDetail);
-		factoryBean.setStartDelay(10000L);
-		factoryBean.setRepeatInterval(pollFrequencyMs);
-		factoryBean.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
-		// in case of misfire, ignore all missed triggers and continue :
-		factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT);
-		return factoryBean;
-	}
-
-	// Use this method for creating cron triggers instead of simple triggers:
 	private CronTriggerFactoryBean createCronTrigger(JobDetail jobDetail, long cronExpression) {
 		CronTriggerFactoryBean factoryBean = new CronTriggerFactoryBean();
 		factoryBean.setJobDetail(jobDetail);

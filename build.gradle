@@ -45,4 +45,7 @@ dependencies {
 	compile('commons-logging:commons-logging')
 	compile('commons-lang:commons-lang')
 	compile('com.jcraft:jsch:0.1.46')
+	compile('com.itextpdf:itextpdf:5.0.6')
+	compile('jcifs:jcifs:1.3.17')
+	
 }

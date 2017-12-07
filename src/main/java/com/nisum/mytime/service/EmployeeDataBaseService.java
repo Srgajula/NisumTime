@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,11 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.nisum.mytime.configuration.DbConnection;
 import com.nisum.mytime.model.DateCompare;
 import com.nisum.mytime.model.EmpLoginData;
+import com.nisum.mytime.utils.MyTimeLogger;
+import com.nisum.mytime.utils.MyTimeUtils;
 
 @Component
 public class EmployeeDataBaseService {
@@ -34,17 +36,23 @@ public class EmployeeDataBaseService {
 	private String dateOnly = null;
 	private String empDatestr = null;
 	private EmpLoginData empDetails = new EmpLoginData();
-	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static DateFormat tdf = new SimpleDateFormat("HH:mm");
-	private static DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd");
-	private static String filePath = "/Users/nisum/Documents/workspace-sts-3.8/newMdb/";
 	private Connection connection = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
 	private PreparedStatement preparedStatement = null;
 	private static String logfilename = "DeviceLogs";
-	private static String driverUrl = "jdbc:ucanaccess://";
-	private static String log = "Taking time to do all operation ";
+
+	@Value("${mytime.remoteFile.location}")
+	private String remotePath;
+
+	@Value("${mytime.localFile.location}")
+	private String localFile;
+
+	@Value("${mytime.attendance.fileName}")
+	private String mdbFile;
+
+	@Value("${mytime.attendance.fileExtension}")
+	private String fileExtension;
 
 	public List<EmpLoginData> fetchEmployeesData() throws ParseException, IOException {
 
@@ -54,10 +62,10 @@ public class EmployeeDataBaseService {
 		boolean frstQuery = true;
 		Map<String, EmpLoginData> emp = new HashMap<>();
 		try {
-			File dir = new File(filePath);
+			File dir = new File(localFile);
 			for (File file : dir.listFiles()) {
-				String msAccDB = filePath + file.getName();
-				String dbURL = driverUrl + msAccDB;
+				String msAccDB = localFile + file.getName();
+				String dbURL = MyTimeUtils.driverUrl + msAccDB;
 				connection = DbConnection.getDBConnection(dbURL);
 				statement = connection.createStatement();
 				resultSet = statement.executeQuery("SELECT * FROM DeviceLogs_10_2017");
@@ -94,7 +102,7 @@ public class EmployeeDataBaseService {
 			for (Entry<String, List<EmpLoginData>> empMap : map.entrySet()) {
 				calculatingEachEmployeeLoginsByDate(empMap.getValue(), emp);
 			}
-			System.out.println(log + (System.currentTimeMillis() - start_ms));
+			MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
 
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
@@ -120,10 +128,10 @@ public class EmployeeDataBaseService {
 		List<EmpLoginData> loginsData = new ArrayList<>();
 		boolean frstQuery = true;
 		try {
-			File dir = new File(filePath);
+			File dir = new File(localFile);
 			for (File file : dir.listFiles()) {
-				String msAccDB = filePath + file.getName();
-				String dbURL = driverUrl + msAccDB;
+				String msAccDB = localFile + file.getName();
+				String dbURL = MyTimeUtils.driverUrl + msAccDB;
 				connection = DbConnection.getDBConnection(dbURL);
 				Calendar calendar = new GregorianCalendar();
 				String query = "SELECT * FROM " + logfilename + "_" + (calendar.get(Calendar.MONTH)) + "_"
@@ -156,7 +164,7 @@ public class EmployeeDataBaseService {
 				}
 			}
 			calculatingEachEmployeeLoginsByDate(loginsData, empMap);
-			System.out.println(log + (System.currentTimeMillis() - start_ms));
+			MyTimeLogger.getInstance().info("Time : " + (System.currentTimeMillis() - start_ms));
 
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
@@ -187,24 +195,24 @@ public class EmployeeDataBaseService {
 			count++;
 			if (first) {
 				firstLoginAndLastRecordAdding(empLoginData, dates);
-				firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+				firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 				internalEmpMap.put(dateOnly, empLoginData);
 				first = false;
 			} else {
 				empDatestr = empLoginData.getFirstLogin();
-				Date dt = df.parse(empDatestr);
-				String timeOnly = tdf.format(dt);
-				String nextDate = dfmt.format(dt);
+				Date dt = MyTimeUtils.df.parse(empDatestr);
+				String timeOnly = MyTimeUtils.tdf.format(dt);
+				String nextDate = MyTimeUtils.dfmt.format(dt);
 				if (dateOnly.equals(nextDate)) {
 					dates.add(timeOnly);
-					firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 				} else {
 					EmpLoginData empLoginData1 = internalEmpMap.get(dateOnly);
 					addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, dateOnly, internalEmpMap);
 					internalEmpMap.get(dateOnly).setId(employeeId + dateOnly);
 					empMap.put(employeeId + "-" + dateOnly, internalEmpMap.get(dateOnly));
 					firstLoginAndLastRecordAdding(empLoginData, dates);
-					firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 					internalEmpMap.put(dateOnly, empLoginData);
 					if (count == loginsData.size()) {
 						addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly,
@@ -227,10 +235,10 @@ public class EmployeeDataBaseService {
 		boolean first = true;
 		boolean frstQuery = true;
 		try {
-			File dir = new File(filePath);
+			File dir = new File(localFile);
 			for (File file : dir.listFiles()) {
-				String msAccDB = filePath + file.getName();
-				String dbURL = driverUrl + msAccDB;
+				String msAccDB = localFile + file.getName();
+				String dbURL = MyTimeUtils.driverUrl + msAccDB;
 				connection = DbConnection.getDBConnection(dbURL);
 				Calendar calendar = new GregorianCalendar();
 				int date = calendar.get(Calendar.MONTH);
@@ -272,17 +280,17 @@ public class EmployeeDataBaseService {
 				count++;
 				if (first) {
 					firstLoginAndLastRecordAdding(empLoginData, dates);
-					firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 					empMap.put(dateOnly, empLoginData);
 					first = false;
 				} else {
 					empDatestr = empLoginData.getFirstLogin();
-					Date dt = df.parse(empDatestr);
-					String timeOnly = tdf.format(dt);
-					String nextDate = dfmt.format(dt);
+					Date dt = MyTimeUtils.df.parse(empDatestr);
+					String timeOnly = MyTimeUtils.tdf.format(dt);
+					String nextDate = MyTimeUtils.dfmt.format(dt);
 					if (dateOnly.equals(nextDate)) {
 						dates.add(timeOnly);
-						firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+						firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 						if (count == loginsData.size()) {
 							empLoginData.setEmployeeName(empDetails.getEmployeeName());
 							addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly, empMap);
@@ -292,12 +300,12 @@ public class EmployeeDataBaseService {
 						empLoginData.setEmployeeName(empDetails.getEmployeeName());
 						addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, dateOnly, empMap);
 						firstLoginAndLastRecordAdding(empLoginData, dates);
-						firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+						firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 						empMap.put(dateOnly, empLoginData);
 					}
 				}
 			}
-			System.out.println(log + (System.currentTimeMillis() - start_ms));
+			MyTimeLogger.getInstance().info("Time :" + (System.currentTimeMillis() - start_ms));
 
 		} catch (SQLException sqlex) {
 			sqlex.printStackTrace();
@@ -317,9 +325,9 @@ public class EmployeeDataBaseService {
 
 	private void firstLoginAndLastRecordAdding(EmpLoginData empLoginData, List<String> dates) throws ParseException {
 		empDatestr = empLoginData.getFirstLogin();
-		Date dt = df.parse(empDatestr);
-		String timeOnly = tdf.format(dt);
-		dateOnly = dfmt.format(dt);
+		Date dt = MyTimeUtils.df.parse(empDatestr);
+		String timeOnly = MyTimeUtils.tdf.format(dt);
+		dateOnly = MyTimeUtils.dfmt.format(dt);
 		empLoginData.setDateOfLogin(dateOnly);
 		dates.add(timeOnly);
 	}

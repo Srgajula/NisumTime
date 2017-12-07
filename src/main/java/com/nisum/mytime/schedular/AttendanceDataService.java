@@ -1,12 +1,13 @@
 package com.nisum.mytime.schedular;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,48 +23,58 @@ import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.nisum.mytime.configuration.DbConnection;
+import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.DateCompare;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.repository.EmployeeLoginsRepo;
+import com.nisum.mytime.utils.MyTimeLogger;
+import com.nisum.mytime.utils.MyTimeUtils;
+
+import jcifs.smb.SmbFile;
 
 @Service
 @Transactional(rollbackOn = RuntimeException.class)
-public class FilePickingSchedular {
+public class AttendanceDataService {
 
 	private String dateOnly = null;
 	private String empDatestr = null;
-	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static DateFormat tdf = new SimpleDateFormat("HH:mm");
-	private static DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd");
-	private static String filePath = "/Users/nisum/Documents/workspace-sts-3.8/newMdb/";
 	private Connection connection = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
-	private PreparedStatement preparedStatement = null;
-	private static String driverUrl = "jdbc:ucanaccess://";
-	private static String log = "Taking time to do all operation ";
+
+	private PreparedStatement statement1 = null;
 
 	@Autowired
 	private EmployeeLoginsRepo employeeLoginsRepo;
 
-	public List<EmpLoginData> fetchEmployeesData() throws ParseException, IOException {
+	@Value("${mytime.remoteFile.location}")
+	private String remotePath;
+
+	@Value("${mytime.localFile.location}")
+	private String localFile;
+
+	@Value("${mytime.attendance.fileName}")
+	private String mdbFile;
+
+	@Value("${mytime.attendance.fileExtension}")
+	private String fileExtension;
+
+	public List<EmpLoginData> populateEmployeeAttendanceData() throws MyTimeException {
 
 		long start_ms = System.currentTimeMillis();
 		List<EmpLoginData> loginsData = new ArrayList<>();
 		Map<String, List<EmpLoginData>> map = new HashMap<>();
 		boolean frstQuery = true;
 		Map<String, EmpLoginData> emp = new HashMap<>();
-		String mdbFileName = "eTimeTrackLite_";
 		String underScore = "_";
-		String fileExtension = "_1.mdb";
 		String logfilename = "DeviceLogs_";
 		String query = "SELECT * FROM ";
-
-		String file = "eTimeTrackLite1.mdb";
 
 		try {
 			long dbTime = System.currentTimeMillis();
@@ -73,17 +84,6 @@ public class FilePickingSchedular {
 			int year = calendar.get(Calendar.YEAR);
 			int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-			StringBuilder fileNameBuilder = new StringBuilder();
-
-			fileNameBuilder.append(filePath);
-			fileNameBuilder.append(mdbFileName);
-			fileNameBuilder.append(year);
-			fileNameBuilder.append(underScore);
-			fileNameBuilder.append(month);
-			fileNameBuilder.append(underScore);
-			fileNameBuilder.append(day);
-			fileNameBuilder.append(fileExtension);
-
 			StringBuilder queryBuilder = new StringBuilder();
 
 			queryBuilder.append(query);
@@ -92,20 +92,14 @@ public class FilePickingSchedular {
 			queryBuilder.append(underScore);
 			queryBuilder.append(year);
 
-			file = filePath + file;
-
-			String msAccDB = filePath + file.toString();
-			String dbURL = driverUrl + file;
-
-			System.out.println(file);
-
+			File localFile = fetchRemoteFilesAndCopyToLocal();
+			String dbURL = MyTimeUtils.driverUrl + localFile;
+			MyTimeLogger.getInstance().info(dbURL);
 			connection = DbConnection.getDBConnection(dbURL);
 			statement = connection.createStatement();
-
-			System.out.println(queryBuilder.toString());
+			MyTimeLogger.getInstance().info(queryBuilder.toString());
 
 			resultSet = statement.executeQuery(queryBuilder.toString());
-
 			String empname = null;
 			while (resultSet.next()) {
 				frstQuery = true;
@@ -114,8 +108,7 @@ public class FilePickingSchedular {
 					loginData.setEmployeeId(resultSet.getString(4));
 					loginData.setFirstLogin(resultSet.getString(5));
 					loginData.setDirection(resultSet.getString(6));
-					PreparedStatement statement1 = connection
-							.prepareStatement("SELECT * FROM EMPLOYEES Where EMPLOYEECODE=?");
+					statement1 = connection.prepareStatement("SELECT * FROM EMPLOYEES Where EMPLOYEECODE=?");
 					statement1.setLong(1, Long.valueOf(resultSet.getString(4)));
 					ResultSet resultSet1 = statement1.executeQuery();
 					while (resultSet1.next() && frstQuery) {
@@ -127,9 +120,7 @@ public class FilePickingSchedular {
 					loginsData.add(loginData);
 				}
 			}
-			System.out.println(" Taking time to do Db-Time job " + (System.currentTimeMillis() - dbTime));
-
-			System.out.println(loginsData.size());
+			MyTimeLogger.getInstance().info(" Taking time to do Db-Time job " + (System.currentTimeMillis() - dbTime));
 
 			long start_ms1 = System.currentTimeMillis();
 
@@ -139,9 +130,8 @@ public class FilePickingSchedular {
 				getSingleEmploginData(loginsData, map, empLoginData);
 			}
 
-			System.out.println(" Taking time to do iterator job " + (System.currentTimeMillis() - start_ms1));
-
-			System.out.println("map size " + map.size());
+			MyTimeLogger.getInstance()
+					.info(" Taking time to do iterator job " + (System.currentTimeMillis() - start_ms1));
 
 			for (Entry<String, List<EmpLoginData>> empMap : map.entrySet()) {
 				calculatingEachEmployeeLoginsByDate(empMap.getValue(), emp);
@@ -149,22 +139,39 @@ public class FilePickingSchedular {
 
 			employeeLoginsRepo.save(emp.values());
 
-			System.out.println(log + " and Savng also Done ::: " + (System.currentTimeMillis() - start_ms));
+			MyTimeLogger.getInstance()
+					.info(" Time Taken for 1st to Savng also Done ::: " + (System.currentTimeMillis() - start_ms));
 
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+		} catch (Exception ex) {
+			MyTimeLogger.getInstance().info(ex.getMessage());
+			throw new MyTimeException(ex.getMessage());
 		} finally {
 			try {
 				if (null != connection) {
 					resultSet.close();
 					statement.close();
+					statement1.close();
 					connection.close();
 				}
-			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+			} catch (Exception sqlex) {
+				MyTimeLogger.getInstance().info(sqlex.getMessage());
+				throw new MyTimeException(sqlex.getMessage());
 			}
 		}
-		return new ArrayList<EmpLoginData>(emp.values());
+		return new ArrayList<>(emp.values());
+	}
+
+	private File fetchRemoteFilesAndCopyToLocal() throws IOException {
+		SmbFile[] files = new SmbFile(remotePath).listFiles();
+		File file1 = new File(localFile);
+		for (SmbFile file : files) {
+			if (file.getCanonicalPath().contains(mdbFile)) {
+				try (InputStream in = file.getInputStream(); FileOutputStream out = new FileOutputStream(file1)) {
+					IOUtils.copy(in, out);
+				}
+			}
+		}
+		return file1;
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)
@@ -180,34 +187,43 @@ public class FilePickingSchedular {
 			count++;
 			if (first) {
 				firstLoginAndLastRecordAdding(empLoginData, dates);
-				firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+				firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 				internalEmpMap.put(dateOnly, empLoginData);
 				first = false;
 			} else {
 				empDatestr = empLoginData.getFirstLogin();
-				Date dt = df.parse(empDatestr);
-				String timeOnly = tdf.format(dt);
-				String nextDate = dfmt.format(dt);
+				Date dt = MyTimeUtils.df.parse(empDatestr);
+				String timeOnly = MyTimeUtils.tdf.format(dt);
+				String nextDate = MyTimeUtils.dfmt.format(dt);
 				if (dateOnly.equals(nextDate)) {
 					dates.add(timeOnly);
-					firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
+					ifCountEqualsSize(count, loginsData, empLoginData, dates, firstAndLastLoginDates, internalEmpMap,
+							empMap, employeeId);
 				} else {
 					EmpLoginData empLoginData1 = internalEmpMap.get(dateOnly);
 					addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, dateOnly, internalEmpMap);
 					internalEmpMap.get(dateOnly).setId(employeeId + "-" + dateOnly);
 					empMap.put(employeeId + "-" + dateOnly, internalEmpMap.get(dateOnly));
 					firstLoginAndLastRecordAdding(empLoginData, dates);
-					firstAndLastLoginDates.add(df.parse(empDatestr) + "");
+					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
 					internalEmpMap.put(dateOnly, empLoginData);
-					if (count == loginsData.size()) {
-						addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly,
-								internalEmpMap);
-						internalEmpMap.get(dateOnly).setId(employeeId + "-" + dateOnly);
-						empMap.put(employeeId + "-" + dateOnly, internalEmpMap.get(dateOnly));
-					}
+					ifCountEqualsSize(count, loginsData, empLoginData, dates, firstAndLastLoginDates, internalEmpMap,
+							empMap, employeeId);
 				}
 			}
 		}
+	}
+
+	private void ifCountEqualsSize(int count, List<EmpLoginData> loginsData, EmpLoginData empLoginData,
+			List<String> dates, List<String> firstAndLastLoginDates, Map<String, EmpLoginData> internalEmpMap,
+			Map<String, EmpLoginData> empMap, String employeeId) throws ParseException {
+		if (count == loginsData.size()) {
+			addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly, internalEmpMap);
+			internalEmpMap.get(dateOnly).setId(employeeId + "-" + dateOnly);
+			empMap.put(employeeId + "-" + dateOnly, internalEmpMap.get(dateOnly));
+		}
+
 	}
 
 	private void getSingleEmploginData(List<EmpLoginData> loginsData, Map<String, List<EmpLoginData>> map,
@@ -225,9 +241,9 @@ public class FilePickingSchedular {
 
 	private void firstLoginAndLastRecordAdding(EmpLoginData empLoginData, List<String> dates) throws ParseException {
 		empDatestr = empLoginData.getFirstLogin();
-		Date dt = df.parse(empDatestr);
-		String timeOnly = tdf.format(dt);
-		dateOnly = dfmt.format(dt);
+		Date dt = MyTimeUtils.df.parse(empDatestr);
+		String timeOnly = MyTimeUtils.tdf.format(dt);
+		dateOnly = MyTimeUtils.dfmt.format(dt);
 		empLoginData.setDateOfLogin(dateOnly);
 		dates.add(timeOnly);
 	}
