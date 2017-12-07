@@ -38,7 +38,7 @@
 }
 
 .md-button {    
-    text-transform: capitalize !important;/*For Lower case use lowercase*/
+    text-transform: capitalize !important;
 }
 
 .carousel-indicators li{
@@ -49,4 +49,8 @@
 .carousel-indicators .active{
 	background-color:orange;
 	border-color:#ff9200;
+}
+
+md-dialog{
+	margin-left: 15%;
 }

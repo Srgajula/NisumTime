@@ -1,5 +1,4 @@
-myApp.controller("employeeController", function($scope, $location, $filter,
-		$http, myFactory, $cookies, $mdDialog, $window) {
+myApp.controller("employeeController", function($scope, $http, myFactory, $mdDialog) {
 	$scope.records = [];
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();

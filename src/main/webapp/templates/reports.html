@@ -36,28 +36,26 @@
 						ng-change="validateDates(toDate, 'ToDate')"></md-datepicker>
 				</p>
 			</div>
-			<div class="col-xs-2" style="cursor: pointer; margin-left: -60px;"
+			<div class="col-xs-2" style="cursor: pointer; margin-left: -60px;margin-top: -5px;"
 				align="left">
 				<md-button class="md-raised md-primary"
-					style="width:100px;background: rgba(0, 178, 226, .6) !important;"
-					ng-click="getEmployeeData('click');"> <i
-					class="fa fa-print fa-2x"
+					style="width:120px;background: rgba(0, 178, 226, .6) !important;"
+					ng-click="generateReport()"> <i
+					class="fa fa-file-pdf-o fa-2x"
 					style="margin-top: 5px; font-size: 1.5em; float: left"></i>
 				Generate</md-button>
 			</div>
 		</div>
 	</div>
 	<div class="wrapper"
-		style="height: 370px; width: 950px; background-color: #888; overflow: scroll;">
+		style="height: 415px; width: 950px; background-color: #888; overflow: scroll;">
 		<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf"
 			scale="page-fit" page=1 style="width:940px;border-radius:5px;"></ng-pdf>
-	</div>
-	<div style="height: 5px;"></div>
-	<div style="text-align: center; cursor: pointer;">
-		<md-button class="md-raised md-primary"
-			style="width:120px;background: rgba(0, 178, 226, .6) !important;"
-			ng-click=""> <i class="fa fa-envelope-o fa-2x"
-			style="margin-top: 5px; font-size: 1.5em; float: left"></i> Send
-		Email</md-button>
+		<div>
+			<p id="reportMsg"
+				style="color: #fff; font-size: 1.35em; opacity: 0.5; vertical-align: middle; margin-top: 200px; margin-left: 300px;">{{reportMsg}}
+			
+			<p>
+		</div> 
 	</div>
 </div>

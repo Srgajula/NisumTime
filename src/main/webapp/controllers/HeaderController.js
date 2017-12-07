@@ -1,4 +1,4 @@
-myApp.controller("headerController",function($scope, myFactory, $cookies, $location, $compile){
+myApp.controller("headerController",function($scope, myFactory, $compile){
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
 	$scope.empEmailId = myFactory.getEmpEmailId();
@@ -17,6 +17,7 @@ myApp.controller("headerController",function($scope, myFactory, $cookies, $locat
 		var path = "'templates/login.html'";
 		element.setAttribute("src", path);
 		var newTemplate = angular.element(element);
-		$compile(newTemplate)($scope);
+		$('#home').html(newTemplate);
+		$compile($('#home'))($scope)
 	}
 });

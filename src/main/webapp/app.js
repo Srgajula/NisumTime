@@ -11,7 +11,7 @@ var myApp = angular.module(
 						+ (day < 10 ? "0" + day : day);
 			};
 		});
-
+myApp.constant('appConfig', { appName: "MyTime", appUri: "http://localhost:8080/", version:"1.0"});
 myApp.factory('myFactory', function() {
 	var empId = "";
 	var empName = "";

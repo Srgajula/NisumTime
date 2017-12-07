@@ -1,0 +1,48 @@
+<head>
+<script>
+	$(document).ready(function() {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+</head>
+<md-dialog aria-label="Email Template" style="width:400px;height:250px;">
+<form ng-cloak name="myForm">
+	<md-toolbar>
+	<div class="md-toolbar-tools"
+		style="background: rgba(0, 178, 226, .6) !important;">
+		<h2>Send Email</h2>
+		<span flex></span>
+		<md-button class="md-icon-button" ng-click="cancel()"> <i
+			class="fa fa-times fa-2x"
+			style="margin-top: 5px; font-size: 1.5em; float: left"></i> </md-button>
+	</div>
+	</md-toolbar>
+
+	<md-dialog-content>
+	<div class="md-dialog-content">
+		<div class="form-group">
+			<input type="text" class="form-control" id="toEmail" name="toEmail"
+				ng-model="toEmail" data-toggle="tooltip"
+				title="Use comma seperated values for multiple emails"
+				placeholder="To" ng-blur="validateEmail('TO', 'toEmail')" /> <br>
+			<input type="text" class="form-control" id="ccEmail" name="ccEmail"
+				ng-model="ccEmail" data-toggle="tooltip"
+				title="Use comma seperated values for multiple emails"
+				placeholder="CC" ng-blur="validateEmail('CC', 'ccEmail')" />
+			<div role="alert">
+				<span class="error" style="color: red;">{{invalidMsg}}</span>
+			</div>
+		</div>
+	</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row"> <md-button
+		data-ng-click="send()"
+		style="background: rgba(0, 178, 226, .6) !important;color:#fff;"
+		ng-show="showSend"> Send </md-button> <md-button ng-click="cancel()"
+		style="background: rgba(0, 178, 226, .6) !important;color:#fff;">
+	Cancel </md-button> <md-progress-linear ng-show="showLoader"
+		md-mode="indeterminate" style="left:0px;position:absolute;">
+	</md-progress-linear> </md-dialog-actions>
+</form>
+</md-dialog>
