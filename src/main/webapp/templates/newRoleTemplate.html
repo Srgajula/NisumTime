@@ -1,0 +1,36 @@
+<md-dialog aria-label="Role Template" style="width:435px;height:325px;">
+<form ng-cloak name="myForm">
+	<md-toolbar>
+	<div class="md-toolbar-tools"
+		style="background: rgba(0, 178, 226, .6) !important;">
+		<h2>{{templateTitle}} Role</h2>
+		<span flex></span>
+		<md-button class="md-icon-button" ng-click="cancel()"> <i
+			class="fa fa-times fa-2x"
+			style="margin-top: 5px; font-size: 1.5em; float: left"></i> </md-button>
+	</div>
+	</md-toolbar>
+
+	<md-dialog-content>
+	<div class="md-dialog-content">
+		<div class="form-group">
+			<input type="text" class="form-control" id="empId" name="empId"
+				ng-model="empId" placeholder="Employee ID" ng-blur="validateEmpId()" /> <br>
+			<input type="text" class="form-control" id="empName" name="empName"
+				ng-model="empName" placeholder="Employee Name" />
+			<md-select ng-model="empRole" md-selected-text="getSelectedRole()">
+			<md-optgroup label="roles"> <md-option ng-value="role"
+				ng-repeat="role in roles">{{role}}</md-option> </md-optgroup> </md-select>
+			<div role="alert">
+				<span class="error" style="color: red;">{{alertMsg}}</span>
+			</div>
+		</div>
+	</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row"> <md-button
+		class="md-raised" data-ng-click="validateFields()">
+	{{templateTitle}} </md-button> <md-button class="md-raised" ng-click="cancel()">
+	Cancel </md-button> </md-dialog-actions>
+</form>
+</md-dialog>
