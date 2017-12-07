@@ -31,7 +31,7 @@ import com.nisum.mytime.utils.MyTimeLogger;
 import com.nisum.mytime.utils.MyTimeUtils;
 
 @Component
-public class EmployeeDataBaseService {
+public class EmployeeDataService {
 
 	private String dateOnly = null;
 	private String empDatestr = null;

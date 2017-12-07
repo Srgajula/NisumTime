@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
 	private EmployeeLoginsRepo employeeLoginsRepo;
 
 	@Autowired
-	private EmployeeDataBaseService employeeDataBaseService;
+	private EmployeeDataService employeeDataBaseService;
 
 	@Override
 	public List<EmpLoginData> fetchEmployeeDataBasedOnEmpId(long id) throws FileNotFoundException, ParseException {

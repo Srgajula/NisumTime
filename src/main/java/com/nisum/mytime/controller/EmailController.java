@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.model.EmailDomain;
-import com.nisum.mytime.util.MailService;
+import com.nisum.mytime.service.MailService;
 
 @RestController
 public class EmailController {

@@ -1,4 +1,4 @@
-package com.nisum.mytime.schedular;
+package com.nisum.mytime.configuration;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -19,6 +19,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+
+import com.nisum.mytime.schedular.AutowiringSpringBeanJobFactory;
+import com.nisum.mytime.schedular.MyTimeCronSchedularJob;
 
 @Configuration
 @ConditionalOnProperty(name = "quartz.enabled")

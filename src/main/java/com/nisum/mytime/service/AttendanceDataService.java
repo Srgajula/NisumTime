@@ -1,4 +1,4 @@
-package com.nisum.mytime.schedular;
+package com.nisum.mytime.service;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -18,8 +18,8 @@ import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.service.UserService;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/attendance")
+public class AttendanceController {
 
 	@Autowired
 	private UserService userService;
