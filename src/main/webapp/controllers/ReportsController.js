@@ -155,7 +155,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		    });
 		  };
 
-	$scope.cancel = function() {
+	  $scope.cancel = function() {
 	    $mdDialog.cancel();
 	  };
 	  
@@ -184,6 +184,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 				}
 				$http(req).then(
 				 function onSuccess(response) {
+					 //Need to delete the file from the reports folder after sending the email
 					 $scope.showLoader = false;
 					 $mdDialog.hide(response);
 				 },function onError(response) {

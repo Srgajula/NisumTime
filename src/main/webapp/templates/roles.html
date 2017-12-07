@@ -1,1 +1,32 @@
-Roles
+<div class="md-padding" style="width: 100%; padding: 3px;"
+	id="popupContainer" ng-controller="assignRoleController" ng-init="">
+	<div class="container-fluid"
+		style="text-align: center; background: rgba(0, 178, 226, .6) !important; color: floralwhite; border-radius: 5px;">
+		<div class="row">
+			<div>
+				<p align="center"
+					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Roles</p>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="row col-lg-12" style="height:15px;"></div>
+	<div class="row col-lg-12">
+		<div class="col-lg-1" style="cursor: pointer; float:right;right:53px;">
+			<md-button class="md-raised md-primary"
+				style="width:120px;background: rgba(0, 178, 226, .6) !important;"
+				ng-click="assignRole('Assign', parentData)"> <i class="fa fa-plus-circle fa-2x"
+				style="margin-top: 5px; font-size: 1.5em; float: left"></i> Assign
+			Role</md-button>
+		</div>
+	</div>
+	<div class="row col-lg-12" style="height:15px;"></div>
+	<div class="row col-lg-12" style="margin-left:0px;">
+
+		<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination
+			class="myGrid">
+			<div class="watermark" ng-show="!gridOptions.data.length">No
+				data available</div>
+		</div>
+	</div>
+</div>
