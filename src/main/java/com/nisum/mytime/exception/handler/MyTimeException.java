@@ -1,12 +1,7 @@
 package com.nisum.mytime.exception.handler;
 
-/**
- * The Class BusinessException.
- *
- * @author r.dnyandeo.narkhede
- */
 public class MyTimeException extends Exception {
-	
+
 	/**
 	 * 
 	 */
