@@ -1,9 +1,5 @@
-myApp.controller("reportsController", function($scope, $location, $filter,
-		$http, myFactory, $cookies, $mdDialog, $window) {
+myApp.controller("reportsController", function($scope, $http, myFactory, $mdDialog, appConfig) {
 	$scope.records = [];
-	$scope.empId = myFactory.getEmpId();
-	$scope.empName = myFactory.getEmpName();
-	$scope.empEmailId = myFactory.getEmpEmailId();
 	$scope.searchId="";
 	// Date picker related code
 	var today = new Date();
@@ -11,6 +7,7 @@ myApp.controller("reportsController", function($scope, $location, $filter,
 	$scope.maxDate = today;
 	$scope.fromDate = priorDt;
 	$scope.toDate = today;
+	$scope.reportMsg ="Please generate a report for preview.";
 	$scope.records =[
 		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-10-30","firstLogin":"09:31","lastLogout":"16:54","totalLoginTime":"7:10"},
 		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-10-31","firstLogin":"09:21","lastLogout":"16:12","totalLoginTime":"7:15"},
@@ -51,13 +48,10 @@ myApp.controller("reportsController", function($scope, $location, $filter,
 	};
 	
 	function showAlert(message) {
-		$mdDialog.show(
-				$mdDialog.alert()
-				.parent(angular.element(document.querySelector('#popupContainer')))
-				.clickOutsideToClose(true)
-				.textContent(message)
-				.ariaLabel('Alert Dialog')
-				.ok('Got it!'));
+		$mdDialog.show($mdDialog.alert().parent(
+				angular.element(document.querySelector('#popupContainer')))
+				.clickOutsideToClose(true).textContent(message).ariaLabel(
+						'Alert Dialog').ok('Got it!'));
 	}
 	
 	function treatAsUTC(date) {
@@ -81,10 +75,8 @@ myApp.controller("reportsController", function($scope, $location, $filter,
 		return futureDt;
 	}
 	
-
-	$scope.pdfUrl = 'reports/sample.pdf';
+	$scope.pdfUrl = "";
 	$scope.scroll = 0;
-	$scope.loading = 'loading';
 
 	$scope.getNavStyle = function(scroll) {
 		if (scroll > 100)
@@ -92,25 +84,156 @@ myApp.controller("reportsController", function($scope, $location, $filter,
 		else
 			return 'pdf-controls';
 	}
-
-	$scope.onError = function(error) {
-		console.log(error);
+	
+	$scope.print = function(pdfFile){
+		printJS({ printable: pdfFile });
 	}
-
-	$scope.onLoad = function() {
-		$scope.loading = '';
-	}
-
-	$scope.onProgress = function(progressData) {
+	
+	var parentData = {
+			"empId": "",
+			"fromDate": getFormattedDate($scope.fromDate),
+			"toDate": getFormattedDate($scope.toDate),
+			"toEmail": [],
+			"ccEmail": [],
+			"bccEmail": []
 	};
 	
-	$scope.print = function(){
-		//Need to do
-//		var binaryData = [];
-//		binaryData.push($scope.pdfData);
-//		var pdfUrl = $window.URL.createObjectURL(new Blob(binaryData, {type: "application/pdf"}))
-//        var printwWindow = $window.open(pdfUrl);
-//        printwWindow.print();
+	$scope.generateReport = function(){
+		setDefaults("Yes");
+		var searchId = $scope.searchId;
+		if(searchId == "" || searchId.length ==0){
+			showAlert('Please enter an Employee ID');
+		}else if(isNaN(searchId)){
+			showAlert('Please enter only digits');
+			$scope.searchId = "";
+		}else if(searchId != ""&& (searchId.length < 5 || searchId.length > 5)){
+			showAlert('Employee ID should be 5 digits');
+			$scope.searchId = "";
+		}else{
+			setDefaults("No");
+			parentData.empId = $scope.searchId;
+			$scope.pdfUrl = "reports/"+$scope.searchId+"_"+parentData.fromDate+"_"+parentData.toDate+".pdf";
+		}
+	};
+	
+	function setDefaults(val){
+		if(val == "Yes"){
+			$('nav.pdf-controls').css("display","none");
+			$('canvas').css("display","none");
+			$('#reportMsg').css("margin-top","200px");
+			$('#reportMsg').css("margin-left","300px");
+			$scope.reportMsg ="Please generate a report for preview.";
+		}else{
+			$('nav.pdf-controls').css("display","block");
+			$('canvas').css("display","block");
+			$('#reportMsg').css("margin-top","0");
+			$('#reportMsg').css("margin-left","0");
+			$scope.reportMsg ="";
+		}
+		
+	}
+	function getFormattedDate(date){
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		var year = date.getFullYear();
+		return year + '-' + (month < 10 ? "0" + month : month) + '-'
+				+ (day < 10 ? "0" + day : day);
 	}
 	
+	$scope.sendEmail = function(ev){
+		$mdDialog.show({
+		      controller: DialogController,
+		      templateUrl: 'templates/emailTemplate.html',
+		      parent: angular.element(document.body),
+		      targetEvent: ev,
+		      clickOutsideToClose:true,
+		      locals:{dataToPass: parentData},
+		    })
+		    .then(function(result) {
+		    	if(result.data == "Success") showAlert('Report has been emailed successfully to the recepient(s)');
+		    	else showAlert("Something went wrong while sending email!!!");
+		    });
+		  };
+
+	$scope.cancel = function() {
+	    $mdDialog.cancel();
+	  };
+	  
+	 function DialogController($scope, $mdDialog, dataToPass) {
+		 $scope.toEmail = "";
+		 $scope.ccEmail = "";
+		 $scope.invalidMsg = "";
+		 $scope.showLoader = false;
+		 $scope.showSend = false;
+		 
+		 $scope.hide = function() {
+			 $mdDialog.hide();
+		 };
+
+		 $scope.cancel = function() {
+			 $mdDialog.cancel();
+		 };
+
+		 $scope.send = function() {
+			 $scope.showLoader = true;
+			 if($scope.invalidMsg == ""){
+				var req = {
+					method : 'POST',
+					url : appConfig.appUri+"sendEmail",
+					data : dataToPass
+				}
+				$http(req).then(
+				 function onSuccess(response) {
+					 $scope.showLoader = false;
+					 $mdDialog.hide(response);
+				 },function onError(response) {
+					 $scope.showLoader = false;
+					 $mdDialog.hide(response);
+				});
+			 }
+		 };
+		 
+		 $scope.validateEmail = function(from, elementId){
+			 var emailId = "";
+			 if(from == "TO"){
+				 emailId = $scope.toEmail;
+				 dataToPass.toEmail = [];
+			 }else if(from == "CC"){
+				 emailId = $scope.ccEmail;
+				 dataToPass.ccEmail = [];
+			 }
+			 if(emailId != ""){
+				 if(emailId.indexOf(",") != -1){
+					 var emails = emailId.split(",");
+					 for(var i=0;i<emails.length;i++){
+						 if(emails[i].trim() != ""){
+							 if(validateEmail(emails[i].trim())){
+								 $scope.invalidMsg = "";
+								 if(from == "TO") dataToPass.toEmail.push(emails[i].trim());
+								 else if(from == "CC") dataToPass.ccEmail.push(emails[i].trim());
+							 }else{
+								$scope.invalidMsg = "Please enter only valid email id(s)!";
+								document.getElementById(elementId).focus();
+							 }
+						 }
+					 }
+				 }else{
+					 if(validateEmail(emailId.trim())){
+						 $scope.invalidMsg = "";
+						 if(from == "TO") dataToPass.toEmail.push(emailId.trim());
+						 else if(from == "CC") dataToPass.ccEmail.push(emailId.trim());
+					 }else{
+						 $scope.invalidMsg = "Please enter only valid email id(s)!";
+						 document.getElementById(elementId).focus();
+					 }
+				 }
+				 $scope.showSend = true;
+			 }
+		 };
+		 
+		 function validateEmail(emailId){
+			 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			 return re.test(emailId);
+		 }
+	 }
 });

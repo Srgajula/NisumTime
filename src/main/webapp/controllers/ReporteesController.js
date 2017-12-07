@@ -1,5 +1,4 @@
-myApp.controller("employeesController", function($scope, $location, $filter,
-		$http, myFactory, $cookies, $mdDialog) {
+myApp.controller("employeesController", function($scope, $http, myFactory, $mdDialog) {
 	$scope.records = [];
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
@@ -122,13 +121,10 @@ myApp.controller("employeesController", function($scope, $location, $filter,
 	};
 	
 	function showAlert(message) {
-		$mdDialog.show(
-				$mdDialog.alert()
-				.parent(angular.element(document.querySelector('#popupContainer')))
-				.clickOutsideToClose(true)
-				.textContent(message)
-				.ariaLabel('Alert Dialog')
-				.ok('Got it!'));
+		$mdDialog.show($mdDialog.alert().parent(
+				angular.element(document.querySelector('#popupContainer')))
+				.clickOutsideToClose(true).textContent(message).ariaLabel(
+						'Alert Dialog').ok('Got it!'));
 	}
 	
 	function getFormattedDate(date){

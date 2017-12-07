@@ -1,4 +1,4 @@
-myApp.controller("leftmenuController",function($scope, myFactory, $cookies, $compile){
+myApp.controller("leftmenuController",function($scope, myFactory, $compile){
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
 	$scope.empEmailId = myFactory.getEmpEmailId();

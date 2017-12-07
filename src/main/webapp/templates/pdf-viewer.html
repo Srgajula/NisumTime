@@ -1,9 +1,9 @@
 <nav ng-class="getNavStyle(scroll)">
 	<button class="btn btn-default" ng-click="goPrevious()" title="Previous">
-		<i class="fa fa-hand-o-left fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+		<i class="fa fa-arrow-circle-left fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
 	</button>
 	<button class="btn btn-default" ng-click="goNext()" title="Next">
-		<i class="fa fa-hand-o-right fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+		<i class="fa fa-arrow-circle-right fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
 	</button>
 
 	<button class="btn btn-default" ng-click="zoomIn()">
@@ -15,13 +15,13 @@
 	<button class="btn btn-default" ng-click="zoomOut()">
 		<i class="fa fa-search-minus fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
 	</button>
-
-	<button class="btn btn-default" ng-click="rotate()" title="Rotate">
-		<i class="fa fa-repeat fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	
+	<button class="btn btn-default" ng-click="print(pdfUrl)" title="Print">
+		<i class="fa fa-print fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
 	</button>
 	
-	<button class="btn btn-default" ng-click="print()" title="Print">
-		<i class="fa fa-print fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
+	<button class="btn btn-default" ng-click="sendEmail($event)" title="Email">
+		<i class="fa fa-envelope-o fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>
 	</button>
 	
 	<div class="col-lg-2" style="float: right; right: 10px;">

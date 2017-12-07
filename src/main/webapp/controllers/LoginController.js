@@ -1,4 +1,4 @@
-myApp.controller("loginController",function($scope, myFactory, $mdDialog, $location, $compile,$window){
+myApp.controller("loginController",function($scope, myFactory, $compile){
 	var menuItems = myFactory.getMenuItems();
 	$scope.authenticate = function(role){
 		
@@ -13,7 +13,7 @@ myApp.controller("loginController",function($scope, myFactory, $mdDialog, $locat
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
 			menuItems.push({"menu" : "Reports","icon" : "fa fa-flag fa-2x","path" : "templates/reports.html"});
-			menuItems.push({"menu" : "Roles","icon" : "fa fa-universal-access fa-2x","path" : "templates/roles.html"});
+			menuItems.push({"menu" : "Assign Roles","icon" : "fa fa-universal-access fa-2x","path" : "templates/roles.html"});
 		}else if(role == "Manager"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
@@ -28,7 +28,8 @@ myApp.controller("loginController",function($scope, myFactory, $mdDialog, $locat
 		var path = "'templates/home.html'";
 		element.setAttribute("src", path);
 		var newTemplate = angular.element(element);
-		$compile(newTemplate)($scope);
+		$('#home').html(newTemplate);
+		$compile($('#home'))($scope)
 	}
 	
 });

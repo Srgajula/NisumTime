@@ -1,12 +1,12 @@
 *{box-sizing: border-box;}
 .wrapper {margin: 0 auto; width: 940px;background: #888;  }
-.pdf-controls { width: 99%; display: block; background: #888; padding: 1em;}
+.pdf-controls { width: 99%; display: none; background: #888; padding: 1em;}
 .rotate0 {-webkit-transform: rotate(0deg); transform: rotate(0deg);background: #888;
-    padding-left: 10px;}
+    padding-left: 10px;display: none;}
 .rotate90 {-webkit-transform: rotate(90deg); transform: rotate(90deg); background: #888;
-    padding-left: 10px; }
+    padding-left: 10px;display: none; }
 .rotate180 {-webkit-transform: rotate(180deg); transform: rotate(180deg);background: #888;
-    padding-left: 10px;}
+    padding-left: 10px;display: none;}
 .rotate270 {-webkit-transform: rotate(270deg); transform: rotate(270deg); background: #888;
-    padding-left: 10px; }
+    padding-left: 10px; display: none;}
 .fixed { position: fixed; top: 0; left: calc(50% - 480px); z-index: 100; width: 99%; padding: 1em; background: #888; width: 940px; }
