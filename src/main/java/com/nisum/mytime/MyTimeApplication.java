@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@EnableMongoRepositories
+@EnableMongoRepositories(basePackages = { "com.nisum.mytime.repository" })
 public class MyTimeApplication extends SpringBootServletInitializer {
 
 	@Override

@@ -4,27 +4,29 @@ import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter
 @Setter
-@Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "Employee")
-public class Employee implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
-	
+@ToString
+@Document(collection = "EmployeeRoles")
+public class EmployeeRoles implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2685951572250975416L;
+
 	@Id
-	private String empId;
-	private String empName;
-	private String empDesg;
-	private String empDept;
-	
+	private String employeeId;
+	private String employeeName;
+	private String emailId;
+	private String role;
+
 }

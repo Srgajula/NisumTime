@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,10 +33,11 @@ import com.nisum.mytime.configuration.DbConnection;
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.DateCompare;
 import com.nisum.mytime.model.EmpLoginData;
-import com.nisum.mytime.repository.EmployeeLoginsRepo;
+import com.nisum.mytime.repository.EmployeeAttendanceRepo;
 import com.nisum.mytime.utils.MyTimeLogger;
 import com.nisum.mytime.utils.MyTimeUtils;
 
+import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 @Service
@@ -44,26 +46,27 @@ public class AttendanceDataService {
 
 	private String dateOnly = null;
 	private String empDatestr = null;
-	private Connection connection = null;
-	private Statement statement = null;
-	private ResultSet resultSet = null;
-
-	private PreparedStatement statement1 = null;
 
 	@Autowired
-	private EmployeeLoginsRepo employeeLoginsRepo;
+	private EmployeeAttendanceRepo employeeLoginsRepo;
 
-	@Value("${mytime.remoteFile.location}")
+	@Value("${mytime.remoteFileTransfer.required}")
+	private Boolean isRemoteFileTransfer;
+
+	@Value("${mytime.remote.connection}")
 	private String remotePath;
 
-	@Value("${mytime.localFile.location}")
-	private String localFile;
+	@Value("${mytime.localFile.directory}")
+	private String localFileDirectory;
 
 	@Value("${mytime.attendance.fileName}")
 	private String mdbFile;
 
 	@Value("${mytime.attendance.fileExtension}")
 	private String fileExtension;
+
+	@Value("${mytime.remote.directory}")
+	private String remoteFilesDirectory;
 
 	public List<EmpLoginData> populateEmployeeAttendanceData() throws MyTimeException {
 
@@ -75,7 +78,11 @@ public class AttendanceDataService {
 		String underScore = "_";
 		String logfilename = "DeviceLogs_";
 		String query = "SELECT * FROM ";
-
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		PreparedStatement statement1 = null;
+		String dbURL = null;
 		try {
 			long dbTime = System.currentTimeMillis();
 
@@ -92,8 +99,12 @@ public class AttendanceDataService {
 			queryBuilder.append(underScore);
 			queryBuilder.append(year);
 
-			File localFile = fetchRemoteFilesAndCopyToLocal();
-			String dbURL = MyTimeUtils.driverUrl + localFile;
+			if (Boolean.TRUE.equals(isRemoteFileTransfer)) {
+				dbURL = MyTimeUtils.driverUrl + fetchRemoteFilesAndCopyToLocal();
+			} else {
+				dbURL = MyTimeUtils.driverUrl + fetchRemoteFileName();
+			}
+
 			MyTimeLogger.getInstance().info(dbURL);
 			connection = DbConnection.getDBConnection(dbURL);
 			statement = connection.createStatement();
@@ -136,34 +147,28 @@ public class AttendanceDataService {
 			for (Entry<String, List<EmpLoginData>> empMap : map.entrySet()) {
 				calculatingEachEmployeeLoginsByDate(empMap.getValue(), emp);
 			}
-
 			employeeLoginsRepo.save(emp.values());
 
 			MyTimeLogger.getInstance()
 					.info(" Time Taken for 1st to Savng also Done ::: " + (System.currentTimeMillis() - start_ms));
 
+			if (null != connection) {
+				resultSet.close();
+				statement.close();
+				statement1.close();
+				connection.close();
+			}
 		} catch (Exception ex) {
 			MyTimeLogger.getInstance().info(ex.getMessage());
 			throw new MyTimeException(ex.getMessage());
-		} finally {
-			try {
-				if (null != connection) {
-					resultSet.close();
-					statement.close();
-					statement1.close();
-					connection.close();
-				}
-			} catch (Exception sqlex) {
-				MyTimeLogger.getInstance().info(sqlex.getMessage());
-				throw new MyTimeException(sqlex.getMessage());
-			}
 		}
 		return new ArrayList<>(emp.values());
 	}
 
 	private File fetchRemoteFilesAndCopyToLocal() throws IOException {
+		File file1 = null;
 		SmbFile[] files = new SmbFile(remotePath).listFiles();
-		File file1 = new File(localFile);
+		file1 = new File(localFileDirectory + mdbFile);
 		for (SmbFile file : files) {
 			if (file.getCanonicalPath().contains(mdbFile)) {
 				try (InputStream in = file.getInputStream(); FileOutputStream out = new FileOutputStream(file1)) {
@@ -172,6 +177,17 @@ public class AttendanceDataService {
 			}
 		}
 		return file1;
+	}
+
+	private String fetchRemoteFileName() throws SmbException, MalformedURLException {
+		String fileName = null;
+		SmbFile[] files = new SmbFile(remoteFilesDirectory).listFiles();
+		for (SmbFile file : files) {
+			if (file.getCanonicalPath().contains(mdbFile)) {
+				fileName = file.getName();
+			}
+		}
+		return fileName;
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)

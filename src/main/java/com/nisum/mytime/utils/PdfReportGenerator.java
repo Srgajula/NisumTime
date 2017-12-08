@@ -2,7 +2,6 @@ package com.nisum.mytime.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
+import com.nisum.mytime.service.EmployeeDataService;
 
 @Component
 public class PdfReportGenerator {
@@ -31,37 +31,24 @@ public class PdfReportGenerator {
 	@Autowired
 	ResourceLoader resourceLoader;
 
-	public void generateEmployeeReport(String employeeId, String startDate, String endDate) throws MyTimeException {
+	@Autowired
+	private EmployeeDataService employeeDataBaseService;
+
+	public boolean generateEmployeeReport(long employeeId, String startDate, String endDate) throws MyTimeException {
 
 		String fileName = employeeId + "_" + startDate + "_" + endDate + ".pdf";
 		List<EmpLoginData> empLoginDetails = getEmployeeData(employeeId, startDate, endDate);
-		createPDF(fileName, empLoginDetails);
+		return createPDF(fileName, empLoginDetails);
 
 	}
 
-	// replace method with actual implementation
-	private List<EmpLoginData> getEmployeeData(String employeeId, String startDate, String endDate) {
+	private List<EmpLoginData> getEmployeeData(long employeeId, String fromDate, String toDate) throws MyTimeException {
 
-		List<EmpLoginData> empLoginDatas = new ArrayList<>();
-
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:30", "17:30", "09:00", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:00", "17:30", "08:30", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:30", "17:30", "09:00", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:00", "17:30", "08:30", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:30", "17:30", "09:00", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:00", "17:30", "08:30", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:30", "17:30", "09:00", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:00", "17:30", "08:30", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:30", "17:30", "09:00", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:00", "17:30", "08:30", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:30", "17:30", "09:00", "out"));
-		empLoginDatas.add(new EmpLoginData("someId", "16XXX", "name", "2017-12-01", "08:30", "17:30", "09:00", "out"));
-
-		return empLoginDatas;
+		return employeeDataBaseService.fetchEmployeeLoginsBasedOnDates(employeeId, fromDate, toDate);
 	}
 
-	private void createPDF(String pdfFilename, List<EmpLoginData> empLoginDatas) throws MyTimeException {
-
+	private boolean createPDF(String pdfFilename, List<EmpLoginData> empLoginDatas) throws MyTimeException {
+		boolean result = false;
 		Document doc = new Document();
 		PdfWriter docWriter = null;
 		try {
@@ -70,7 +57,7 @@ public class PdfReportGenerator {
 			setPdfDocumentProperties(doc);
 			doc.open();
 			preparePdfDocument(doc, empLoginDatas);
-
+			result = true;
 		} catch (Exception dex) {
 			MyTimeLogger.getInstance()
 					.error("DocumentException while generating {} " + pdfFilename + "\n" + dex.getMessage());
@@ -83,6 +70,7 @@ public class PdfReportGenerator {
 				docWriter.close();
 			}
 		}
+		return result;
 	}
 
 	private void setPdfDocumentProperties(Document doc) {

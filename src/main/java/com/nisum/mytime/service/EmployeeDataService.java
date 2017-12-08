@@ -1,8 +1,9 @@
 package com.nisum.mytime.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,16 +22,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.transaction.Transactional;
+
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.nisum.mytime.configuration.DbConnection;
+import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.DateCompare;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.utils.MyTimeLogger;
 import com.nisum.mytime.utils.MyTimeUtils;
 
+import jcifs.smb.SmbFile;
+
 @Component
+@Transactional
 public class EmployeeDataService {
 
 	private String dateOnly = null;
@@ -42,11 +55,14 @@ public class EmployeeDataService {
 	private PreparedStatement preparedStatement = null;
 	private static String logfilename = "DeviceLogs";
 
-	@Value("${mytime.remoteFile.location}")
+	@Autowired
+	private MongoTemplate mongoTemplate;
+
+	@Value("${mytime.remote.connection}")
 	private String remotePath;
 
-	@Value("${mytime.localFile.location}")
-	private String localFile;
+	@Value("${mytime.localFile.directory}")
+	private String localFileDirectory;
 
 	@Value("${mytime.attendance.fileName}")
 	private String mdbFile;
@@ -54,7 +70,16 @@ public class EmployeeDataService {
 	@Value("${mytime.attendance.fileExtension}")
 	private String fileExtension;
 
-	public List<EmpLoginData> fetchEmployeesData() throws ParseException, IOException {
+	@Value("${mytime.remoteFileTransfer.required}")
+	private String isRemoteFileTransfer;
+
+	@Value("${mytime.remote.directory}")
+	private String remoteFilesDirectory;
+
+	private List<EmpLoginData> listOfEmpLoginData = null;
+	private DBCursor cursor = null;
+
+	public List<EmpLoginData> fetchEmployeesData() throws MyTimeException {
 
 		long start_ms = System.currentTimeMillis();
 		List<EmpLoginData> loginsData = new ArrayList<>();
@@ -62,10 +87,8 @@ public class EmployeeDataService {
 		boolean frstQuery = true;
 		Map<String, EmpLoginData> emp = new HashMap<>();
 		try {
-			File dir = new File(localFile);
-			for (File file : dir.listFiles()) {
-				String msAccDB = localFile + file.getName();
-				String dbURL = MyTimeUtils.driverUrl + msAccDB;
+			for (File file : fetchRemoteFilesAndCopyToLocal()) {
+				String dbURL = MyTimeUtils.driverUrl + file.getName();
 				connection = DbConnection.getDBConnection(dbURL);
 				statement = connection.createStatement();
 				resultSet = statement.executeQuery("SELECT * FROM DeviceLogs_10_2017");
@@ -104,8 +127,9 @@ public class EmployeeDataService {
 			}
 			MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
 
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+		} catch (Exception sqlex) {
+			MyTimeLogger.getInstance().info(sqlex.getMessage());
+			throw new MyTimeException(sqlex.getMessage());
 		} finally {
 			try {
 				if (null != connection) {
@@ -114,72 +138,64 @@ public class EmployeeDataService {
 					connection.close();
 				}
 			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+				MyTimeLogger.getInstance().info(sqlex.getMessage());
+				throw new MyTimeException(sqlex.getMessage());
 			}
 		}
 		return new ArrayList<EmpLoginData>(emp.values());
 	}
 
-	public List<EmpLoginData> fetchEmployeeLoginsBasedOnDates(long id, String fromDate, String toDate)
-			throws FileNotFoundException, ParseException {
-
-		Map<String, EmpLoginData> empMap = new HashMap<>();
-		long start_ms = System.currentTimeMillis();
-		List<EmpLoginData> loginsData = new ArrayList<>();
-		boolean frstQuery = true;
-		try {
-			File dir = new File(localFile);
-			for (File file : dir.listFiles()) {
-				String msAccDB = localFile + file.getName();
-				String dbURL = MyTimeUtils.driverUrl + msAccDB;
-				connection = DbConnection.getDBConnection(dbURL);
-				Calendar calendar = new GregorianCalendar();
-				String query = "SELECT * FROM " + logfilename + "_" + (calendar.get(Calendar.MONTH)) + "_"
-						+ (calendar.get(Calendar.YEAR)) + " Where USERID=?";
-				preparedStatement = connection.prepareStatement(query);
-				preparedStatement.setLong(1, id);
-				resultSet = preparedStatement.executeQuery();
-				if (frstQuery) {
-					PreparedStatement statement1 = connection
-							.prepareStatement("SELECT * FROM EMPLOYEES Where EMPLOYEECODE=?");
-					statement1.setLong(1, id);
-					ResultSet resultSet1 = statement1.executeQuery();
-					while (resultSet1.next() && frstQuery) {
-						empDetails.setEmployeeName(resultSet1.getString(2));
-						frstQuery = false;
-						statement1.close();
-						resultSet1.close();
+	private List<File> fetchRemoteFilesAndCopyToLocal() throws IOException {
+		List<File> files = new ArrayList<>();
+		if (Boolean.TRUE.equals(isRemoteFileTransfer)) {
+			SmbFile[] smbFiles = new SmbFile(remotePath).listFiles();
+			for (SmbFile file : smbFiles) {
+				if (file.getCanonicalPath().contains(".mdb")) {
+					File file1 = new File(localFileDirectory + file.getName());
+					try (InputStream in = file.getInputStream(); FileOutputStream out = new FileOutputStream(file1)) {
+						IOUtils.copy(in, out);
 					}
-				}
-
-				while (resultSet.next()) {
-					if (resultSet.getString(4).length() >= 5) {
-						EmpLoginData loginData = new EmpLoginData();
-						loginData.setEmployeeId(resultSet.getString(4));
-						loginData.setEmployeeName(empDetails.getEmployeeName());
-						loginData.setFirstLogin(resultSet.getString(5));
-						loginData.setDirection(resultSet.getString(6));
-						loginsData.add(loginData);
-					}
+					files.add(file1);
 				}
 			}
-			calculatingEachEmployeeLoginsByDate(loginsData, empMap);
-			MyTimeLogger.getInstance().info("Time : " + (System.currentTimeMillis() - start_ms));
-
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
-		} finally {
-			try {
-				if (null != connection) {
-					resultSet.close();
-					preparedStatement.close();
-					connection.close();
+		} else {
+			SmbFile[] smbFiles = new SmbFile(remoteFilesDirectory).listFiles();
+			for (SmbFile file : smbFiles) {
+				if (file.getCanonicalPath().contains(".mdb")) {
+					File file1 = new File(file.getName());
+					files.add(file1);
 				}
-			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
 			}
 		}
-		return new ArrayList<EmpLoginData>(empMap.values());
+		return files;
+	}
+
+	public List<EmpLoginData> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate, String toDate)
+			throws MyTimeException {
+
+		try {
+			listOfEmpLoginData = new ArrayList<>();
+			BasicDBObject gtQuery = new BasicDBObject();
+			gtQuery.put("_id",
+					new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
+			cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
+			while (cursor.hasNext()) {
+				DBObject dbObject = cursor.next();
+				EmpLoginData empLoginData = new EmpLoginData();
+				empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
+				empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
+				empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
+				empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
+				empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
+				empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
+				listOfEmpLoginData.add(empLoginData);
+			}
+		} catch (Exception ex) {
+			MyTimeLogger.getInstance().info(ex.getMessage());
+			throw new MyTimeException(ex.getMessage());
+		}
+		cursor.close();
+		return listOfEmpLoginData;
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)
@@ -225,7 +241,7 @@ public class EmployeeDataService {
 		}
 	}
 
-	public List<EmpLoginData> fetchEmployeeDataBasedOnEmpId(long id) throws FileNotFoundException, ParseException {
+	public List<EmpLoginData> fetchEmployeeDataBasedOnEmpId(long id) throws MyTimeException {
 
 		List<String> dates = new ArrayList<>();
 		List<String> firstAndLastLoginDates = new ArrayList<>();
@@ -235,9 +251,9 @@ public class EmployeeDataService {
 		boolean first = true;
 		boolean frstQuery = true;
 		try {
-			File dir = new File(localFile);
+			File dir = new File(localFileDirectory);
 			for (File file : dir.listFiles()) {
-				String msAccDB = localFile + file.getName();
+				String msAccDB = localFileDirectory + file.getName();
 				String dbURL = MyTimeUtils.driverUrl + msAccDB;
 				connection = DbConnection.getDBConnection(dbURL);
 				Calendar calendar = new GregorianCalendar();
@@ -307,8 +323,9 @@ public class EmployeeDataService {
 			}
 			MyTimeLogger.getInstance().info("Time :" + (System.currentTimeMillis() - start_ms));
 
-		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+		} catch (Exception sqlex) {
+			MyTimeLogger.getInstance().info(sqlex.getMessage());
+			throw new MyTimeException(sqlex.getMessage());
 		} finally {
 			try {
 				if (null != connection) {
@@ -317,7 +334,8 @@ public class EmployeeDataService {
 					connection.close();
 				}
 			} catch (SQLException sqlex) {
-				sqlex.printStackTrace();
+				MyTimeLogger.getInstance().info(sqlex.getMessage());
+				throw new MyTimeException(sqlex.getMessage());
 			}
 		}
 		return new ArrayList<EmpLoginData>(empMap.values());
