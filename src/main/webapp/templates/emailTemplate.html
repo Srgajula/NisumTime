@@ -37,12 +37,11 @@
 	</md-dialog-content>
 
 	<md-dialog-actions layout="row"> <md-button
-		data-ng-click="send()"
-		style="background: rgba(0, 178, 226, .6) !important;color:#fff;"
-		ng-show="showSend"> Send </md-button> <md-button ng-click="cancel()"
-		style="background: rgba(0, 178, 226, .6) !important;color:#fff;">
+		class="md-raised" data-ng-click="validateFields()" style="color: rgb(63,81,181);">
+	Send </md-button> <md-button class="md-raised" ng-click="cancel()" style="color: rgb(63,81,181);">
 	Cancel </md-button> <md-progress-linear ng-show="showLoader"
 		md-mode="indeterminate" style="left:0px;position:absolute;">
-	</md-progress-linear> </md-dialog-actions>
+	</md-progress-linear> 
+	</md-dialog-actions>
 </form>
 </md-dialog>

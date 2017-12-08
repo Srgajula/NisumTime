@@ -1,4 +1,4 @@
-<md-dialog aria-label="Role Template" style="width:435px;height:325px;">
+<md-dialog aria-label="Role Template" style="width:470px;height:380px;">
 <form ng-cloak name="myForm">
 	<md-toolbar>
 	<div class="md-toolbar-tools"
@@ -15,9 +15,11 @@
 	<div class="md-dialog-content">
 		<div class="form-group">
 			<input type="text" class="form-control" id="empId" name="empId"
-				ng-model="empId" placeholder="Employee ID" ng-blur="validateEmpId()" /> <br>
+				ng-model="empId" placeholder="Employee ID" ng-blur="validateEmpId()" ng-disabled="isDisabled"/> <br>
 			<input type="text" class="form-control" id="empName" name="empName"
-				ng-model="empName" placeholder="Employee Name" />
+				ng-model="empName" placeholder="Employee Name" /><br>
+			<input type="text" class="form-control" id="empEmail" name="empEmail"
+				ng-model="empEmail" placeholder="Email ID" ng-blur="validateEmailId()"/>
 			<md-select ng-model="empRole" md-selected-text="getSelectedRole()">
 			<md-optgroup label="roles"> <md-option ng-value="role"
 				ng-repeat="role in roles">{{role}}</md-option> </md-optgroup> </md-select>
@@ -29,8 +31,8 @@
 	</md-dialog-content>
 
 	<md-dialog-actions layout="row"> <md-button
-		class="md-raised" data-ng-click="validateFields()">
-	{{templateTitle}} </md-button> <md-button class="md-raised" ng-click="cancel()">
+		class="md-raised" data-ng-click="validateFields()" style="color: rgb(63,81,181);">
+	{{templateTitle}} </md-button> <md-button class="md-raised" ng-click="cancel()" style="color: rgb(63,81,181);">
 	Cancel </md-button> </md-dialog-actions>
 </form>
 </md-dialog>

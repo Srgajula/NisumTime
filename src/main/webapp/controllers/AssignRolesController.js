@@ -3,15 +3,16 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 	$scope.parentData = {
 			"empId": "",
 			"empName": "",
+			"emailId":"",
 			"role": "",
 			"action":""
 	};
 	$scope.records =[
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","role":"Manager"},
-		{"employeeId":"16207","employeeName":"Sumith Lambu","role":"HR"},
-		{"employeeId":"16112","employeeName":"Srikanth Gajula","role":"Manager"},
-		{"employeeId":"16142","employeeName":"Srinivas Maneti","role":"HR"},
-		{"employeeId":"16175","employeeName":"Srihari Kakasthapol","role":"Manager"}
+		{"employeeId":"16209","employeeName":"Mahesh Gutam","role":"Manager","emailId":"mgutam@nisum.com"},
+		{"employeeId":"16207","employeeName":"Sumith Lambu","role":"HR","emailId":"slambu@nisum.com"},
+		{"employeeId":"16112","employeeName":"Srikanth Gajula","role":"Manager","emailId":"srgajula@nisum.com"},
+		{"employeeId":"16142","employeeName":"Srinivas Maneti","role":"HR","emailId":"smaneti@nisum.com"},
+		{"employeeId":"16175","employeeName":"Srihari Kakasthapol","role":"Manager","emailId":"skakasthapol@nisum.com"}
 	];
 	
 	var getCellTemplate = '<p class="col-lg-12"><i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Update\')"></i>'+
@@ -24,7 +25,8 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 		pageSize:5,
 		columnDefs : [ 
 			{field : 'employeeId',displayName: 'Employee ID'},
-			{field : 'employeeName',displayName: 'Name'}, 
+			{field : 'employeeName',displayName: 'Name'},
+			{field : 'emailId',displayName: 'Email'},
 			{field : 'role',displayName: 'Role'}, 
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate} 
 		]
@@ -34,6 +36,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 	$scope.getRowData = function(row, action){
 		$scope.parentData.empId = row.entity.employeeId;
 		$scope.parentData.empName = row.entity.employeeName;
+		$scope.parentData.emailId = row.entity.emailId;
 		$scope.parentData.role = row.entity.role;
 		if(action == "Update")
 			$scope.assignRole(action, $scope.parentData);
@@ -60,12 +63,13 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 		    .then(function(result) {
 		    	if(result == "Assign") showAlert('Role assigned successfully');
 		    	else if(result == "Update") showAlert('Role updated successfully');
-		    	else showAlert("Role assigning failed!!!");
+		    	else if(result == "Cancelled") console.log(result);
+		    	else showAlert('Role assigning failed!!!');
 		    });
 	};
 	
 	$scope.cancel = function() {
-	    $mdDialog.cancel();
+	    $mdDialog.hide();
 	};
 	
 	$scope.deleteRole = function(row){
@@ -86,14 +90,19 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 	function AddRoleController($scope, $mdDialog, dataToPass, gridOptionsData) {
 		$scope.templateTitle = dataToPass.action;
 		$scope.alertMsg = "";
+		$scope.isDisabled = false;
 		if(dataToPass.action == "Assign"){
 			$scope.empId = "";
 			$scope.empName = "";
 			$scope.empRole;
+			$scope.empEmail = "";
+			$scope.isDisabled = false;
 		}else if(dataToPass.action == "Update"){
 			$scope.empId = dataToPass.empId;
 			$scope.empName = dataToPass.empName;
 			$scope.empRole = dataToPass.role;
+			$scope.empEmail = dataToPass.emailId;
+			$scope.isDisabled = true;
 		}
 		$scope.roles = ["HR","Manager"];
 		$scope.getSelectedRole = function(){
@@ -117,16 +126,38 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 			}
 		};
 		
+		$scope.validateEmailId = function(){
+			var emailId = $scope.empEmail;
+			if(emailId != "" && !validateEmail(emailId)){
+				$scope.alertMsg = "Please enter a valid email id";
+				document.getElementById('empEmail').focus();
+			}else{
+				$scope.alertMsg = "";
+			}
+		}
+		
+		function validateEmail(emailId){
+			 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			 return re.test(emailId);
+		 }
+		
 		$scope.validateFields = function(){
 			var searchId = $scope.empId;
 			var empName = $scope.empName;
 			var empRole = $scope.empRole;
+			var empEmail = $scope.empEmail;
 			if(searchId == ""){
 				$scope.alertMsg = "Employee ID is mandatory";
+				document.getElementById('empId').focus();
 			}else if(empName == ""){
 				$scope.alertMsg = "Employee Name is mandatory";
+				document.getElementById('empName').focus();
+			}else if(empEmail == ""){
+				$scope.alertMsg = "Email ID is mandatory";
+				document.getElementById('empEmail').focus();
 			}else if(empRole == undefined){
-				$scope.alertMsg = "Please select an Employee role";
+				$scope.alertMsg = "Please select a role";
+				document.getElementById('empRole').focus();
 			}else{
 				$scope.alertMsg = "";
 				updateGrid($scope.templateTitle);
@@ -134,20 +165,22 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 		};
 		
 		$scope.cancel = function() {
-		    $mdDialog.hide();
+		    $mdDialog.hide('Cancelled');
 		};
 		
 		function updateGrid(action){
 			//Need to implement backend functionality for updating or inserting role to role table in db
-			var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "role": $scope.empRole};
-			if(action == "Assign"){
-				gridOptionsData.push(record);
-			}else if(action == "Update"){
-				var existingRecord = getRowEntity($scope.empId);
-				var index = gridOptionsData.indexOf(existingRecord);
-				gridOptionsData[index] = record;
+			if($scope.alertMsg == ""){
+				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "role": $scope.empRole, "emailId": $scope.empEmail};
+				if(action == "Assign"){
+					gridOptionsData.push(record);
+				}else if(action == "Update"){
+					var existingRecord = getRowEntity($scope.empId);
+					var index = gridOptionsData.indexOf(existingRecord);
+					gridOptionsData[index] = record;
+				}
+				$mdDialog.hide(action);
 			}
-			$mdDialog.hide(action);
 		}
 		
 		function getRowEntity(empId){

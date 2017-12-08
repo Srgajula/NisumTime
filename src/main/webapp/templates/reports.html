@@ -15,7 +15,7 @@
 		<div class="row col-lg-12">
 			<div class="col-xs-2">
 				<input type="text" ng-model="searchId" id="searchId"
-					placeholder="Employee ID" class="form-control" min-length="5" />
+					placeholder="Employee ID" class="form-control" min-length="5" ng-blur="validateEmpId()"/>
 			</div>
 			<div class="col-xs-4" style="margin-left: -21px;">
 				<p>

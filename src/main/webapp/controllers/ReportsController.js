@@ -98,6 +98,19 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 			"bccEmail": []
 	};
 	
+	$scope.validateEmpId = function(){
+		var searchId = $scope.searchId;
+		if(searchId !="" && isNaN(searchId)){
+			showAlert('Please enter only digits');
+			$scope.searchId = "";
+			document.getElementById('searchId').focus();
+		}else if(searchId != ""&& (searchId.length < 5 || searchId.length > 5)){
+			showAlert('Employee ID should be 5 digits');
+			$scope.searchId = "";
+			document.getElementById('searchId').focus();
+		}
+	};
+	
 	$scope.generateReport = function(){
 		setDefaults("Yes");
 		var searchId = $scope.searchId;
@@ -164,7 +177,6 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		 $scope.ccEmail = "";
 		 $scope.invalidMsg = "";
 		 $scope.showLoader = false;
-		 $scope.showSend = false;
 		 
 		 $scope.hide = function() {
 			 $mdDialog.hide();
@@ -175,8 +187,8 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		 };
 
 		 $scope.send = function() {
-			 $scope.showLoader = true;
 			 if($scope.invalidMsg == ""){
+				$scope.showLoader = true;
 				var req = {
 					method : 'POST',
 					url : appConfig.appUri+"sendEmail",
@@ -228,7 +240,6 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 						 document.getElementById(elementId).focus();
 					 }
 				 }
-				 $scope.showSend = true;
 			 }
 		 };
 		 
@@ -236,5 +247,16 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 			 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			 return re.test(emailId);
 		 }
+		 
+		 $scope.validateFields = function(){
+			 var toEmail = $scope.toEmail;
+			 if(toEmail == ""){
+				 $scope.invalidMsg = "To Email is mandatory";
+				 document.getElementById('toEmail').focus();
+			 }else{
+				 $scope.validateEmail("TO",'toEmail');
+				 $scope.send();
+			 }
+		 };
 	 }
 });
