@@ -62,9 +62,6 @@ public class AttendanceDataService {
 	@Value("${mytime.attendance.fileName}")
 	private String mdbFile;
 
-	@Value("${mytime.attendance.fileExtension}")
-	private String fileExtension;
-
 	@Value("${mytime.remote.directory}")
 	private String remoteFilesDirectory;
 
@@ -89,7 +86,6 @@ public class AttendanceDataService {
 			Calendar calendar = new GregorianCalendar();
 			int month = (calendar.get(Calendar.MONTH)) + 1;
 			int year = calendar.get(Calendar.YEAR);
-			int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 			StringBuilder queryBuilder = new StringBuilder();
 
@@ -152,12 +148,6 @@ public class AttendanceDataService {
 			MyTimeLogger.getInstance()
 					.info(" Time Taken for 1st to Savng also Done ::: " + (System.currentTimeMillis() - start_ms));
 
-			if (null != connection) {
-				resultSet.close();
-				statement.close();
-				statement1.close();
-				connection.close();
-			}
 		} catch (Exception ex) {
 			MyTimeLogger.getInstance().info(ex.getMessage());
 			throw new MyTimeException(ex.getMessage());

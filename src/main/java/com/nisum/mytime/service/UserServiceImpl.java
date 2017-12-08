@@ -10,6 +10,7 @@ import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.repository.EmployeeAttendanceRepo;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
+import com.nisum.mytime.utils.MyTimeLogger;
 import com.nisum.mytime.utils.PdfReportGenerator;
 
 @Service("userService")
@@ -33,9 +34,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<EmpLoginData> fetchEmployeesData() throws MyTimeException {
+	public Boolean fetchEmployeesData() throws MyTimeException {
+		Boolean result = false;
 		List<EmpLoginData> listOfEmpLoginData = employeeDataBaseService.fetchEmployeesData();
-		return employeeLoginsRepo.save(listOfEmpLoginData);
+		try {
+			employeeLoginsRepo.save(listOfEmpLoginData);
+			result = true;
+		} catch (Exception e) {
+			MyTimeLogger.getInstance().error(e.getMessage());
+			throw new MyTimeException(e.getMessage());
+		}
+
+		return result;
 	}
 
 	@Override
