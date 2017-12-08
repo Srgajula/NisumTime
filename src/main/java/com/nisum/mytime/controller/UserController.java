@@ -27,8 +27,14 @@ public class UserController {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeesRole();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/employeesDataSave", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> employeesDataSave() throws MyTimeException {
+		Boolean result = userService.fetchEmployeesData();
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 
-	@RequestMapping(value = "assigingEmployeeRole/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/assigingEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
 		userService.assigingEmployeeRole(employeeRoles);
 		return new ResponseEntity<>("", HttpStatus.OK);

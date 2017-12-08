@@ -26,14 +26,14 @@ public class AttendanceController {
 	public ResponseEntity<List<EmpLoginData>> fetchEmployeeDataBasedOnEmpId(@PathVariable("id") long id)
 			throws MyTimeException {
 		List<EmpLoginData> empLoginData = userService.fetchEmployeeDataBasedOnEmpId(id);
-		return new ResponseEntity<List<EmpLoginData>>(empLoginData, HttpStatus.OK);
+		return new ResponseEntity<>(empLoginData, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "employeeLoginsBasedOnDate/{id}/{fromDate}/{toDate}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmpLoginData>> employeeLoginsBasedOnDate(@PathVariable("id") long id,
 			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate) throws MyTimeException {
 		List<EmpLoginData> message = userService.employeeLoginsBasedOnDate(id, fromDate, toDate);
-		return new ResponseEntity<List<EmpLoginData>>(message, HttpStatus.OK);
+		return new ResponseEntity<>(message, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "generatePdfReport/{id}/{fromDate}/{toDate}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +41,7 @@ public class AttendanceController {
 			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate)
 			throws MyTimeException {
 		Boolean result= userService.generatePdfReport(id, fromDate, toDate);
-		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 }

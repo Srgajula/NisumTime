@@ -10,7 +10,7 @@ public interface UserService {
 
 	List<EmpLoginData> fetchEmployeeDataBasedOnEmpId(long id) throws MyTimeException;
 
-	List<EmpLoginData> fetchEmployeesData() throws MyTimeException;
+	Boolean fetchEmployeesData() throws MyTimeException;
 
 	List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate) throws MyTimeException;
 
