@@ -39,8 +39,25 @@
 	<script src="controllers/ReporteesController.js"></script>
 	<script src="controllers/ReportsController.js"></script>
 	<script src="controllers/AssignRolesController.js"></script>
+	<script src="controllers/SigninController.js"></script>
+	<script src="controllers/google.js"></script>
+	<script src="controllers/googleController.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script async defer src="https://apis.google.com/js/api.js" 
+        onload="this.onload=function(){};handleClientLoad()" 
+        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+  <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="585172608227-fnpg1siqk0evu2sp9is5rgqdpu7go7na.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
-<body>
-   	<ng-include src="'templates/login.html'" id="home"></ng-include>
+  <body>
+  	<ng-include src="'templates/login.html'" id="home"></ng-include>
+    <div ng-controller="googleController">
+    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    </div>
+    <script>
+      
+    </script>
 </body>
 </html>

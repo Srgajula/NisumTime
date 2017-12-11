@@ -23,11 +23,12 @@ public class UserController {
 	private UserService userService;
 
 	@RequestMapping(value = "employee/{emailId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EmployeeRoles> getEmployeeRole(@PathVariable("emailId") String emailId) throws MyTimeException {
+	public ResponseEntity<EmployeeRoles> getEmployeeRole(@PathVariable("emailId") String emailId)
+			throws MyTimeException {
 		EmployeeRoles employeesRole = userService.getEmployeesRole(emailId);
-		return new ResponseEntity<>(employeesRole,HttpStatus.OK);
+		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/employeesDataSave", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Boolean> employeesDataSave() throws MyTimeException {
 		Boolean result = userService.fetchEmployeesData();
@@ -45,11 +46,11 @@ public class UserController {
 		userService.assigingEmployeeRole(employeeRoles);
 		return new ResponseEntity<>("Success", HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/getUserRoles", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeRoles>> getUserRoles() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
-	
+
 }
