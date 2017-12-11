@@ -36,7 +36,7 @@ public class AttendanceController {
 		return new ResponseEntity<>(message, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "generatePdfReport/{id}/{fromDate}/{toDate}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "generatePdfReport/{id}/{fromDate}/{toDate}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> generatePdfReport(@PathVariable("id") long id,
 			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate)
 			throws MyTimeException {

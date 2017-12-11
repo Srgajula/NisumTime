@@ -1,19 +1,12 @@
-myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
+myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $http, appConfig, $timeout){
 	$scope.records = [];
 	$scope.parentData = {
-			"empId": "",
-			"empName": "",
+			"employeeId": "",
+			"employeeName": "",
 			"emailId":"",
 			"role": "",
 			"action":""
 	};
-	$scope.records =[
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","role":"Manager","emailId":"mgutam@nisum.com"},
-		{"employeeId":"16207","employeeName":"Sumith Lambu","role":"HR","emailId":"slambu@nisum.com"},
-		{"employeeId":"16112","employeeName":"Srikanth Gajula","role":"Manager","emailId":"srgajula@nisum.com"},
-		{"employeeId":"16142","employeeName":"Srinivas Maneti","role":"HR","emailId":"smaneti@nisum.com"},
-		{"employeeId":"16175","employeeName":"Srihari Kakasthapol","role":"Manager","emailId":"skakasthapol@nisum.com"}
-	];
 	
 	var getCellTemplate = '<p class="col-lg-12"><i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Update\')"></i>'+
 	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-minus-circle fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Delete\')"></i></p>';
@@ -34,8 +27,8 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 	$scope.gridOptions.data = $scope.records;
 	
 	$scope.getRowData = function(row, action){
-		$scope.parentData.empId = row.entity.employeeId;
-		$scope.parentData.empName = row.entity.employeeName;
+		$scope.parentData.employeeId = row.entity.employeeId;
+		$scope.parentData.employeeName = row.entity.employeeName;
 		$scope.parentData.emailId = row.entity.emailId;
 		$scope.parentData.role = row.entity.role;
 		if(action == "Update")
@@ -43,6 +36,22 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 		else if(action == "Delete")
 			$scope.deleteRole(row);
 	}
+	
+	$scope.refreshPage = function(){
+		$scoope.getUserRoles();
+	}
+	
+	$scope.getUserRoles = function(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getUserRoles"
+	    }).then(function mySuccess(response) {
+	        $scope.gridOptions.data = response.data;
+	    }, function myError(response) {
+	    	showAlert("Something went wrong while fetching data!!!");
+	    	$scope.gridOptions.data = [];
+	    });
+	};
 	
 	function showAlert(message) {
 		$mdDialog.show($mdDialog.alert().parent(
@@ -64,7 +73,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 		    	if(result == "Assign") showAlert('Role assigned successfully');
 		    	else if(result == "Update") showAlert('Role updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
-		    	else showAlert('Role assigning failed!!!');
+		    	else showAlert('Role assigning/updation failed!!!');
 		    });
 	};
 	
@@ -73,24 +82,52 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 	};
 	
 	$scope.deleteRole = function(row){
-		//Need to implement backend logic for deleting the row from db table
 	    var confirm = $mdDialog.confirm()
 	          .textContent('Are you sure want to delete the role?')
 	          .ok('Do it!')
 	          .cancel('Cancel');
 	    $mdDialog.show(confirm).then(function() {
-	    	var index = $scope.gridOptions.data.indexOf(row.entity);
-			$scope.gridOptions.data.splice(index, 1);
-			showAlert('Role deleted successfully');
+	    	var record = {"id":row.entity.id,"employeeId":row.entity.employeeId, "employeeName": row.entity.employeeName, "emailId": row.entity.emailId, "role": row.entity.role};
+			deleteUserRole(record);
+			$timeout(function(){updateGridAfterDelete(row)},500);
 	    }, function() {
-	    	
+	    	console.log("Cancelled dialog");
 	    });
 	};
+	
+	function deleteUserRole(record){
+		var req = {
+				method : 'POST',
+				url : appConfig.appUri+ "user/deleteEmployee",
+				headers : {
+					"Content-type" : "application/json"
+				},
+				data : record
+			}
+			$http(req).then(function mySuccess(response) {
+				$scope.result = response.data;
+			}, function myError(response){
+				$scope.result = "Error";
+			});
+	}
+	
+	function updateGridAfterDelete(row){
+		if($scope.result == "Success"){
+			var index = $scope.gridOptions.data.indexOf(row.entity);
+			$scope.gridOptions.data.splice(index, 1);
+			showAlert('Role deleted successfully');
+		}else{
+			showAlert('Something went wrong while deleting the role.')
+		}
+    	
+	}
 	
 	function AddRoleController($scope, $mdDialog, dataToPass, gridOptionsData) {
 		$scope.templateTitle = dataToPass.action;
 		$scope.alertMsg = "";
 		$scope.isDisabled = false;
+		$scope.result = "";
+		$scope.savedId = "";
 		if(dataToPass.action == "Assign"){
 			$scope.empId = "";
 			$scope.empName = "";
@@ -98,8 +135,8 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 			$scope.empEmail = "";
 			$scope.isDisabled = false;
 		}else if(dataToPass.action == "Update"){
-			$scope.empId = dataToPass.empId;
-			$scope.empName = dataToPass.empName;
+			$scope.empId = dataToPass.employeeId;
+			$scope.empName = dataToPass.employeeName;
 			$scope.empRole = dataToPass.role;
 			$scope.empEmail = dataToPass.emailId;
 			$scope.isDisabled = true;
@@ -160,7 +197,10 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 				document.getElementById('empRole').focus();
 			}else{
 				$scope.alertMsg = "";
-				updateGrid($scope.templateTitle);
+				var record = {"id":"","employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": $scope.empRole};
+				addOrUpdateRole(record);
+				record.id = $scope.savedId;
+				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}
 		};
 		
@@ -168,19 +208,39 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog){
 		    $mdDialog.hide('Cancelled');
 		};
 		
-		function updateGrid(action){
-			//Need to implement backend functionality for updating or inserting role to role table in db
+		function updateGrid(action, record){
 			if($scope.alertMsg == ""){
-				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "role": $scope.empRole, "emailId": $scope.empEmail};
-				if(action == "Assign"){
-					gridOptionsData.push(record);
-				}else if(action == "Update"){
-					var existingRecord = getRowEntity($scope.empId);
-					var index = gridOptionsData.indexOf(existingRecord);
-					gridOptionsData[index] = record;
+				if($scope.result == "Success"){
+					if(action == "Assign"){
+						gridOptionsData.push(record);
+					}else if(action == "Update"){
+						var existingRecord = getRowEntity($scope.empId);
+						var index = gridOptionsData.indexOf(existingRecord);
+						gridOptionsData[index] = record;
+					}
+					$mdDialog.hide(action);
+				}else{
+					$mdDialog.hide("Error");
 				}
-				$mdDialog.hide(action);
+				
 			}
+		}
+		
+		function addOrUpdateRole(record){
+			var req = {
+				method : 'POST',
+				url : appConfig.appUri+ "user/assigingEmployeeRole",
+				headers : {
+					"Content-type" : "application/json"
+				},
+				data : record
+			}
+			$http(req).then(function mySuccess(response) {
+				$scope.savedId = response.data;
+				$scope.result = "Success";
+			}, function myError(response){
+				$scope.result = "Error";
+			});
 		}
 		
 		function getRowEntity(empId){

@@ -24,6 +24,7 @@ public class EmployeeRoles implements Serializable {
 	private static final long serialVersionUID = 2685951572250975416L;
 
 	@Id
+	private String id;
 	private String employeeId;
 	private String employeeName;
 	private String emailId;

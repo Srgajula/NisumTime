@@ -164,7 +164,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		    		showAlert('Report has been emailed successfully to the recepient(s)');
 		    		deleteReport($scope.pdfUrl);
 		    	}
-		    	else if(result.data == "Cancelled"){
+		    	else if(result.data == "Cancelled" || result.data == undefined){
 		    		console.log("Dialog cancelled");
 		    	}
 		    	else{
@@ -174,7 +174,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		  };
 
 	  $scope.cancel = function() {
-	    $mdDialog.cancel();
+	    $mdDialog.hide('Cancelled');
 	  };
 	  
 	  function deleteReport(pdfReport){
@@ -204,7 +204,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		 $scope.showLoader = false;
 		 
 		 $scope.hide = function() {
-			 $mdDialog.hide();
+			 $mdDialog.hide('Cancelled');
 		 };
 
 		 $scope.cancel = function() {
