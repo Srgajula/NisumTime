@@ -53,13 +53,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<EmployeeRoles> getEmployeesRole() throws MyTimeException {
+	public List<EmployeeRoles> getEmployeeRoles() throws MyTimeException {
 		return employeeRolesRepo.findAll();
 	}
 
 	@Override
 	public void assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
 		employeeRolesRepo.save(employeeRoles);
+	}
+
+	@Override
+	public EmployeeRoles getEmployeesRole(String emailId) {
+		return employeeRolesRepo.findByEmailId(emailId);
+
+	}
+
+	@Override
+	public void deleteEmployee(EmployeeRoles employeeRoles) {
+		employeeRolesRepo.delete(employeeRoles);
 	}
 
 }

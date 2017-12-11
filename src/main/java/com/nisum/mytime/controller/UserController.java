@@ -19,31 +19,38 @@ import com.nisum.mytime.service.UserService;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @RequestMapping(value = "employee/{emailId}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<EmployeeRoles>> getEmployeeRole(
-            @PathVariable("emailId") String emailId) throws MyTimeException {
-        List<EmployeeRoles> employeesRoles = userService.getEmployeesRole();
-        return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
-    }
+	@RequestMapping(value = "employee/{emailId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EmployeeRoles> getEmployeeRole(@PathVariable("emailId") String emailId)
+			throws MyTimeException {
+		EmployeeRoles employeesRole = userService.getEmployeesRole(emailId);
+		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
+	}
 
-    @RequestMapping(value = "/employeesDataSave", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> employeesDataSave() throws MyTimeException {
-        Boolean result = userService.fetchEmployeesData();
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+	@RequestMapping(value = "/employeesDataSave", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> employeesDataSave() throws MyTimeException {
+		Boolean result = userService.fetchEmployeesData();
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 
-    @RequestMapping(value = "/assigingEmployeeRole",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> assigingEmployeeRole(
-            EmployeeRoles employeeRoles) throws MyTimeException {
-        userService.assigingEmployeeRole(employeeRoles);
-        return new ResponseEntity<>("", HttpStatus.OK);
-    }
+	@RequestMapping(value = "/assigingEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
+		userService.assigingEmployeeRole(employeeRoles);
+		return new ResponseEntity<>("", HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> deleteEmployee(EmployeeRoles employeeRoles) throws MyTimeException {
+		userService.assigingEmployeeRole(employeeRoles);
+		return new ResponseEntity<>("Success", HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/getUserRoles", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EmployeeRoles>> getUserRoles() throws MyTimeException {
+		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
+		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	}
 
 }
