@@ -34,7 +34,7 @@ public class PdfReportGenerator {
 	@Autowired
 	private EmployeeDataService employeeDataBaseService;
 
-	public boolean generateEmployeeReport(long employeeId, String startDate, String endDate) throws MyTimeException {
+	public String generateEmployeeReport(long employeeId, String startDate, String endDate) throws MyTimeException {
 
 		String fileName = employeeId + "_" + startDate + "_" + endDate + ".pdf";
 		List<EmpLoginData> empLoginDetails = getEmployeeData(employeeId, startDate, endDate);
@@ -47,8 +47,7 @@ public class PdfReportGenerator {
 		return employeeDataBaseService.fetchEmployeeLoginsBasedOnDates(employeeId, fromDate, toDate);
 	}
 
-	private boolean createPDF(String pdfFilename, List<EmpLoginData> empLoginDatas) throws MyTimeException {
-		boolean result = false;
+	private String createPDF(String pdfFilename, List<EmpLoginData> empLoginDatas) throws MyTimeException {
 		Document doc = new Document();
 		PdfWriter docWriter = null;
 		try {
@@ -57,7 +56,6 @@ public class PdfReportGenerator {
 			setPdfDocumentProperties(doc);
 			doc.open();
 			preparePdfDocument(doc, empLoginDatas);
-			result = true;
 		} catch (Exception dex) {
 			MyTimeLogger.getInstance()
 					.error("DocumentException while generating {} " + pdfFilename + "\n" + dex.getMessage());
@@ -70,7 +68,7 @@ public class PdfReportGenerator {
 				docWriter.close();
 			}
 		}
-		return result;
+		return pdfFilename;
 	}
 
 	private void setPdfDocumentProperties(Document doc) {

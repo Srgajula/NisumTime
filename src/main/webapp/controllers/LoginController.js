@@ -5,8 +5,8 @@ myApp.controller("loginController",function($scope, myFactory, $compile){
 		//Write any login authentication logic here 
 		
 		//Setting default values to myFactory object so that we can use it anywhere in application
-		myFactory.setEmpId("12345");
-		myFactory.setEmpName("Mahesh Kumar G");
+		myFactory.setEmpId("16209");
+		myFactory.setEmpName("Mahesh Gutam");
 		myFactory.setEmpEmailId("mgutam@nisum.com");
 		myFactory.setEmpRole(role);
 		if(role == "HR"){

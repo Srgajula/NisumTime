@@ -37,10 +37,10 @@ public class AttendanceController {
 	}
 	
 	@RequestMapping(value = "generatePdfReport/{id}/{fromDate}/{toDate}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Boolean> generatePdfReport(@PathVariable("id") long id,
+	public ResponseEntity<String> generatePdfReport(@PathVariable("id") long id,
 			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate)
 			throws MyTimeException {
-		Boolean result= userService.generatePdfReport(id, fromDate, toDate);
+		String result= userService.generatePdfReport(id, fromDate, toDate);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 

@@ -1,4 +1,4 @@
-myApp.controller("reportsController", function($scope, $http, myFactory, $mdDialog, appConfig) {
+myApp.controller("reportsController", function($scope, $http, myFactory, $mdDialog, appConfig, $timeout, $compile) {
 	$scope.records = [];
 	$scope.searchId="";
 	// Date picker related code
@@ -8,27 +8,6 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	$scope.fromDate = priorDt;
 	$scope.toDate = today;
 	$scope.reportMsg ="Please generate a report for preview.";
-	$scope.records =[
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-10-30","firstLogin":"09:31","lastLogout":"16:54","totalLoginTime":"7:10"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-10-31","firstLogin":"09:21","lastLogout":"16:12","totalLoginTime":"7:15"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-01","firstLogin":"09:15","lastLogout":"16:24","totalLoginTime":"7:05"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-02","firstLogin":"09:01","lastLogout":"16:36","totalLoginTime":"7:51"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-03","firstLogin":"09:41","lastLogout":"16:37","totalLoginTime":"7:49"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-04","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-05","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-06","firstLogin":"09:08","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-12-01","firstLogin":"09:01","lastLogout":"16:36","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-12-02","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-12-03","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16207","employeeName":"Sumith Lambu","dateOfLogin":"2017-12-03","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16207","employeeName":"Sumith Lambu","dateOfLogin":"2017-12-02","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16207","employeeName":"Sumith Lambu","dateOfLogin":"2017-11-10","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16207","employeeName":"Sumith Lambu","dateOfLogin":"2017-11-11","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16142","employeeName":"Srinivas Maneti","dateOfLogin":"2017-11-08","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16142","employeeName":"Srinivas Maneti","dateOfLogin":"2017-11-09","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16142","employeeName":"Srinivas Maneti","dateOfLogin":"2017-11-10","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"}
-	];
-	
 	$scope.validateDates = function(dateValue, from) {
 		if(from == "FromDate"){
 			var toDt = $scope.toDate;
@@ -45,6 +24,12 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 			$scope.toDate = dateValue;
 			$scope.fromDate = getCalculatedDate(dateValue, 'Substract');
 		}
+	};
+	
+	$scope.refreshPage = function(){
+		$scope.fromDate = priorDt;
+		$scope.toDate = today;
+		setDefaults();
 	};
 	
 	function showAlert(message) {
@@ -112,7 +97,6 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	};
 	
 	$scope.generateReport = function(){
-		setDefaults("Yes");
 		var searchId = $scope.searchId;
 		if(searchId == "" || searchId.length ==0){
 			showAlert('Please enter an Employee ID');
@@ -123,28 +107,41 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 			showAlert('Employee ID should be 5 digits');
 			$scope.searchId = "";
 		}else{
-			setDefaults("No");
+			$scope.reportMsg ="";
 			parentData.empId = $scope.searchId;
-			$scope.pdfUrl = "reports/"+$scope.searchId+"_"+parentData.fromDate+"_"+parentData.toDate+".pdf";
+			generatePdfReport(parentData);
+			showProgressDialog();
+			$timeout(function(){previewPdfReport();},5000);
 		}
 	};
 	
-	function setDefaults(val){
-		if(val == "Yes"){
-			$('nav.pdf-controls').css("display","none");
-			$('canvas').css("display","none");
-			$('#reportMsg').css("margin-top","200px");
-			$('#reportMsg').css("margin-left","300px");
-			$scope.reportMsg ="Please generate a report for preview.";
-		}else{
-			$('nav.pdf-controls').css("display","block");
-			$('canvas').css("display","block");
-			$('#reportMsg').css("margin-top","0");
-			$('#reportMsg').css("margin-left","0");
-			$scope.reportMsg ="";
-		}
-		
+	function showProgressDialog(){
+		$mdDialog.show({
+	      templateUrl: 'templates/progressDialog.html',
+	      parent: angular.element(document.body),
+	      clickOutsideToClose:false
+	    });
 	}
+	
+	function previewPdfReport(){
+		var pdfTemplate = '<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf" scale="page-fit" page=1 style="width:940px;border-radius:5px;"></ng-pdf>';
+		$("#pdfReportPreview").html($compile(pdfTemplate)($scope));
+		$mdDialog.hide();
+	}
+	
+	function generatePdfReport(data){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "attendance/generatePdfReport/" + data.empId + "/" + data.fromDate + "/" +data.toDate
+	    }).then(function mySuccess(response) {
+	        $scope.pdfUrl = "reports/"+response.data;
+	    }, function myError(response) {
+	    	showAlert("Something went wrong while generating report!!!");
+	    	$scope.pdfUrl = "";
+	    });
+	}
+	
+	
 	function getFormattedDate(date){
 		var day = date.getDate();
 		var month = date.getMonth() + 1;
@@ -163,14 +160,42 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		      locals:{dataToPass: parentData},
 		    })
 		    .then(function(result) {
-		    	if(result.data == "Success") showAlert('Report has been emailed successfully to the recepient(s)');
-		    	else showAlert("Something went wrong while sending email!!!");
+		    	if(result.data == "Success"){
+		    		showAlert('Report has been emailed successfully to the recepient(s)');
+		    		deleteReport($scope.pdfUrl);
+		    	}
+		    	else if(result.data == "Cancelled"){
+		    		console.log("Dialog cancelled");
+		    	}
+		    	else{
+		    		showAlert("Something went wrong while sending email!!!");
+		    	}
 		    });
 		  };
 
 	  $scope.cancel = function() {
 	    $mdDialog.cancel();
 	  };
+	  
+	  function deleteReport(pdfReport){
+		  var fileName = pdfReport.substring(pdfReport.indexOf("/")+1,pdfReport.indexOf("."));
+		  $http({
+		        method : "GET",
+		        url : appConfig.appUri + "deleteReport/" + fileName
+		    }).then(function mySuccess(response) {
+		    	console.log("Report deleted successfully after sending email.");
+		    }, function myError(response) {
+		    	console.log("Something went wrong while deleting the report!!!");
+		    });
+		  setDefaults();
+	  }
+	  
+	  function setDefaults(){
+		  var defaultTemplate = '<p id="reportMsg" style="color: #fff; font-size: 1.35em; opacity: 0.5; vertical-align: middle; margin-top: 200px;'+ 
+			  'margin-left: 300px;">Please generate a report for preview.</p>';
+		  $("#pdfReportPreview").html($compile(defaultTemplate)($scope));
+		  $scope.searchId="";
+	  }
 	  
 	 function DialogController($scope, $mdDialog, dataToPass) {
 		 $scope.toEmail = "";
@@ -183,7 +208,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		 };
 
 		 $scope.cancel = function() {
-			 $mdDialog.cancel();
+			 $mdDialog.hide('Cancelled');
 		 };
 
 		 $scope.send = function() {
@@ -196,7 +221,6 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 				}
 				$http(req).then(
 				 function onSuccess(response) {
-					 //Need to delete the file from the reports folder after sending the email
 					 $scope.showLoader = false;
 					 $mdDialog.hide(response);
 				 },function onError(response) {

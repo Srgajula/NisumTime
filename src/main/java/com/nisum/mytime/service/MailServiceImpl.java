@@ -67,4 +67,22 @@ public class MailServiceImpl implements MailService {
 		}
 		return response;
 	}
+
+	@Override
+	public String deletePdfReport(String fileName) {
+		String response = "";
+		try {
+			File file = resourceLoader.getResource("/reports/" + fileName+".pdf").getFile();
+			if(file.exists()){
+				boolean status = file.delete();
+				if(status){
+					response = "Success";
+				}
+			}
+		} catch (IOException e) {
+			response = "Report deletion failed due to: " + e.getMessage();
+			logger.error("Report deletion failed due to: ", e);
+		}
+		return response;
+	}
 }

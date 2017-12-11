@@ -18,6 +18,6 @@ public interface UserService {
 
 	void assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException;
 	
-	Boolean generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException;
+	String generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException;
 
 }
