@@ -10,7 +10,6 @@ import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.repository.EmployeeAttendanceRepo;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
-import com.nisum.mytime.utils.MyTimeLogger;
 import com.nisum.mytime.utils.PdfReportGenerator;
 
 @Service("userService")
@@ -37,14 +36,8 @@ public class UserServiceImpl implements UserService {
 	public Boolean fetchEmployeesData() throws MyTimeException {
 		Boolean result = false;
 		List<EmpLoginData> listOfEmpLoginData = employeeDataBaseService.fetchEmployeesData();
-		try {
-			employeeLoginsRepo.save(listOfEmpLoginData);
-			result = true;
-		} catch (Exception e) {
-			MyTimeLogger.getInstance().error(e.getMessage());
-			throw new MyTimeException(e.getMessage());
-		}
-
+		employeeLoginsRepo.save(listOfEmpLoginData);
+		result = true;
 		return result;
 	}
 
@@ -55,7 +48,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Boolean generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException {
+	public String generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException {
 		return pdfReportGenerator.generateEmployeeReport(id, fromDate, toDate);
 	}
 

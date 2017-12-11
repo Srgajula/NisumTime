@@ -12,4 +12,6 @@ import com.nisum.mytime.model.EmailDomain;
 public interface MailService {
 	
 	public String sendEmailWithAttachment(EmailDomain emailObj);
+
+	public String deletePdfReport(String fileName);
 }

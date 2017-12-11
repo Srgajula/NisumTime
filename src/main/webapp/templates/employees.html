@@ -1,13 +1,18 @@
 
 <div class="md-padding" style="width: 100%; padding: 3px;"
-	id="popupContainer" ng-controller="employeesController" ng-init="getEmployeeData('click')">
+	id="popupContainer" ng-controller="employeesController">
 	<div class="container-fluid"
 		style="text-align: center; background: rgba(0, 178, 226, .6) !important; color: floralwhite; border-radius: 5px;">
 		<div class="row">
-			<div>
-				<p align="center"
+			<div class="col-lg-12">
+				<p align="center" class="col-xs-11"
 					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Reportee
 					Login Details</p>
+				<p align="right" class="col-xs-1"
+					style="vertical-align: middle; font-weight: bold; font-size: 1.5em; margin-top: 8px; cursor: pointer;">
+					<i class="fa fa-refresh" aria-hidden="true"
+						ng-click="refreshPage()"></i>
+				</p>
 			</div>
 			<div class="clearfix"></div>
 		</div>
@@ -40,13 +45,12 @@
 				</p>
 			</div>
 			<div class="col-xs-2" style="cursor: pointer;" align="left">
-				<panel>
-				<md-button class="md-raised md-primary"
+				<panel> <md-button class="md-raised md-primary"
 					style="width:100px;background: rgba(0, 178, 226, .6) !important;"
 					ng-click="getEmployeeData('click');"> <i
 					class="fa fa-search fa-2x"
 					style="margin-top: 5px; font-size: 1.5em; float: left"></i> Search</md-button>
-					</panel>
+				</panel>
 			</div>
 		</div>
 		<div class="row col-lg-12" style="height: 15px;"></div>

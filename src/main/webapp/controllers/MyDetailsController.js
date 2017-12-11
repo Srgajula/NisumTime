@@ -1,4 +1,4 @@
-myApp.controller("employeeController", function($scope, $http, myFactory, $mdDialog) {
+myApp.controller("employeeController", function($scope, $http, myFactory, $mdDialog, appConfig) {
 	$scope.records = [];
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
@@ -13,19 +13,6 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	$scope.fromDate = priorDt;
 	$scope.toDate = today;
 	
-	$scope.records =[
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-10-30","firstLogin":"09:31","lastLogout":"16:54","totalLoginTime":"7:10"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-10-31","firstLogin":"09:21","lastLogout":"16:12","totalLoginTime":"7:15"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-01","firstLogin":"09:15","lastLogout":"16:24","totalLoginTime":"7:05"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-02","firstLogin":"09:01","lastLogout":"16:36","totalLoginTime":"7:51"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-03","firstLogin":"09:41","lastLogout":"16:37","totalLoginTime":"7:49"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-04","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-05","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-11-06","firstLogin":"09:08","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-12-01","firstLogin":"09:01","lastLogout":"16:36","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-12-02","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"},
-		{"employeeId":"16209","employeeName":"Mahesh Gutam","dateOfLogin":"2017-12-03","firstLogin":"09:01","lastLogout":"16:33","totalLoginTime":"7:31"}
-	];
 	$scope.gridOptions = {
 		paginationPageSizes : [ 5, 10, 15 ],
 		paginationPageSize : 5,
@@ -35,7 +22,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 				{field : 'dateOfLogin',displayName: 'Date'},
 				{field : 'firstLogin',displayName: 'Login Time'}, 
 				{field : 'lastLogout',displayName: 'Logout Time'}, 
-				{field : 'totalLoginTime',displayName: 'Total(Hours)'} 
+				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)'} 
 			],
 		onRegisterApi: function(gridApi) {
 		    gridApi.core.on.rowsRendered($scope, function(gridApi) {
@@ -54,17 +41,23 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	$scope.getEmployeeData = function(){
 		var fromDate = getFormattedDate($scope.fromDate);
 		var toDate = getFormattedDate($scope.toDate);
-		var filteredRecord = filterRecordsByEmployeeId(fromDate, toDate);
-		$scope.gridOptions.data = filteredRecord;
+		var empId = $scope.empId;
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate/" + empId + "/" + fromDate + "/" +toDate
+	    }).then(function mySuccess(response) {
+	        $scope.gridOptions.data = response.data;
+	    }, function myError(response) {
+	    	showAlert("Something went wrong while fetching data!!!");
+	    	$scope.gridOptions.data = [];
+	    });
 	}
 	
-	function filterRecordsByEmployeeId(fromDate, toDate){
-		var filteredRecords = $scope.records
-				.filter(function(record) {
-					return (record.dateOfLogin >= fromDate && record.dateOfLogin <= toDate);
-				});
-		return filteredRecords;
-	}
+	$scope.refreshPage = function(){
+		$scope.fromDate = priorDt;
+		$scope.toDate = today;
+		$scope.getEmployeeData();
+	};
 	
 	function getFormattedDate(date){
 		var day = date.getDate();

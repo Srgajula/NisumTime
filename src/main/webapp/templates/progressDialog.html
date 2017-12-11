@@ -1,0 +1,20 @@
+<head>
+<style type="text/css">
+md-progress-circular.md-default-theme path, md-progress-circular path {
+stroke:orange;
+}
+</style>
+</head>
+<md-dialog aria-label="Email Template" style="width:420px;height:180px;background:transparent;" id="progressTemplate">
+<form ng-cloak name="myForm">
+	<md-dialog-content>
+	<div class="md-dialog-content">
+		<p
+			style="color: #fff; font-size: 1.35em; vertical-align: middle; text-align:center;">
+			Please wait !!! Report is being generated.</p>
+		<md-progress-circular md-mode="indeterminate" 
+			style="left:42%;position:relative;"> </md-progress-circular>
+	</div>
+	</md-dialog-content>
+</form>
+</md-dialog>
