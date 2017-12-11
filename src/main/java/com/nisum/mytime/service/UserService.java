@@ -14,10 +14,14 @@ public interface UserService {
 
 	List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate) throws MyTimeException;
 
-	List<EmployeeRoles> getEmployeesRole() throws MyTimeException;
+	List<EmployeeRoles> getEmployeeRoles() throws MyTimeException;
 
 	void assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException;
 	
 	String generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException;
+	
+	EmployeeRoles getEmployeesRole(String emailId);
+	
+	void deleteEmployee(EmployeeRoles employeeRoles);
 
 }
