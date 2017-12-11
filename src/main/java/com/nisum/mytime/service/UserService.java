@@ -16,7 +16,7 @@ public interface UserService {
 
 	List<EmployeeRoles> getEmployeeRoles() throws MyTimeException;
 
-	void assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException;
+	EmployeeRoles assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException;
 	
 	String generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException;
 	

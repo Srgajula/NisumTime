@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
-		employeeRolesRepo.save(employeeRoles);
+	public EmployeeRoles assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
+		return employeeRolesRepo.save(employeeRoles);
 	}
 
 	@Override

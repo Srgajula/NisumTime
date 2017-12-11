@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,15 +36,15 @@ public class UserController {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/assigingEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
-		userService.assigingEmployeeRole(employeeRoles);
-		return new ResponseEntity<>("", HttpStatus.OK);
+	@RequestMapping(value = "/assigingEmployeeRole", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+		EmployeeRoles employeeRole = userService.assigingEmployeeRole(employeeRoles);
+		return new ResponseEntity<>(employeeRole.getId(), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> deleteEmployee(EmployeeRoles employeeRoles) throws MyTimeException {
-		userService.assigingEmployeeRole(employeeRoles);
+	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> deleteEmployee(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+		userService.deleteEmployee(employeeRoles);
 		return new ResponseEntity<>("Success", HttpStatus.OK);
 	}
 
