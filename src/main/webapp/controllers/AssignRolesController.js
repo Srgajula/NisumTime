@@ -106,17 +106,18 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result = response.data;
+				console.log($scope.result);
 			}, function myError(response){
 				$scope.result = "Error";
 			});
 	}
 	
 	function updateGridAfterDelete(row){
-		if($scope.result == "Success"){
+		if($scope.result == "Success" || $scope.result == ""){
 			var index = $scope.gridOptions.data.indexOf(row.entity);
 			$scope.gridOptions.data.splice(index, 1);
 			showAlert('Role deleted successfully');
-		}else{
+		}else if($scope.result == "Error"){
 			showAlert('Something went wrong while deleting the role.')
 		}
     	
@@ -197,8 +198,8 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 				document.getElementById('empRole').focus();
 			}else{
 				$scope.alertMsg = "";
-				var record = {"id":"","employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": $scope.empRole};
-				addOrUpdateRole(record);
+				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": $scope.empRole};
+				addOrUpdateRole(record, $scope.templateTitle);
 				record.id = $scope.savedId;
 				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}
@@ -226,10 +227,16 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			}
 		}
 		
-		function addOrUpdateRole(record){
+		function addOrUpdateRole(record, action){
+			var urlRequest  = "";
+			if(action == "Assign"){
+				urlRequest = appConfig.appUri+ "user/assignEmployeeRole";
+			}else if(action == "Update"){
+				urlRequest = appConfig.appUri+ "user/updateEmployeeRole";
+			}
 			var req = {
 				method : 'POST',
-				url : appConfig.appUri+ "user/assigingEmployeeRole",
+				url : urlRequest,
 				headers : {
 					"Content-type" : "application/json"
 				},
