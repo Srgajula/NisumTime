@@ -12,6 +12,7 @@ node_modules/
 
 vendor/
 
+/webapp/reports/
 
 
 # Git
