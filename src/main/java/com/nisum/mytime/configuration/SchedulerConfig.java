@@ -28,7 +28,7 @@ import com.nisum.mytime.schedular.MyTimeCronSchedularJob;
 public class SchedulerConfig {
 
 	@Value("${cron.expression}")
-	private String crosExp;
+	private String cronExp;
 
 	@Bean
 	public JobFactory jobFactory(ApplicationContext applicationContext) {
@@ -84,7 +84,7 @@ public class SchedulerConfig {
 	private CronTriggerFactoryBean createCronTrigger(JobDetail jobDetail, long cronExpression) {
 		CronTriggerFactoryBean factoryBean = new CronTriggerFactoryBean();
 		factoryBean.setJobDetail(jobDetail);
-		factoryBean.setCronExpression(crosExp);
+		factoryBean.setCronExpression(cronExp);
 		factoryBean.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
 		return factoryBean;
 	}

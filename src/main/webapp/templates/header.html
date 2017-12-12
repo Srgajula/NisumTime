@@ -10,16 +10,14 @@
 			</button>
 			<img src="images/logo.png" />
 		</div>
-		<!-- <div class="col-lg-6" style="text-align: center; margin-left: 65px;">
-			<p style="font-size: 2em; color: #fff;">{{appName}} -
-				v{{version}}</p>
-		</div> -->
 		<div class="collapse navbar-collapse" id="b-menu-1">
 			<ul class="nav navbar-nav navbar-right">
 				<li class="active"><a href="#">Signed in as <b>{{empName}}</b></a></li>
 				<li class="dropdown active"><a href="#" class="dropdown-toggle"
-					data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span><b
-						class="caret"></b></a>
+					data-toggle="dropdown">
+					<img ng-src="{{profilePicUrl}}" style="height:20px;border-radius:5px;"/>
+					<b class="caret"></b>
+					</a>
 					<ul class="dropdown-menu">
 						<li><a href="#">Employee ID: {{empId}}</a></li>
 						<li><a href="#">Email: {{empEmailId}}</a></li>

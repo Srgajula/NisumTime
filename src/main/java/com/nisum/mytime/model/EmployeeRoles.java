@@ -21,7 +21,7 @@ public class EmployeeRoles implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2685951572250975416L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	private String id;

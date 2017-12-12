@@ -11,7 +11,9 @@ var myApp = angular.module(
 						+ (day < 10 ? "0" + day : day);
 			};
 		});
+
 myApp.constant('appConfig', { appName: "MyTime", appUri: "http://localhost:8080/", version:"1.0"});
+
 myApp.factory('myFactory', function() {
 	var empId = "";
 	var empName = "";
@@ -19,6 +21,8 @@ myApp.factory('myFactory', function() {
 	var empRole = "";
 	var menuItems = [];
 	var templateUrl = "";
+	var profileUrl = "";
+	
 	function setEmpId(id) {
 		empId = id;
 	}
@@ -63,6 +67,14 @@ myApp.factory('myFactory', function() {
 	function getTemplateUrl() {
 		return templateUrl;
 	}
+	
+	function setProfileUrl(picurl) {
+		profileUrl = picurl;
+	}
+
+	function getProfileUrl() {
+		return profileUrl;
+	}
 
 	return {
 		setEmpId : setEmpId,
@@ -76,7 +88,9 @@ myApp.factory('myFactory', function() {
 		setMenuItems : setMenuItems,
 		getMenuItems : getMenuItems,
 		setTemplateUrl : setTemplateUrl,
-		getTemplateUrl : getTemplateUrl
+		getTemplateUrl : getTemplateUrl,
+		setProfileUrl : setProfileUrl,
+		getProfileUrl : getProfileUrl
 	}
 
 });

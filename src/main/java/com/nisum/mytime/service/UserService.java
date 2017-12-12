@@ -24,4 +24,6 @@ public interface UserService {
 	
 	void deleteEmployee(EmployeeRoles employeeRoles);
 
+	EmployeeRoles updateEmployeeRole(EmployeeRoles employeeRoles);
+
 }

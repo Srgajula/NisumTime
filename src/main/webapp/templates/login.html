@@ -1,5 +1,5 @@
 <head>
-<!-- <script type="text/javascript">
+<script type="text/javascript">
 	$(function() {
 		$('.carousel').carousel({
 			interval : 2000
@@ -7,11 +7,20 @@
 		$('.carousel-control.right').trigger('click');
 	});
 	
-</script> -->
+</script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="975549130344-jhc8ucpgme7ein2gop3vm55ark1ltntc.apps.googleusercontent.com">
+<style type="text/css">
+.abcRioButtonLightBlue {
+    border-radius: 5px; 
+    background: rgba(0, 178, 226, .6) !important;
+    color:#fff;
+}
+</style>
 </head>
-<div class="container col-lg-12"
+<div class="container col-lg-12 md-padding"
 	style="padding: 50px; background-color: #eee;"
-	ng-controller="loginController">
+	ng-controller="loginController" id="popupContainer">
 	<div class="row">
 		<div class="col-md-9 col-sm-9 col-xs-9">
 			<div id="myCarousel" class="carousel slide" data-ride="carousel">
@@ -64,19 +73,12 @@
 		</div>
 		<div class="col-md-3 col-sm-3 col-xs-3"
 			style="margin: auto; text-align: center; padding-top: 130px;">
-			<div class="row" style="vertical-align: middle;">
+			<div class="row col-xs-12" style="vertical-align: middle;">
 				<img alt="MyTime Logo" src="images/loginlogo.png">
 			</div>
-			<div class="row">
-				<button class="sign-in-or-out-button" id="sign-in-or-out-button"  ng-click="signin()"
-					style="width: 180px; border-radius: 5px; background: rgba(0, 178, 226, .6) !important;color:#fff;">
-					<i class="fa fa-google-plus-official fa-2x"
-						style="font-size: 1.5em; float: left"></i> Login with gmail
-				</button>
-				<form ng-submit="goToEmploy()">
-			<button id="secretbutton" style="display:none">Secret Buttom</button></form>
+			<div class="row col-xs-12" style="padding-left: 24%;text-align:center;">
+				<div class="g-signin2" style="width:160px;" data-onsuccess="onSignIn"></div>
 			</div>
 		</div>
-		<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 	</div>
 </div>

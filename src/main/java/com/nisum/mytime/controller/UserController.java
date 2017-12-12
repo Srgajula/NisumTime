@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
@@ -23,8 +23,8 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping(value = "employee/{emailId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EmployeeRoles> getEmployeeRole(@PathVariable("emailId") String emailId)
+	@RequestMapping(value = "/employee", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EmployeeRoles> getEmployeeRole(@RequestParam("emailId") String emailId)
 			throws MyTimeException {
 		EmployeeRoles employeesRole = userService.getEmployeesRole(emailId);
 		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
@@ -36,10 +36,16 @@ public class UserController {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/assigingEmployeeRole", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/assignEmployeeRole", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
 		EmployeeRoles employeeRole = userService.assigingEmployeeRole(employeeRoles);
-		return new ResponseEntity<>(employeeRole.getId(), HttpStatus.OK);
+		return new ResponseEntity<>(employeeRole.getEmployeeId(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/updateEmployeeRole", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> updateEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+		EmployeeRoles employeeRole = userService.updateEmployeeRole(employeeRoles);
+		return new ResponseEntity<>(employeeRole.getEmployeeId(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)

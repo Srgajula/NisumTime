@@ -1,13 +1,36 @@
-myApp.controller("loginController",function($scope,$http, myFactory, $compile){
+myApp.controller("loginController",function($scope, myFactory, $compile, $window, $http, appConfig, $mdDialog){
 	var menuItems = myFactory.getMenuItems();
-	$scope.authenticate = function(role){
-		
-		//Write any login authentication logic here 
-		
+	$window.onSignIn = onSignIn;
+	
+	function onSignIn(googleUser) {
+		var profile = googleUser.getBasicProfile();
+		var loggedInUser = profile.getName();
+		var loggedInEmail = profile.getEmail();
+		var loggedInPic = profile.getImageUrl();
+		console.log('Name: ' + loggedInUser);
+		console.log('Email: ' + loggedInEmail); 
+		console.log('Image URL: ' + loggedInPic);
+		getUserRole(loggedInEmail, loggedInPic);
+	}
+	
+	function getUserRole(emailId, profilePicUrl){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/employee?emailId="+emailId
+	    }).then(function mySuccess(response) {
+	        setDefaultValues(response.data, profilePicUrl);
+	    }, function myError(response) {
+	    	showAlert("Something went wrong redirecting to login page!!!");
+	    	redirectToLoginPage();
+	    });
+	}
+	
+	function setDefaultValues(userRole, profilePicUrl){
 		//Setting default values to myFactory object so that we can use it anywhere in application
-		myFactory.setEmpId("16209");
-		myFactory.setEmpName("Mahesh Gutam");
-		myFactory.setEmpEmailId("mgutam@nisum.com");
+		myFactory.setEmpId(userRole.employeeId);
+		myFactory.setEmpName(userRole.employeeName);
+		myFactory.setEmpEmailId(userRole.emailId);
+		var role = userRole.role;
 		myFactory.setEmpRole(role);
 		if(role == "HR"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
@@ -17,15 +40,12 @@ myApp.controller("loginController",function($scope,$http, myFactory, $compile){
 		}else if(role == "Manager"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
-		}else{
+		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 		}
 		myFactory.setMenuItems(menuItems);
 		myFactory.setTemplateUrl("templates/employee.html");
-		
-		$scope.goToEmploy = function(){
-			$location.path("templates/employee.html");
-		};
+		myFactory.setProfileUrl(profilePicUrl);
 		
 		//Redirecting to home page after logging in successfully
 		var element = document.getElementById('home');
@@ -34,19 +54,33 @@ myApp.controller("loginController",function($scope,$http, myFactory, $compile){
 		var newTemplate = angular.element(element);
 		$('#home').html(newTemplate);
 		$compile($('#home'))($scope)
-	};
-	$scope.onSignIn = function(googleUser){
-		 var profile = googleUser.getBasicProfile();
-	      console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-	      console.log('Full Name: ' + profile.getName());
-	      console.log('Given Name: ' + profile.getGivenName());
-	      console.log('Family Name: ' + profile.getFamilyName());
-	      console.log("Image URL: " + profile.getImageUrl());
-	      console.log("Email: " + profile.getEmail());
-
-	      // The ID token you need to pass to your backend:
-	      var id_token = googleUser.getAuthResponse().id_token;
-	      console.log("ID Token: " + id_token);
-	};
+	}
+	
+	function redirectToLoginPage(){
+		
+		//Clear if any values set to factory
+		var menuItems = [];
+		myFactory.setEmpId("");
+		myFactory.setEmpName("");
+		myFactory.setEmpEmailId("");
+		myFactory.setEmpRole("");
+		myFactory.setMenuItems(menuItems);
+		myFactory.setTemplateUrl("");
+		myFactory.setProfilePicUrl("");
+		
+		var element = document.getElementById('home');
+		var path = "'templates/login.html'";
+		element.setAttribute("src", path);
+		var newTemplate = angular.element(element);
+		$('#home').html(newTemplate);
+		$compile($('#home'))($scope)
+	}
+	
+	function showAlert(message) {
+		$mdDialog.show($mdDialog.alert().parent(
+				angular.element(document.querySelector('#popupContainer')))
+				.clickOutsideToClose(true).textContent(message).ariaLabel(
+						'Alert Dialog').ok('Got it!'));
+	}
 	
 });
