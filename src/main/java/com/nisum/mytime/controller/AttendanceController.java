@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
@@ -29,9 +30,9 @@ public class AttendanceController {
 		return new ResponseEntity<>(empLoginData, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "employeeLoginsBasedOnDate/{id}/{fromDate}/{toDate}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EmpLoginData>> employeeLoginsBasedOnDate(@PathVariable("id") long id,
-			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate) throws MyTimeException {
+	@RequestMapping(value = "employeeLoginsBasedOnDate", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EmpLoginData>> employeeLoginsBasedOnDate(@RequestParam("empId") long id,
+			@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) throws MyTimeException {
 		List<EmpLoginData> message = userService.employeeLoginsBasedOnDate(id, fromDate, toDate);
 		return new ResponseEntity<>(message, HttpStatus.OK);
 	}

@@ -6,15 +6,31 @@
 		});
 		$('.carousel-control.right').trigger('click');
 	});
-	
+	function renderButton() {
+	      gapi.signin2.render('my-signin2', {
+	        'scope': 'profile email',
+	        'width': 180,
+	        'height': 40,
+	        'longtitle': true,
+	        'theme': 'dark',
+	        'onsuccess': onSignIn
+	        'onfailure': onFailure
+	      });
+	 }
 </script>
-<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script src="https://apis.google.com/js/platform.js?onload=renderButton"></script>
 <meta name="google-signin-client_id" content="975549130344-jhc8ucpgme7ein2gop3vm55ark1ltntc.apps.googleusercontent.com">
 <style type="text/css">
-.abcRioButtonLightBlue {
-    border-radius: 5px; 
-    background: rgba(0, 178, 226, .6) !important;
-    color:#fff;
+.abcRioButtonBlue {
+    background-color: rgba(0, 178, 226, .6) !important;
+    border: none;
+    color: #fff;
+    border-radius: 5px 5px 5px 5px;
+}
+.abcRioButtonBlue .abcRioButtonIcon {
+    background-color: inherit;
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
 }
 </style>
 </head>
@@ -77,7 +93,7 @@
 				<img alt="MyTime Logo" src="images/loginlogo.png">
 			</div>
 			<div class="row col-xs-12" style="padding-left: 24%;text-align:center;">
-				<div class="g-signin2" style="width:160px;" data-onsuccess="onSignIn"></div>
+				<div id="my-signin2"></div>
 			</div>
 		</div>
 	</div>

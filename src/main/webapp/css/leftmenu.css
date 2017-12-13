@@ -26,7 +26,7 @@
     height: 100%;
     margin-left: -255px;
     overflow-y: auto;
-    background-color:black !Important;
+    background-color:darkslategray;
    
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
@@ -53,7 +53,7 @@
 
 .sidebar-nav {
     position: absolute;
-    top: 0;
+    top: 10px;
     right:15px;
     width: 265px;
     margin: 0;
@@ -69,7 +69,7 @@
 .sidebar-nav li a {
     display: block;
     text-decoration: none;
-    color: #999999;
+    color: gainsboro;
 }
 
 .sidebar-nav li a:hover {
@@ -109,7 +109,7 @@
 
     #sidebar-wrapper {
         width: 20%;
-        height:84%;
+        height:84.5%;
     }
 
     #wrapper.toggled #sidebar-wrapper {

@@ -118,9 +118,14 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	function showProgressDialog(){
 		$mdDialog.show({
 	      templateUrl: 'templates/progressDialog.html',
+	      controller: ProgressController,
 	      parent: angular.element(document.body),
 	      clickOutsideToClose:false
 	    });
+	}
+	
+	function ProgressController($scope) {
+		$scope.progressText = "Please wait!!! Report is being generated.";
 	}
 	
 	function previewPdfReport(){

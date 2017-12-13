@@ -8,7 +8,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	// Date picker related code
 	var today = new Date();
 	var priorDt = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
-	today = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
+	//today = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
 	$scope.maxDate = today;
 	$scope.fromDate = priorDt;
 	$scope.toDate = today;
@@ -44,7 +44,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 		var empId = $scope.empId;
 		$http({
 	        method : "GET",
-	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate/" + empId + "/" + fromDate + "/" +toDate
+	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate?empId=" + empId + "&fromDate=" + fromDate + "&toDate=" +toDate
 	    }).then(function mySuccess(response) {
 	        $scope.gridOptions.data = response.data;
 	    }, function myError(response) {
