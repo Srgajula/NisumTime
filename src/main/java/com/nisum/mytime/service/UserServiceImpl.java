@@ -62,7 +62,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<EmployeeRoles> getEmployeeRoles() throws MyTimeException {
-		return employeeRolesRepo.findAll();
+		Query query = new Query(Criteria.where("role").ne("Employee"));
+		return mongoTemplate.find(query, EmployeeRoles.class);
 	}
 
 	@Override

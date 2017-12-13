@@ -15,13 +15,13 @@
 				<li class="active"><a href="#">Signed in as <b>{{empName}}</b></a></li>
 				<li class="dropdown active"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown">
-					<img ng-src="{{profilePicUrl}}" style="height:20px;border-radius:5px;"/>
+					<img ng-src="{{profilePicUrl}}" style="border-radius:3px;height:20px;"/>
 					<b class="caret"></b>
 					</a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Employee ID: {{empId}}</a></li>
-						<li><a href="#">Email: {{empEmailId}}</a></li>
-						<li><a href="#" ng-click="logout()">Logout</a></li>
+						<li><i class="fa fa-id-badge fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>: {{empId}}</li>
+								<li><i class="fa fa-envelope fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>: {{empEmailId}}</li>
+								<li><a href="#" ng-click="logout()" style="padding: 3px 0px;color:#fff;"><i class="fa fa-sign-out fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>Logout</a></li>
 					</ul></li>
 			</ul>
 		</div>

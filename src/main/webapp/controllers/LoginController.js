@@ -1,6 +1,7 @@
 myApp.controller("loginController",function($scope, myFactory, $compile, $window, $http, appConfig, $mdDialog){
 	var menuItems = myFactory.getMenuItems();
 	$window.onSignIn = onSignIn;
+	$window.onFailure = onFailure;
 	
 	function onSignIn(googleUser) {
 		var profile = googleUser.getBasicProfile();
@@ -11,6 +12,11 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		console.log('Email: ' + loggedInEmail); 
 		console.log('Image URL: ' + loggedInPic);
 		getUserRole(loggedInEmail, loggedInPic);
+	}
+	
+	function onFailure(error){
+		console.log("Error:: "+error);
+		showAlert(""+error);
 	}
 	
 	function getUserRole(emailId, profilePicUrl){

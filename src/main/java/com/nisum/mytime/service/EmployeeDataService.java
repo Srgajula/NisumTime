@@ -27,11 +27,10 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.nisum.mytime.configuration.DbConnection;
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.DateCompare;
@@ -70,8 +69,8 @@ public class EmployeeDataService {
 	@Value("${mytime.remote.directory}")
 	private String remoteFilesDirectory;
 
-	private List<EmpLoginData> listOfEmpLoginData = null;
-	private DBCursor cursor = null;
+	//private List<EmpLoginData> listOfEmpLoginData = null;
+	//private DBCursor cursor = null;
 
 	public List<EmpLoginData> fetchEmployeesData() throws MyTimeException {
 		String queryMonthDecider = null;
@@ -163,30 +162,42 @@ public class EmployeeDataService {
 
 	public List<EmpLoginData> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate, String toDate)
 			throws MyTimeException {
-
-		try {
-			listOfEmpLoginData = new ArrayList<>();
-			BasicDBObject gtQuery = new BasicDBObject();
-			gtQuery.put("_id",
-					new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
-			cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
-			while (cursor.hasNext()) {
-				DBObject dbObject = cursor.next();
-				EmpLoginData empLoginData = new EmpLoginData();
-				empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
-				empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
-				empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
-				empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
-				empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
-				empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
-				listOfEmpLoginData.add(empLoginData);
+			Query query = null;
+			if(employeeId == 0){
+				query = new Query(Criteria.where("dateOfLogin").gte(fromDate).lte(toDate));
+			}else{
+				query = new Query(Criteria.where("_id").gte(employeeId + "-" + fromDate).lte(employeeId + "-" + toDate));
 			}
-		} catch (Exception ex) {
-			MyTimeLogger.getInstance().info(ex.getMessage());
-			throw new MyTimeException(ex.getMessage());
-		}
-		cursor.close();
-		return listOfEmpLoginData;
+			return mongoTemplate.find(query,EmpLoginData.class);
+//			try {
+//				listOfEmpLoginData = new ArrayList<>();
+//			BasicDBObject gtQuery = new BasicDBObject();
+//			if(employeeId == 0){
+//				gtQuery.put("_id",
+//						new BasicDBObject("$gt", fromDate).append("$lt", toDate));
+//			}else{
+//				gtQuery.put("_id",
+//						new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
+//			}
+//			
+//			cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
+//			while (cursor.hasNext()) {
+//				DBObject dbObject = cursor.next();
+//				EmpLoginData empLoginData = new EmpLoginData();
+//				empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
+//				empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
+//				empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
+//				empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
+//				empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
+//				empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
+//				listOfEmpLoginData.add(empLoginData);
+//			}
+//		} catch (Exception ex) {
+//			MyTimeLogger.getInstance().info(ex.getMessage());
+//			throw new MyTimeException(ex.getMessage());
+//		}
+//		cursor.close();
+//		return listOfEmpLoginData;
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)

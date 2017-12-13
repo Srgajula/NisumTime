@@ -3,15 +3,28 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
 	$scope.empEmailId = myFactory.getEmpEmailId();
+	$scope.role = myFactory.getEmpRole();
+	
 	$scope.startDate = "";
 	$scope.endDate = "";
 	$scope.searchId="";
+	$scope.pageTitle = "";
+	
 	// Date picker related code
 	var today = new Date();
-	var priorDt = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+	var priorDt = null;
+	
+	if($scope.role == "HR"){
+		$scope.pageTitle = "Employees Login Details";
+		priorDt = today;
+	}else if($scope.role == "Manager"){
+		$scope.pageTitle = "Reportees Login Details";
+		priorDt = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+	}
 	$scope.maxDate = today;
 	$scope.fromDate = priorDt;
 	$scope.toDate = today;
+
 	$scope.gridOptions = {
 		paginationPageSizes : [ 5, 10, 15 ],
 		paginationPageSize : 5,
@@ -39,6 +52,12 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	};
 	$scope.gridOptions.data = [];
 	
+	$scope.setPageDefaults = function(){
+		if($scope.role == "HR"){
+			getData(0, getFormattedDate($scope.fromDate), getFormattedDate($scope.toDate));
+		}
+	}
+	
 	$scope.refreshPage = function(){
 		$scope.startDate = "";
 		$scope.endDate = "";
@@ -46,6 +65,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
+		$scope.setPageDefaults();
 	};
 	
 	$scope.getEmployeeData = function(type){
@@ -60,13 +80,22 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 				showAlert('Employee ID should be 5 digits');
 				setFieldsEmpty();
 			}else{
-				if(searchId != ""){
-					getData(searchId, fromDate, toDate);
+				if($scope.role == "Manager"){
+					if(searchId != ""){
+						getData(searchId, fromDate, toDate);
+					}
+				}else if($scope.role == "HR"){
+					if(searchId == "") getData(0, fromDate, toDate);
+					else getData(searchId, fromDate, toDate);
 				}
 			}
 		}else if(type == "click"){
 			if(searchId == ""){
-				showAlert('Please enter an Employee ID');
+				if($scope.role == "HR"){
+					getData(0, fromDate, toDate);
+				}else{
+					showAlert('Please enter an Employee ID');
+				}
 			}else if(searchId != "" && isNaN(searchId)){
 				showAlert('Please enter only digits');
 				setFieldsEmpty();
@@ -77,38 +106,39 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 				getData(searchId, fromDate, toDate);
 			}
 		}
+		
 	}
 	
 	function getData(empId, fromDate, toDate){
-		if(empId != ""){
-			$http({
-		        method : "GET",
-		        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate/" + empId + "/" + fromDate + "/" +toDate
-		    }).then(function mySuccess(response) {
-		        $scope.gridOptions.data = response.data;
-		    }, function myError(response) {
-		    	showAlert("Something went wrong while fetching data!!!");
-		    	$scope.gridOptions.data = [];
-		    });
-		}
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate?empId=" + empId + "&fromDate=" + fromDate + "&toDate=" +toDate
+	    }).then(function mySuccess(response) {
+	        $scope.gridOptions.data = response.data;
+	    }, function myError(response) {
+	    	showAlert("Something went wrong while fetching data!!!");
+	    	$scope.gridOptions.data = [];
+	    });
 	}
 
 	$scope.validateDates = function(dateValue, from) {
-		if(from == "FromDate"){
-			var toDt = $scope.toDate;
-			var diff = daysBetween(dateValue, toDt);
-			if(diff < 30 ){
-				showAlert('Date range should have minimum of 30 days difference');
-				$scope.fromDate = priorDt;
-				$scope.toDate = today;
-				setFieldsEmpty();
-			}else{
-				$scope.fromDate = dateValue;
-				$scope.toDate = getCalculatedDate(dateValue, 'Add');
+		if($scope.role == "Manager"){
+			if(from == "FromDate"){
+				var toDt = $scope.toDate;
+				var diff = daysBetween(dateValue, toDt);
+				if(diff < 30 ){
+					showAlert('Date range should have minimum of 30 days difference');
+					$scope.fromDate = priorDt;
+					$scope.toDate = today;
+					setFieldsEmpty();
+				}else{
+					$scope.fromDate = dateValue;
+					$scope.toDate = getCalculatedDate(dateValue, 'Add');
+				}
+			}else if(from == "ToDate"){
+				$scope.toDate = dateValue;
+				$scope.fromDate = getCalculatedDate(dateValue, 'Substract');
 			}
-		}else if(from == "ToDate"){
-			$scope.toDate = dateValue;
-			$scope.fromDate = getCalculatedDate(dateValue, 'Substract');
 		}
 	};
 	
