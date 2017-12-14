@@ -1,37 +1,121 @@
-myApp.controller("loginController",function($scope, myFactory, $compile, $window, $http, appConfig, $mdDialog){
+myApp.controller("loginController",function($scope, myFactory, $compile, $window, $http, appConfig, $mdDialog, $timeout){
 	var menuItems = myFactory.getMenuItems();
 	$window.onSignIn = onSignIn;
 	$window.onFailure = onFailure;
 	
 	function onSignIn(googleUser) {
 		var profile = googleUser.getBasicProfile();
-		var loggedInUser = profile.getName();
-		var loggedInEmail = profile.getEmail();
-		var loggedInPic = profile.getImageUrl();
-		console.log('Name: ' + loggedInUser);
-		console.log('Email: ' + loggedInEmail); 
-		console.log('Image URL: ' + loggedInPic);
-		getUserRole(loggedInEmail, loggedInPic);
+		console.log('Name: ' + profile.getName());
+		console.log('Email: ' + profile.getEmail()); 
+		console.log('Image URL: ' + profile.getImageUrl());
+		getUserRole(profile);
 	}
 	
 	function onFailure(error){
 		console.log("Error:: "+error);
-		showAlert(""+error);
 	}
 	
-	function getUserRole(emailId, profilePicUrl){
+	function getUserRole(profile){
 		$http({
 	        method : "GET",
-	        url : appConfig.appUri + "user/employee?emailId="+emailId
+	        url : appConfig.appUri + "user/employee?emailId="+profile.getEmail()
 	    }).then(function mySuccess(response) {
-	        setDefaultValues(response.data, profilePicUrl);
+	    	var result = response.data;
+	    	if(result == "" || result.length == 0){
+	    		showRegisterEmployeeScreen(profile);
+	    	}else{
+	    		showProgressDialog("Please wait!!! Redirecting to home page.");
+	    		$timeout(function(){setDefaultValues(result, profile.getImageUrl());},2000);
+	    		
+	    	}
 	    }, function myError(response) {
-	    	showAlert("Something went wrong redirecting to login page!!!");
-	    	redirectToLoginPage();
+	    	showProgressDialog("Something went wrong redirecting to login page!!!");
+	    	$timeout(function(){redirectToLoginPage();},2000);
 	    });
 	}
 	
+	function showRegisterEmployeeScreen(profile){
+		$mdDialog.show({
+	      controller: NewEmployeeController,
+	      templateUrl: 'templates/registerEmployee.html',
+	      parent: angular.element(document.body),
+	      clickOutsideToClose:false,
+	      locals:{dataToPass: profile},
+	    })
+	    .then(function(result) {
+	    	if(result == "Cancelled"){ console.log(result);
+		    	showProgressDialog("Registration cancelled!!! Please wait while redirected to login page.");
+		    	$timeout(function(){redirectToLoginPage();},2000);
+	    	}else if(result == "Error"){
+	    		showProgressDialog("Registration failed!!! Please wait while redirected to login page.");
+	    		$timeout(function(){redirectToLoginPage();},2000);
+	    	}else{
+	    		showProgressDialog("Registered successfully!!! Please wait while redirected to home page.");
+	    		console.log("Result:: "+result.data);
+	    		$timeout(function(){setDefaultValues(result.data, profile.getImageUrl());},2000);
+	    	}
+	    });
+	}
+	
+	function NewEmployeeController($scope, $mdDialog, dataToPass) {
+		$scope.alertMsg = "";
+		$scope.empId = "";
+		$scope.empName = dataToPass.getName();
+		$scope.empEmail = dataToPass.getEmail();
+		
+		$scope.validateEmpId = function(){
+			var searchId = $scope.empId;
+			if(searchId != "" && isNaN(searchId)){
+				$scope.alertMsg = "Please enter only digits";
+				document.getElementById('empId').focus();
+			}else if(searchId != "" && ((searchId.length >0 && searchId.length <5) || searchId.length>5)){
+				$scope.alertMsg = "Employee ID should be 5 digits";
+				document.getElementById('empId').focus();
+			}else{
+				$scope.alertMsg = "";
+			}
+		};
+		
+		$scope.validateFields = function(){
+			var searchId = $scope.empId;
+			var empName = $scope.empName;
+			if(searchId == ""){
+				$scope.alertMsg = "Employee ID is mandatory";
+				document.getElementById('empId').focus();
+			}else if(empName == ""){
+				$scope.alertMsg = "Employee Name is mandatory";
+				document.getElementById('empName').focus();
+			}else{
+				$scope.alertMsg = "";
+				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": "Employee"};
+				addEmployee(record);
+			}
+		};
+		
+		function addEmployee(record){
+			var urlRequest = appConfig.appUri+ "user/assignEmployeeRole";
+			var req = {
+				method : 'POST',
+				url : urlRequest,
+				headers : {
+					"Content-type" : "application/json"
+				},
+				data : record
+			}
+			$http(req).then(function mySuccess(response) {
+				$mdDialog.hide(response);
+			}, function myError(response){
+				$mdDialog.hide("Error");
+			});
+		}
+		
+		$scope.cancel = function() {
+		    $mdDialog.hide('Cancelled');
+		};
+	}
+	
 	function setDefaultValues(userRole, profilePicUrl){
+		$mdDialog.hide();
 		//Setting default values to myFactory object so that we can use it anywhere in application
 		myFactory.setEmpId(userRole.employeeId);
 		myFactory.setEmpName(userRole.employeeName);
@@ -63,7 +147,14 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	}
 	
 	function redirectToLoginPage(){
+		$mdDialog.hide();
 		
+		var auth2 = gapi.auth2.getAuthInstance();
+	    auth2.signOut().then(function () {
+	      console.log('User signed out.');
+	    });
+	    auth2.disconnect();
+	    
 		//Clear if any values set to factory
 		var menuItems = [];
 		myFactory.setEmpId("");
@@ -72,7 +163,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		myFactory.setEmpRole("");
 		myFactory.setMenuItems(menuItems);
 		myFactory.setTemplateUrl("");
-		myFactory.setProfilePicUrl("");
+		myFactory.setProfileUrl("");
 		
 		var element = document.getElementById('home');
 		var path = "'templates/login.html'";
@@ -82,11 +173,18 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		$compile($('#home'))($scope)
 	}
 	
-	function showAlert(message) {
-		$mdDialog.show($mdDialog.alert().parent(
-				angular.element(document.querySelector('#popupContainer')))
-				.clickOutsideToClose(true).textContent(message).ariaLabel(
-						'Alert Dialog').ok('Got it!'));
+	function showProgressDialog(msg){
+		$mdDialog.show({
+	      templateUrl: 'templates/progressDialog.html',
+	      controller: ProgressController,
+	      parent: angular.element(document.body),
+	      clickOutsideToClose:false,
+	      locals: {dataToPass:msg}
+	    });
+	}
+	
+	function ProgressController($scope, dataToPass) {
+		$scope.progressText = dataToPass;
 	}
 	
 });

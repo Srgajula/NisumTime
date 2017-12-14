@@ -36,16 +36,16 @@ public class UserController {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/assignEmployeeRole", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+	@RequestMapping(value = "/assignEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EmployeeRoles> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
 		EmployeeRoles employeeRole = userService.assigingEmployeeRole(employeeRoles);
-		return new ResponseEntity<>(employeeRole.getId(), HttpStatus.OK);
+		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/updateEmployeeRole", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> updateEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+	@RequestMapping(value = "/updateEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EmployeeRoles> updateEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
 		EmployeeRoles employeeRole = userService.updateEmployeeRole(employeeRoles);
-		return new ResponseEntity<>(employeeRole.getId(), HttpStatus.OK);
+		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)

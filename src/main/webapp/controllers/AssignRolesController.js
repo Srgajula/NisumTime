@@ -142,7 +142,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			$scope.empEmail = dataToPass.emailId;
 			$scope.isDisabled = true;
 		}
-		$scope.roles = ["HR","Manager"];
+		$scope.roles = ["HR","Manager","Employee"];
 		$scope.getSelectedRole = function(){
 			if ($scope.empRole !== undefined) {
 				return $scope.empRole;
@@ -243,7 +243,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 				data : record
 			}
 			$http(req).then(function mySuccess(response) {
-				$scope.savedId = response.data;
+				$scope.savedId = response.data.id;
 				$scope.result = "Success";
 			}, function myError(response){
 				$scope.result = "Error";
