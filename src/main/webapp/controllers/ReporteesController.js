@@ -31,12 +31,12 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	    pageNumber: 1,
 		pageSize:5,
 		columnDefs : [ 
-				{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true},
-				{field : 'employeeName',displayName: 'Name', enableColumnMenu: false},
-				{field : 'dateOfLogin',displayName: 'Date', enableColumnMenu: true},
-				{field : 'firstLogin',displayName: 'Login Time', enableColumnMenu: false}, 
-				{field : 'lastLogout',displayName: 'Logout Time', enableColumnMenu: false}, 
-				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)', enableColumnMenu: false} 
+				{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true},
+				{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
+				{field : 'dateOfLogin',displayName: 'Date', enableColumnMenu: true, enableSorting: true},
+				{field : 'firstLogin',displayName: 'Login Time', enableColumnMenu: false,enableSorting: false}, 
+				{field : 'lastLogout',displayName: 'Logout Time', enableColumnMenu: false, enableSorting: false}, 
+				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)', enableColumnMenu: false, enableSorting: false} 
 			],
 		onRegisterApi: function(gridApi) {
 		    gridApi.core.on.rowsRendered($scope, function(gridApi) {
@@ -138,6 +138,30 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 			}else if(from == "ToDate"){
 				$scope.toDate = dateValue;
 				$scope.fromDate = getCalculatedDate(dateValue, 'Substract');
+			}
+		}else if($scope.role == "HR"){
+			if(from == "FromDate"){
+				var toDat = $scope.toDate;
+				var difference = daysBetween(dateValue, toDat);
+				if(difference < 0 ){
+					showAlert('From Date should not be greater than To Date');
+					$scope.fromDate = priorDt;
+					$scope.toDate = today;
+				}else{
+					$scope.fromDate = dateValue;
+					$scope.toDate = toDat;
+				}
+			}else if(from == "ToDate"){
+				var fromDat = $scope.fromDate;
+				var differene = daysBetween(fromDat, dateValue);
+				if(differene < 0 ){
+					showAlert('To Date should not be less than From Date');
+					$scope.fromDate = priorDt;
+					$scope.toDate = today;
+				}else{
+					$scope.fromDate = fromDat;
+					$scope.toDate = dateValue;
+				}
 			}
 		}
 	};

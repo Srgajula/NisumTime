@@ -18,11 +18,11 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 	    pageNumber: 1,
 		pageSize:5,
 		columnDefs : [ 
-			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true},
-			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false},
-			{field : 'emailId',displayName: 'Email', enableColumnMenu: false},
-			{field : 'role',displayName: 'Role', enableColumnMenu: false}, 
-			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false} 
+			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true},
+			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
+			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
+			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false}, 
+			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false} 
 		]
 	};
 	$scope.gridOptions.data = $scope.records;
