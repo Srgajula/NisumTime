@@ -31,12 +31,12 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	    pageNumber: 1,
 		pageSize:5,
 		columnDefs : [ 
-				{field : 'employeeId',displayName: 'Employee ID'},
-				{field : 'employeeName',displayName: 'Name'},
-				{field : 'dateOfLogin',displayName: 'Date'},
-				{field : 'firstLogin',displayName: 'Login Time'}, 
-				{field : 'lastLogout',displayName: 'Logout Time'}, 
-				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)'} 
+				{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true},
+				{field : 'employeeName',displayName: 'Name', enableColumnMenu: false},
+				{field : 'dateOfLogin',displayName: 'Date', enableColumnMenu: true},
+				{field : 'firstLogin',displayName: 'Login Time', enableColumnMenu: false}, 
+				{field : 'lastLogout',displayName: 'Logout Time', enableColumnMenu: false}, 
+				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)', enableColumnMenu: false} 
 			],
 		onRegisterApi: function(gridApi) {
 		    gridApi.core.on.rowsRendered($scope, function(gridApi) {

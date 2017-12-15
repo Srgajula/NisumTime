@@ -19,10 +19,10 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	    pageNumber: 1,
 		pageSize:5,
 		columnDefs : [ 
-				{field : 'dateOfLogin',displayName: 'Date'},
-				{field : 'firstLogin',displayName: 'Login Time'}, 
-				{field : 'lastLogout',displayName: 'Logout Time'}, 
-				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)'} 
+				{field : 'dateOfLogin',displayName: 'Date', enableColumnMenu: true},
+				{field : 'firstLogin',displayName: 'Login Time', enableColumnMenu: false}, 
+				{field : 'lastLogout',displayName: 'Logout Time', enableColumnMenu: false}, 
+				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)', enableColumnMenu: false} 
 			],
 		onRegisterApi: function(gridApi) {
 		    gridApi.core.on.rowsRendered($scope, function(gridApi) {

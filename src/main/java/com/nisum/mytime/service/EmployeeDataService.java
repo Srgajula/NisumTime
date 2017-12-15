@@ -26,6 +26,9 @@ import javax.transaction.Transactional;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -168,36 +171,8 @@ public class EmployeeDataService {
 			}else{
 				query = new Query(Criteria.where("_id").gte(employeeId + "-" + fromDate).lte(employeeId + "-" + toDate));
 			}
+			query.with(new Sort(new Order(Direction.ASC, "employeeId"), new Order(Direction.DESC, "dateOfLogin")));
 			return mongoTemplate.find(query,EmpLoginData.class);
-//			try {
-//				listOfEmpLoginData = new ArrayList<>();
-//			BasicDBObject gtQuery = new BasicDBObject();
-//			if(employeeId == 0){
-//				gtQuery.put("_id",
-//						new BasicDBObject("$gt", fromDate).append("$lt", toDate));
-//			}else{
-//				gtQuery.put("_id",
-//						new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
-//			}
-//			
-//			cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
-//			while (cursor.hasNext()) {
-//				DBObject dbObject = cursor.next();
-//				EmpLoginData empLoginData = new EmpLoginData();
-//				empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
-//				empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
-//				empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
-//				empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
-//				empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
-//				empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
-//				listOfEmpLoginData.add(empLoginData);
-//			}
-//		} catch (Exception ex) {
-//			MyTimeLogger.getInstance().info(ex.getMessage());
-//			throw new MyTimeException(ex.getMessage());
-//		}
-//		cursor.close();
-//		return listOfEmpLoginData;
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)

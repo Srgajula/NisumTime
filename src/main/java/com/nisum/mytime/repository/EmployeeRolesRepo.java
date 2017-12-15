@@ -7,5 +7,7 @@ import com.nisum.mytime.model.EmployeeRoles;
 public interface EmployeeRolesRepo extends MongoRepository<EmployeeRoles, String> {
 	
 	EmployeeRoles findByEmailId(String emailId);
+
+	EmployeeRoles findByEmployeeId(String employeeId);
 	
 }

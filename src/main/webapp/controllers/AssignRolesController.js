@@ -1,5 +1,6 @@
 myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $http, appConfig, $timeout){
 	$scope.records = [];
+	$scope.empSearchId = "";
 	$scope.parentData = {
 			"employeeId": "",
 			"employeeName": "",
@@ -17,11 +18,11 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 	    pageNumber: 1,
 		pageSize:5,
 		columnDefs : [ 
-			{field : 'employeeId',displayName: 'Employee ID'},
-			{field : 'employeeName',displayName: 'Name'},
-			{field : 'emailId',displayName: 'Email'},
-			{field : 'role',displayName: 'Role'}, 
-			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate} 
+			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true},
+			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false},
+			{field : 'emailId',displayName: 'Email', enableColumnMenu: false},
+			{field : 'role',displayName: 'Role', enableColumnMenu: false}, 
+			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false} 
 		]
 	};
 	$scope.gridOptions.data = $scope.records;
@@ -38,7 +39,8 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 	}
 	
 	$scope.refreshPage = function(){
-		$scoope.getUserRoles();
+		$scope.empSearchId = "";
+		$scope.getUserRoles();
 	}
 	
 	$scope.getUserRoles = function(){
@@ -52,6 +54,45 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 	    	$scope.gridOptions.data = [];
 	    });
 	};
+	
+	$scope.validateEmpId = function(){
+		var searchId = $scope.empSearchId;
+		if(searchId !="" && isNaN(searchId)){
+			showAlert('Please enter only digits');
+			$scope.empSearchId = "";
+			document.getElementById('empSearchId').focus();
+		}else if(searchId != ""&& (searchId.length < 5 || searchId.length > 5)){
+			showAlert('Employee ID should be 5 digits');
+			$scope.empSearchId = "";
+			document.getElementById('empSearchId').focus();
+		}
+	};
+	
+	$scope.getEmployeeRole = function(type){
+		var searchId = $scope.empSearchId;
+		if(searchId =="" && searchId.length == 0){
+			showAlert('Employee ID is mandatory');
+			$scope.empSearchId = "";
+			document.getElementById('empSearchId').focus();
+		}else{
+			$scope.gridOptions.data = [];
+			getEmployeeRoleData(searchId);
+		}
+	};
+	
+	function getEmployeeRoleData(empId){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getEmployeeRoleData?empId=" + empId
+	    }).then(function mySuccess(response) {
+	    	if(response.data != "" && response.data.length !=0){
+	    		$scope.gridOptions.data.push(response.data);
+	    	}
+	    }, function myError(response) {
+	    	showAlert("Something went wrong while fetching data!!!");
+	    	$scope.refreshPage();
+	    });
+	}
 	
 	function showAlert(message) {
 		$mdDialog.show($mdDialog.alert().parent(
@@ -87,22 +128,17 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 	          .ok('Do it!')
 	          .cancel('Cancel');
 	    $mdDialog.show(confirm).then(function() {
-	    	var record = {"id":row.entity.id,"employeeId":row.entity.employeeId, "employeeName": row.entity.employeeName, "emailId": row.entity.emailId, "role": row.entity.role};
-			deleteUserRole(record);
+			deleteUserRole(row.entity.employeeId);
 			$timeout(function(){updateGridAfterDelete(row)},500);
 	    }, function() {
 	    	console.log("Cancelled dialog");
 	    });
 	};
 	
-	function deleteUserRole(record){
+	function deleteUserRole(empId){
 		var req = {
-				method : 'POST',
-				url : appConfig.appUri+ "user/deleteEmployee",
-				headers : {
-					"Content-type" : "application/json"
-				},
-				data : record
+				method : 'DELETE',
+				url : appConfig.appUri+ "user/deleteEmployee?empId="+empId
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result = response.data;
@@ -128,7 +164,6 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		$scope.alertMsg = "";
 		$scope.isDisabled = false;
 		$scope.result = "";
-		$scope.savedId = "";
 		if(dataToPass.action == "Assign"){
 			$scope.empId = "";
 			$scope.empName = "";
@@ -200,7 +235,6 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 				$scope.alertMsg = "";
 				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": $scope.empRole};
 				addOrUpdateRole(record, $scope.templateTitle);
-				record.id = $scope.savedId;
 				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}
 		};
@@ -243,7 +277,6 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 				data : record
 			}
 			$http(req).then(function mySuccess(response) {
-				$scope.savedId = response.data.id;
 				$scope.result = "Success";
 			}, function myError(response){
 				$scope.result = "Error";

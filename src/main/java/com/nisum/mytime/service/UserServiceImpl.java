@@ -3,6 +3,9 @@ package com.nisum.mytime.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -64,6 +67,8 @@ public class UserServiceImpl implements UserService {
 	public List<EmployeeRoles> getEmployeeRoles() throws MyTimeException {
 		//Query query = new Query(Criteria.where("role").ne("Employee"));
 		//return mongoTemplate.find(query, EmployeeRoles.class);
+		Query query = new Query();
+		query.with(new Sort(new Order(Direction.ASC, "employeeId")));
 		return employeeRolesRepo.findAll();
 	}
 
@@ -79,8 +84,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteEmployee(EmployeeRoles employeeRoles) {
-		employeeRolesRepo.delete(employeeRoles);
+	public void deleteEmployee(String employeeId) {
+		EmployeeRoles role = employeeRolesRepo.findByEmployeeId(employeeId);
+		employeeRolesRepo.delete(role);
 	}
 
 	@Override
@@ -95,6 +101,11 @@ public class UserServiceImpl implements UserService {
         options.upsert(true);
         return mongoTemplate.findAndModify(query, update, options,
         		EmployeeRoles.class);
+	}
+
+	@Override
+	public EmployeeRoles getEmployeesRoleData(String employeeId) {
+		return employeeRolesRepo.findByEmployeeId(employeeId);
 	}
 
 }
