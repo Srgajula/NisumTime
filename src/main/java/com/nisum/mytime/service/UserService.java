@@ -22,8 +22,10 @@ public interface UserService {
 	
 	EmployeeRoles getEmployeesRole(String emailId);
 	
-	void deleteEmployee(EmployeeRoles employeeRoles);
+	void deleteEmployee(String empId);
 
 	EmployeeRoles updateEmployeeRole(EmployeeRoles employeeRoles);
+
+	EmployeeRoles getEmployeesRoleData(String empId);
 
 }

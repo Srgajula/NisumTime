@@ -48,9 +48,9 @@ public class UserController {
 		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> deleteEmployee(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
-		userService.deleteEmployee(employeeRoles);
+	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> deleteEmployee(@RequestParam("empId") String empId) throws MyTimeException {
+		userService.deleteEmployee(empId);
 		return new ResponseEntity<>("Success", HttpStatus.OK);
 	}
 
@@ -58,6 +58,13 @@ public class UserController {
 	public ResponseEntity<List<EmployeeRoles>> getUserRoles() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getEmployeeRoleData", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EmployeeRoles> getEmployeeRoleData(@RequestParam("empId") String empId)
+			throws MyTimeException {
+		EmployeeRoles employeesRole = userService.getEmployeesRoleData(empId);
+		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
 	}
 
 }

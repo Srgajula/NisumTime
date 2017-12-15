@@ -14,14 +14,40 @@
 			<ul class="nav navbar-nav navbar-right">
 				<li class="active"><a href="#">Signed in as <b>{{empName}}</b></a></li>
 				<li class="dropdown active"><a href="#" class="dropdown-toggle"
-					data-toggle="dropdown">
-					<img ng-src="{{profilePicUrl}}" style="border-radius:3px;height:20px;"/>
-					<b class="caret"></b>
-					</a>
+					data-toggle="dropdown"> <i class="fa fa-user-circle-o fa-2x" aria-hidden="true"
+												style="font-size: 1.5em;"></i><b class="caret" style="margin-top:-4px;"></b>
+				</a>
 					<ul class="dropdown-menu">
-						<li><i class="fa fa-id-badge fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>: {{empId}}</li>
-								<li><i class="fa fa-envelope fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>: {{empEmailId}}</li>
-								<li><a href="#" ng-click="logout()" style="padding: 3px 0px;color:#fff;"><i class="fa fa-sign-out fa-2x" aria-hidden="true" style="font-size:1.3em;"></i>Logout</a></li>
+						<li>
+							<div class="col-lg-12" style="padding-right: 5px;padding-left: 5px;">
+								<div class="card hovercard">
+									<div class="cardheader"></div>
+									<div class="avatar">
+										<img ng-alt="{{empName}}" ng-src="{{profilePicUrl}}">
+									</div>
+									<div class="info">
+										<div class="title">{{empName}}</div>
+										<div style="height:5px;"></div>
+										<div class="desc">
+											<i class="fa fa-id-badge fa-2x" aria-hidden="true"
+												style="font-size: 1.3em;"></i> {{empId}}
+										</div>
+										<div style="height:5px;"></div>
+										<div class="desc">
+											<i class="fa fa-envelope fa-2x" aria-hidden="true"
+												style="font-size: 1.3em;"></i> {{empEmailId}}
+										</div>
+										<div style="height:5px;"></div>
+										<div class="desc">
+											<a href="#" ng-click="logout()"
+												style="padding: 3px 0px; color: #fff;"><i
+												class="fa fa-sign-out fa-2x" aria-hidden="true"
+												style="font-size: 1.5em;"></i> Logout</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</li>
 					</ul></li>
 			</ul>
 		</div>
