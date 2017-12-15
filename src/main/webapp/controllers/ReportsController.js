@@ -107,8 +107,11 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 			showAlert('Employee ID should be 5 digits');
 			$scope.searchId = "";
 		}else{
+			$scope.pdfUrl = "";
 			$scope.reportMsg ="";
 			parentData.empId = $scope.searchId;
+			parentData.fromDate = getFormattedDate($scope.fromDate);
+			parentData.toDate = getFormattedDate($scope.toDate);
 			generatePdfReport(parentData);
 			showProgressDialog();
 			$timeout(function(){previewPdfReport();},5000);
@@ -156,6 +159,8 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	}
 	
 	$scope.sendEmail = function(ev){
+		parentData.toEmail = [];
+		parentData.ccEmail = [];
 		$mdDialog.show({
 		      controller: DialogController,
 		      templateUrl: 'templates/emailTemplate.html',
