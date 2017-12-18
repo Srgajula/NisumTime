@@ -14,7 +14,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	$scope.toDate = today;
 	
 	$scope.gridOptions = {
-		paginationPageSizes : [ 5, 10, 15 ],
+		paginationPageSizes : [ 5, 10, 20, 30, 40, 50],
 		paginationPageSize : 5,
 	    pageNumber: 1,
 		pageSize:5,

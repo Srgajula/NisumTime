@@ -135,6 +135,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	
 	function setDefaultValues(userRole, profilePicUrl){
 		$mdDialog.hide();
+		menuItems = [];
 		//Setting default values to myFactory object so that we can use it anywhere in application
 		myFactory.setEmpId(userRole.employeeId);
 		myFactory.setEmpName(userRole.employeeName);

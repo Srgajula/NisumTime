@@ -13,7 +13,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-minus-circle fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Delete\')"></i></p>';
 	
 	$scope.gridOptions = {
-		paginationPageSizes : [ 5, 10, 15 ],
+		paginationPageSizes : [ 5, 10, 20, 30, 40, 50],
 		paginationPageSize : 5,
 	    pageNumber: 1,
 		pageSize:5,
@@ -230,7 +230,12 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		
 		function validateEmail(emailId){
 			 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-			 return re.test(emailId);
+			 if(re.test(emailId)){
+		        if(emailId.indexOf("@nisum.com", emailId.length - "@nisum.com".length) !== -1){
+		        	return true;
+		        }
+			 }
+			 return false;
 		 }
 		
 		$scope.validateFields = function(){

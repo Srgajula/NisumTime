@@ -319,7 +319,12 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		 
 		 function validateEmail(emailId){
 			 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-			 return re.test(emailId);
+			 if(re.test(emailId)){
+		        if(emailId.indexOf("@nisum.com", emailId.length - "@nisum.com".length) !== -1){
+		        	return true;
+		        }
+			 }
+			 return false;
 		 }
 		 
 		 $scope.validateFields = function(){

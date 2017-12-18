@@ -26,7 +26,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	$scope.toDate = today;
 
 	$scope.gridOptions = {
-		paginationPageSizes : [ 5, 10, 15 ],
+		paginationPageSizes : [ 5, 10, 20, 30, 40, 50],
 		paginationPageSize : 5,
 	    pageNumber: 1,
 		pageSize:5,
@@ -54,7 +54,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	
 	$scope.setPageDefaults = function(){
 		if($scope.role == "HR"){
-			getData(0, getFormattedDate($scope.fromDate), getFormattedDate($scope.toDate));
+			getData(0, getFormattedDate($scope.fromDate), getFormattedDate($scope.toDate), 'onload');
 		}
 	}
 	
@@ -85,17 +85,17 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 			}else{
 				if($scope.role == "Manager"){
 					if(searchId != ""){
-						getData(searchId, fromDate, toDate);
+						getData(searchId, fromDate, toDate, 'onblur');
 					}
 				}else if($scope.role == "HR"){
-					if(searchId == "") getData(0, fromDate, toDate);
-					else getData(searchId, fromDate, toDate);
+					if(searchId == "") getData(0, fromDate, toDate, 'onblur');
+					else getData(searchId, fromDate, toDate, 'onblur');
 				}
 			}
 		}else if(type == "click"){
 			if(searchId == ""){
 				if($scope.role == "HR"){
-					getData(0, fromDate, toDate);
+					getData(0, fromDate, toDate, 'onclick');
 				}else{
 					showAlert('Please enter an Employee ID');
 				}
@@ -109,7 +109,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 				showAlert('Employee ID should be 5 digits');
 				setFieldsEmpty();
 			}else{
-				getData(searchId, fromDate, toDate);
+				getData(searchId, fromDate, toDate, 'onclick');
 			}
 		}
 		
@@ -119,12 +119,18 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
 	}
 	
-	function getData(empId, fromDate, toDate){
+	function getData(empId, fromDate, toDate, type){
 		$http({
 	        method : "GET",
 	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate?empId=" + empId + "&fromDate=" + fromDate + "&toDate=" +toDate
 	    }).then(function mySuccess(response) {
-	        $scope.gridOptions.data = response.data;
+	    	var recs = response.data;
+	    	if(recs.length == 0 && type != "onload"){
+	    		showAlert('No data available');
+	    		setFieldsEmpty();
+	    	}else{
+	    		$scope.gridOptions.data = response.data;
+	    	}
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
 	    	$scope.gridOptions.data = [];
