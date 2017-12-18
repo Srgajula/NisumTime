@@ -38,8 +38,11 @@ public class PdfReportGenerator {
 
 		String fileName = employeeId + "_" + startDate + "_" + endDate + ".pdf";
 		List<EmpLoginData> empLoginDetails = getEmployeeData(employeeId, startDate, endDate);
-		return createPDF(fileName, empLoginDetails);
-
+		if(empLoginDetails.isEmpty()){
+			return "No data available";
+		}else{
+			return createPDF(fileName, empLoginDetails);
+		}
 	}
 
 	private List<EmpLoginData> getEmployeeData(long employeeId, String fromDate, String toDate) throws MyTimeException {

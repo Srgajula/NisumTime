@@ -93,8 +93,16 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 			showAlert('Employee ID should be 5 digits');
 			$scope.searchId = "";
 			document.getElementById('searchId').focus();
+		}else if(searchId !="" && !checkEmpIdRange(searchId)){
+			showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
+			$scope.searchId = "";
+			document.getElementById('searchId').focus();
 		}
 	};
+	
+	function checkEmpIdRange(searchId){
+		return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
+	}
 	
 	$scope.generateReport = function(){
 		var searchId = $scope.searchId;
@@ -103,10 +111,15 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		}else if(isNaN(searchId)){
 			showAlert('Please enter only digits');
 			$scope.searchId = "";
-		}else if(searchId != ""&& (searchId.length < 5 || searchId.length > 5)){
+		}else if(searchId != "" && (searchId.length < 5 || searchId.length > 5)){
 			showAlert('Employee ID should be 5 digits');
 			$scope.searchId = "";
+		}else if(searchId != "" && !checkEmpIdRange(searchId)){
+			showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
+			$scope.searchId = "";
+			document.getElementById('searchId').focus();
 		}else{
+			deletePreviousReport();
 			$scope.pdfUrl = "";
 			$scope.reportMsg ="";
 			parentData.empId = $scope.searchId;
@@ -114,9 +127,27 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 			parentData.toDate = getFormattedDate($scope.toDate);
 			generatePdfReport(parentData);
 			showProgressDialog();
-			$timeout(function(){previewPdfReport();},5000);
+			$timeout(function(){previewPdfReport();},6000);
 		}
 	};
+	
+	function deletePreviousReport(){
+		var empId = "";
+		if(parentData.empId != ""){
+			empId = parentData.empId;
+		}else{
+			empId = $scope.empId;
+		}
+		var fileName = empId+"_"+parentData.fromDate+"_"+parentData.toDate;
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "deleteReport/" + fileName
+	    }).then(function mySuccess(response) {
+	    	console.log("Report deleted successfully.");
+	    }, function myError(response) {
+	    	console.log("Something went wrong while deleting the report!!!");
+	    });
+	}
 	
 	function showProgressDialog(){
 		$mdDialog.show({
@@ -132,7 +163,12 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	}
 	
 	function previewPdfReport(){
-		var pdfTemplate = '<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf" scale="page-fit" page=1 style="width:940px;border-radius:5px;"></ng-pdf>';
+		var pdfTemplate = '';
+		if($scope.pdfUrl != "No data available"){
+			pdfTemplate = '<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf" scale="page-fit" page=1 style="width:940px;border-radius:5px;"></ng-pdf>';
+		}else{
+			pdfTemplate = '<p style="color: #fff; font-size: 1.35em; vertical-align: middle; margin-top: 200px; margin-left: 300px;">Searched employee data is not available...</p>';
+		}
 		$("#pdfReportPreview").html($compile(pdfTemplate)($scope));
 		$mdDialog.hide();
 	}
@@ -142,7 +178,11 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	        method : "GET",
 	        url : appConfig.appUri + "attendance/generatePdfReport/" + data.empId + "/" + data.fromDate + "/" +data.toDate
 	    }).then(function mySuccess(response) {
-	        $scope.pdfUrl = "reports/"+response.data;
+	    	if(response.data == "No data available"){
+	    		$scope.pdfUrl = response.data;
+	    	}else{
+	    		$scope.pdfUrl = "reports/"+response.data;
+	    	}
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while generating report!!!");
 	    	$scope.pdfUrl = "";

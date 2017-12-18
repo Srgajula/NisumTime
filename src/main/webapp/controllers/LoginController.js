@@ -12,7 +12,16 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	}
 	
 	function onFailure(error){
-		console.log("Error:: "+error);
+		if(error.type == "tokenFailed"){
+			showAlert('Please login with @Nisum account');
+		}
+	}
+	
+	function showAlert(message) {
+		$mdDialog.show($mdDialog.alert().parent(
+				angular.element(document.querySelector('#popupContainer')))
+				.clickOutsideToClose(true).textContent(message).ariaLabel(
+						'Alert Dialog').ok('Got it!'));
 	}
 	
 	function getUserRole(profile){
@@ -71,16 +80,26 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			}else if(searchId != "" && ((searchId.length >0 && searchId.length <5) || searchId.length>5)){
 				$scope.alertMsg = "Employee ID should be 5 digits";
 				document.getElementById('empId').focus();
+			}else if(searchId != "" && !checkEmpIdRange(searchId)){
+				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
+				document.getElementById('empId').focus();
 			}else{
 				$scope.alertMsg = "";
 			}
 		};
+		
+		function checkEmpIdRange(searchId){
+			return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
+		}
 		
 		$scope.validateFields = function(){
 			var searchId = $scope.empId;
 			var empName = $scope.empName;
 			if(searchId == ""){
 				$scope.alertMsg = "Employee ID is mandatory";
+				document.getElementById('empId').focus();
+			}else if(!checkEmpIdRange(searchId)){
+				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
 				document.getElementById('empId').focus();
 			}else if(empName == ""){
 				$scope.alertMsg = "Employee Name is mandatory";

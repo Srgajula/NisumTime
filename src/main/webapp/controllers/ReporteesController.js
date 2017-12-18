@@ -79,6 +79,9 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 			}else if(searchId != "" && ((searchId.length >0 && searchId.length <5) || searchId.length>5)){
 				showAlert('Employee ID should be 5 digits');
 				setFieldsEmpty();
+			}else if(searchId != "" && !checkEmpIdRange(searchId)){
+				showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
+				setFieldsEmpty();
 			}else{
 				if($scope.role == "Manager"){
 					if(searchId != ""){
@@ -99,6 +102,9 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 			}else if(searchId != "" && isNaN(searchId)){
 				showAlert('Please enter only digits');
 				setFieldsEmpty();
+			}else if(searchId != "" && !checkEmpIdRange(searchId)){
+				showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
+				setFieldsEmpty();
 			}else if(searchId != ""&& (searchId.length < 5 || searchId.length > 5)){
 				showAlert('Employee ID should be 5 digits');
 				setFieldsEmpty();
@@ -107,6 +113,10 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 			}
 		}
 		
+	}
+	
+	function checkEmpIdRange(searchId){
+		return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
 	}
 	
 	function getData(empId, fromDate, toDate){
@@ -185,6 +195,8 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		$scope.searchId="";
 		$scope.startDate = "";
 		$scope.endDate = "";
+		$scope.fromDate = priorDt;
+		$scope.toDate = today;
 		$scope.gridOptions.data = [];
 	}
 	

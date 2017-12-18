@@ -61,17 +61,29 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			showAlert('Please enter only digits');
 			$scope.empSearchId = "";
 			document.getElementById('empSearchId').focus();
-		}else if(searchId != ""&& (searchId.length < 5 || searchId.length > 5)){
+		}else if(searchId != "" && (searchId.length < 5 || searchId.length > 5)){
 			showAlert('Employee ID should be 5 digits');
+			$scope.empSearchId = "";
+			document.getElementById('empSearchId').focus();
+		}else if(searchId != "" && !checkEmpIdRange(searchId)){
+			showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
 			$scope.empSearchId = "";
 			document.getElementById('empSearchId').focus();
 		}
 	};
 	
+	function checkEmpIdRange(searchId){
+		return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
+	}
+	
 	$scope.getEmployeeRole = function(type){
 		var searchId = $scope.empSearchId;
 		if(searchId =="" && searchId.length == 0){
 			showAlert('Employee ID is mandatory');
+			$scope.empSearchId = "";
+			document.getElementById('empSearchId').focus();
+		}else if(searchId != "" && !checkEmpIdRange(searchId)){
+			showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
 			$scope.empSearchId = "";
 			document.getElementById('empSearchId').focus();
 		}else{
@@ -194,10 +206,17 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			}else if(searchId != "" && ((searchId.length >0 && searchId.length <5) || searchId.length>5)){
 				$scope.alertMsg = "Employee ID should be 5 digits";
 				document.getElementById('empId').focus();
+			}else if(searchId != "" && !checkRoleEmpIdRange(searchId)){
+				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
+				document.getElementById('empId').focus();
 			}else{
 				$scope.alertMsg = "";
 			}
 		};
+		
+		function checkRoleEmpIdRange(searchId){
+			return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
+		}
 		
 		$scope.validateEmailId = function(){
 			var emailId = $scope.empEmail;
@@ -221,6 +240,9 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			var empEmail = $scope.empEmail;
 			if(searchId == ""){
 				$scope.alertMsg = "Employee ID is mandatory";
+				document.getElementById('empId').focus();
+			}else if(searchId != "" && !checkRoleEmpIdRange(searchId)){
+				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
 				document.getElementById('empId').focus();
 			}else if(empName == ""){
 				$scope.alertMsg = "Employee Name is mandatory";
