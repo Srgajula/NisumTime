@@ -23,13 +23,6 @@ public class AttendanceController {
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping(value = "employee/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EmpLoginData>> fetchEmployeeDataBasedOnEmpId(@PathVariable("id") long id)
-			throws MyTimeException {
-		List<EmpLoginData> empLoginData = userService.fetchEmployeeDataBasedOnEmpId(id);
-		return new ResponseEntity<>(empLoginData, HttpStatus.OK);
-	}
-
 	@RequestMapping(value = "employeeLoginsBasedOnDate", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmpLoginData>> employeeLoginsBasedOnDate(@RequestParam("empId") long id,
 			@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) throws MyTimeException {

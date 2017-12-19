@@ -8,8 +8,6 @@ import com.nisum.mytime.model.EmployeeRoles;
 
 public interface UserService {
 
-	List<EmpLoginData> fetchEmployeeDataBasedOnEmpId(long id) throws MyTimeException;
-
 	Boolean fetchEmployeesData() throws MyTimeException;
 
 	List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate) throws MyTimeException;
@@ -17,11 +15,11 @@ public interface UserService {
 	List<EmployeeRoles> getEmployeeRoles() throws MyTimeException;
 
 	EmployeeRoles assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException;
-	
+
 	String generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException;
-	
+
 	EmployeeRoles getEmployeesRole(String emailId);
-	
+
 	void deleteEmployee(String empId);
 
 	EmployeeRoles updateEmployeeRole(EmployeeRoles employeeRoles);

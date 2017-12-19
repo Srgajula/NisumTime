@@ -6,22 +6,23 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
-import com.nisum.mytime.service.AttendanceDataService;
+import com.nisum.mytime.service.EmployeeDataService;
 import com.nisum.mytime.utils.MyTimeLogger;
 
 @DisallowConcurrentExecution
 public class MyTimeCronSchedularJob implements Job {
 
 	@Autowired
-	private AttendanceDataService attendanceDataService;
+	private EmployeeDataService employeeDataService;
 
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) {
 		try {
-			attendanceDataService.populateEmployeeAttendanceData();
-
+			if (employeeDataService.fetchEmployeesDataOnDayBasis()) {
+				MyTimeLogger.getInstance().info("Shedular Executed Successfully Records Saved in DB");
+			}
 		} catch (MyTimeException e) {
-			MyTimeLogger.getInstance().info(e.getMessage());
+			MyTimeLogger.getInstance().error("Shedular failed to Executed ::: " + e.getMessage());
 		}
 	}
 }

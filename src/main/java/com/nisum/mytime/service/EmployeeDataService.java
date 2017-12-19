@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +39,7 @@ import com.nisum.mytime.configuration.DbConnection;
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.DateCompare;
 import com.nisum.mytime.model.EmpLoginData;
+import com.nisum.mytime.repository.EmployeeAttendanceRepo;
 import com.nisum.mytime.utils.MyTimeLogger;
 import com.nisum.mytime.utils.MyTimeUtils;
 
@@ -49,10 +51,7 @@ public class EmployeeDataService {
 
 	private String dateOnly = null;
 	private String empDatestr = null;
-	private EmpLoginData empDetails = new EmpLoginData();
 	private Connection connection = null;
-	private PreparedStatement preparedStatement = null;
-	private String query = "SELECT * FROM DeviceLogs_";
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -74,6 +73,9 @@ public class EmployeeDataService {
 
 	@Value("${mytime.attendance.dayWise}")
 	private Boolean dayWise;
+
+	@Autowired
+	private EmployeeAttendanceRepo employeeLoginsRepo;
 
 	String todayDate = MyTimeUtils.dfmt.format(new Date());
 
@@ -98,9 +100,8 @@ public class EmployeeDataService {
 				Statement statement = connection.createStatement();
 
 				while (month >= count) {
-					queryMonthDecider = count + "_" + year;
-					ResultSet resultSet = statement.executeQuery(query + queryMonthDecider.trim());
-					String empname = null;
+					queryMonthDecider = count + MyTimeUtils.UNDER_SCORE + year;
+					ResultSet resultSet = statement.executeQuery(MyTimeUtils.QUERY + queryMonthDecider.trim());
 					while (resultSet.next()) {
 						frstQuery = true;
 						if (resultSet.getString(4).length() >= 5) {
@@ -108,16 +109,14 @@ public class EmployeeDataService {
 							loginData.setEmployeeId(resultSet.getString(4));
 							loginData.setFirstLogin(resultSet.getString(5));
 							loginData.setDirection(resultSet.getString(6));
-							PreparedStatement statement1 = connection
-									.prepareStatement("SELECT * FROM EMPLOYEES Where EMPLOYEECODE=?");
+							PreparedStatement statement1 = connection.prepareStatement(MyTimeUtils.EMP_NAME_QUERY);
 							statement1.setLong(1, Long.valueOf(loginData.getEmployeeId()));
 							ResultSet resultSet1 = statement1.executeQuery();
 							while (resultSet1.next() && frstQuery) {
-								empname = resultSet1.getString(2);
-								loginData.setEmployeeName(empname);
+								loginData.setEmployeeName(resultSet1.getString(2));
 								frstQuery = false;
 							}
-							loginData.setId(resultSet.getString(4) + empname);
+							loginData.setId(resultSet.getString(4));
 							loginsData.add(loginData);
 						}
 					}
@@ -134,10 +133,72 @@ public class EmployeeDataService {
 				MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
 			}
 		} catch (Exception sqlex) {
-			MyTimeLogger.getInstance().info(sqlex.getMessage());
+			MyTimeLogger.getInstance().error(sqlex.getMessage());
 			throw new MyTimeException(sqlex.getMessage());
 		}
 		return new ArrayList<>(emp.values());
+	}
+
+	public Boolean fetchEmployeesDataOnDayBasis() throws MyTimeException {
+		Boolean result = false;
+		StringBuilder queryMonthDecider = new StringBuilder();
+		long start_ms = System.currentTimeMillis();
+		List<EmpLoginData> loginsData = new ArrayList<>();
+		Map<String, List<EmpLoginData>> map = new HashMap<>();
+		boolean frstQuery = true;
+		Map<String, EmpLoginData> emp = new HashMap<>();
+		try {
+			File file = fetchRemoteFilesAndCopyToLocal();
+			if (null != file && file.getName().equals(mdbFile)) {
+				Calendar calendar = new GregorianCalendar();
+				int month = (calendar.get(Calendar.MONTH)) + 1;
+				int year = calendar.get(Calendar.YEAR);
+
+				String dbURL = MyTimeUtils.driverUrl + file.getCanonicalPath();
+				MyTimeLogger.getInstance().info(dbURL);
+				connection = DbConnection.getDBConnection(dbURL);
+				Statement statement = connection.createStatement();
+
+				queryMonthDecider.append(month);
+				queryMonthDecider.append(MyTimeUtils.UNDER_SCORE);
+				queryMonthDecider.append(year);
+
+				ResultSet resultSet = statement.executeQuery(MyTimeUtils.QUERY + queryMonthDecider);
+				while (resultSet.next()) {
+					frstQuery = true;
+					if (resultSet.getString(4).length() >= 5) {
+						EmpLoginData loginData = new EmpLoginData();
+						loginData.setEmployeeId(resultSet.getString(4));
+						loginData.setFirstLogin(resultSet.getString(5));
+						loginData.setDirection(resultSet.getString(6));
+						PreparedStatement statement1 = connection.prepareStatement(MyTimeUtils.EMP_NAME_QUERY);
+						statement1.setLong(1, Long.valueOf(loginData.getEmployeeId()));
+						ResultSet resultSet1 = statement1.executeQuery();
+						while (resultSet1.next() && frstQuery) {
+							loginData.setEmployeeName(resultSet1.getString(2));
+							frstQuery = false;
+						}
+						loginData.setId(resultSet.getString(4));
+						loginsData.add(loginData);
+					}
+				}
+				Iterator<EmpLoginData> iter = loginsData.iterator();
+				while (iter.hasNext()) {
+					EmpLoginData empLoginData = iter.next();
+					getSingleEmploginData(loginsData, map, empLoginData);
+				}
+				for (Entry<String, List<EmpLoginData>> empMap : map.entrySet()) {
+					calculatingEachEmployeeLoginsByDate(empMap.getValue(), emp);
+				}
+				MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
+			}
+		} catch (Exception sqlex) {
+			MyTimeLogger.getInstance().error(sqlex.getMessage());
+			throw new MyTimeException(sqlex.getMessage());
+		}
+		employeeLoginsRepo.save(emp.values());
+		result = Boolean.TRUE;
+		return result;
 	}
 
 	private File fetchRemoteFilesAndCopyToLocal() throws IOException {
@@ -158,7 +219,6 @@ public class EmployeeDataService {
 			for (File file : dir.listFiles()) {
 				if (file.getCanonicalPath().contains(mdbFile)) {
 					Finalfile = new File(file.getCanonicalPath());
-
 				}
 			}
 		}
@@ -169,11 +229,13 @@ public class EmployeeDataService {
 			throws MyTimeException {
 		Query query = null;
 		if (employeeId == 0) {
-			query = new Query(Criteria.where("dateOfLogin").gte(fromDate).lte(toDate));
+			query = new Query(Criteria.where(MyTimeUtils.DATE_OF_LOGIN).gte(fromDate).lte(toDate));
 		} else {
-			query = new Query(Criteria.where("_id").gte(employeeId + "-" + fromDate).lte(employeeId + "-" + toDate));
+			query = new Query(Criteria.where(MyTimeUtils.ID).gte(employeeId + MyTimeUtils.UNDER_SCORE + fromDate)
+					.lte(employeeId + MyTimeUtils.UNDER_SCORE + toDate));
 		}
-		query.with(new Sort(new Order(Direction.ASC, "employeeId"), new Order(Direction.DESC, "dateOfLogin")));
+		query.with(new Sort(new Order(Direction.ASC, MyTimeUtils.EMPLOYEE_ID),
+				new Order(Direction.DESC, MyTimeUtils.DATE_OF_LOGIN)));
 		return mongoTemplate.find(query, EmpLoginData.class);
 	}
 
@@ -190,7 +252,7 @@ public class EmployeeDataService {
 			count++;
 			if (first) {
 				firstLoginAndLastRecordAdding(empLoginData, dates);
-				firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
+				firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
 				internalEmpMap.put(dateOnly, empLoginData);
 				first = false;
 			} else {
@@ -200,120 +262,30 @@ public class EmployeeDataService {
 				String nextDate = MyTimeUtils.dfmt.format(dt);
 				if (dateOnly.equals(nextDate)) {
 					dates.add(timeOnly);
-					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
+					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
 					if (count == loginsData.size()) {
 						addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly,
 								internalEmpMap);
-						internalEmpMap.get(dateOnly).setId(employeeId + "-" + dateOnly);
-						empMap.put(employeeId + "-" + dateOnly, internalEmpMap.get(dateOnly));
+						internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
+						empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
 					}
 				} else {
 					EmpLoginData empLoginData1 = internalEmpMap.get(dateOnly);
 					addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, dateOnly, internalEmpMap);
-					internalEmpMap.get(dateOnly).setId(employeeId + "-" + dateOnly);
-					empMap.put(employeeId + "-" + dateOnly, internalEmpMap.get(dateOnly));
+					internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
+					empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
 					firstLoginAndLastRecordAdding(empLoginData, dates);
-					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
+					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
 					internalEmpMap.put(dateOnly, empLoginData);
 					if (count == loginsData.size()) {
 						addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly,
 								internalEmpMap);
-						internalEmpMap.get(dateOnly).setId(employeeId + "-" + dateOnly);
-						empMap.put(employeeId + "-" + dateOnly, internalEmpMap.get(dateOnly));
+						internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
+						empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
 					}
 				}
 			}
 		}
-	}
-
-	public List<EmpLoginData> fetchEmployeeDataBasedOnEmpId(long id) throws MyTimeException {
-
-		List<String> dates = new ArrayList<>();
-		List<String> firstAndLastLoginDates = new ArrayList<>();
-		Map<String, EmpLoginData> empMap = new HashMap<>();
-		long start_ms = System.currentTimeMillis();
-		List<EmpLoginData> loginsData = new ArrayList<>();
-		boolean first = true;
-		boolean frstQuery = true;
-		try {
-			File dir = new File(localFileDirectory);
-			for (File file : dir.listFiles()) {
-				String msAccDB = localFileDirectory + file.getName();
-				String dbURL = MyTimeUtils.driverUrl + msAccDB;
-				connection = DbConnection.getDBConnection(dbURL);
-				Calendar calendar = new GregorianCalendar();
-				int date = calendar.get(Calendar.MONTH);
-				int year = calendar.get(Calendar.YEAR);
-				preparedStatement = connection
-						.prepareStatement("SELECT * FROM DeviceLogs_" + "_" + date + "_" + year + " Where USERID=?");
-				preparedStatement.setLong(1, id);
-				ResultSet resultSet = preparedStatement.executeQuery();
-
-				if (frstQuery) {
-					PreparedStatement statement1 = connection
-							.prepareStatement("SELECT * FROM EMPLOYEES Where EMPLOYEECODE=?");
-					statement1.setLong(1, id);
-					ResultSet resultSet1 = statement1.executeQuery();
-					while (resultSet1.next() && frstQuery) {
-						empDetails.setEmployeeName(resultSet1.getString(2));
-						frstQuery = false;
-						statement1.close();
-						resultSet1.close();
-					}
-				}
-
-				while (resultSet.next()) {
-					if (resultSet.getString(4).length() >= 5) {
-						EmpLoginData loginData = new EmpLoginData();
-						loginData.setEmployeeId(resultSet.getString(4));
-						loginData.setEmployeeName(empDetails.getEmployeeName());
-						loginData.setFirstLogin(resultSet.getString(5));
-						loginData.setDirection(resultSet.getString(6));
-						loginsData.add(loginData);
-					}
-				}
-			}
-			System.out.println(loginsData.size());
-
-			Collections.sort(loginsData, new DateCompare());
-			int count = 0;
-			for (EmpLoginData empLoginData : loginsData) {
-				count++;
-				if (first) {
-					firstLoginAndLastRecordAdding(empLoginData, dates);
-					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
-					empMap.put(dateOnly, empLoginData);
-					first = false;
-				} else {
-					empDatestr = empLoginData.getFirstLogin();
-					Date dt = MyTimeUtils.df.parse(empDatestr);
-					String timeOnly = MyTimeUtils.tdf.format(dt);
-					String nextDate = MyTimeUtils.dfmt.format(dt);
-					if (dateOnly.equals(nextDate)) {
-						dates.add(timeOnly);
-						firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
-						if (count == loginsData.size()) {
-							addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly, empMap);
-						}
-					} else {
-						EmpLoginData empLoginData1 = empMap.get(dateOnly);
-						addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, dateOnly, empMap);
-						firstLoginAndLastRecordAdding(empLoginData, dates);
-						firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + "");
-						empMap.put(dateOnly, empLoginData);
-						if (count == loginsData.size()) {
-							addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly, empMap);
-						}
-					}
-				}
-			}
-			MyTimeLogger.getInstance().info("Time :" + (System.currentTimeMillis() - start_ms));
-
-		} catch (Exception sqlex) {
-			MyTimeLogger.getInstance().info(sqlex.getMessage());
-			throw new MyTimeException(sqlex.getMessage());
-		}
-		return new ArrayList<EmpLoginData>(empMap.values());
 	}
 
 	private void firstLoginAndLastRecordAdding(EmpLoginData empLoginData, List<String> dates) throws ParseException {
@@ -341,10 +313,10 @@ public class EmployeeDataService {
 		int hours = seconds / 3600;
 		int minutes = (seconds % 3600) / 60;
 		if (minutes < 10) {
-			roundingMinutes = "0" + minutes;
-			empLoginData.setTotalLoginTime(hours + ":" + roundingMinutes);
+			roundingMinutes = MyTimeUtils.ZERO + minutes;
+			empLoginData.setTotalLoginTime(hours + MyTimeUtils.COLON + roundingMinutes);
 		} else {
-			empLoginData.setTotalLoginTime(hours + ":" + minutes);
+			empLoginData.setTotalLoginTime(hours + MyTimeUtils.COLON + minutes);
 		}
 		empLoginData.setDateOfLogin(dateOnly);
 		empMap.put(dateOnly, empLoginData);

@@ -3,9 +3,6 @@ package com.nisum.mytime.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -34,14 +31,10 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private PdfReportGenerator pdfReportGenerator;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	@Override
-	public List<EmpLoginData> fetchEmployeeDataBasedOnEmpId(long id) throws MyTimeException {
-		return employeeDataBaseService.fetchEmployeeDataBasedOnEmpId(id);
-	}
 
 	@Override
 	public Boolean fetchEmployeesData() throws MyTimeException {
@@ -65,10 +58,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<EmployeeRoles> getEmployeeRoles() throws MyTimeException {
-		//Query query = new Query(Criteria.where("role").ne("Employee"));
-		//return mongoTemplate.find(query, EmployeeRoles.class);
-		Query query = new Query();
-		query.with(new Sort(new Order(Direction.ASC, "employeeId")));
 		return employeeRolesRepo.findAll();
 	}
 
@@ -92,15 +81,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public EmployeeRoles updateEmployeeRole(EmployeeRoles employeeRoles) {
 		Query query = new Query(Criteria.where("employeeId").is(employeeRoles.getEmployeeId()));
-        Update update = new Update();
-        update.set("employeeName", employeeRoles.getEmployeeName());
-        update.set("emailId", employeeRoles.getEmailId());
-        update.set("role", employeeRoles.getRole());
-        FindAndModifyOptions options = new FindAndModifyOptions();
-        options.returnNew(true);
-        options.upsert(true);
-        return mongoTemplate.findAndModify(query, update, options,
-        		EmployeeRoles.class);
+		Update update = new Update();
+		update.set("employeeName", employeeRoles.getEmployeeName());
+		update.set("emailId", employeeRoles.getEmailId());
+		update.set("role", employeeRoles.getRole());
+		FindAndModifyOptions options = new FindAndModifyOptions();
+		options.returnNew(true);
+		options.upsert(true);
+		return mongoTemplate.findAndModify(query, update, options, EmployeeRoles.class);
 	}
 
 	@Override
