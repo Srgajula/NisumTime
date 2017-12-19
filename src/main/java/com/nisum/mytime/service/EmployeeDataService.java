@@ -72,8 +72,10 @@ public class EmployeeDataService {
 	@Value("${mytime.remote.directory}")
 	private String remoteFilesDirectory;
 
-	//private List<EmpLoginData> listOfEmpLoginData = null;
-	//private DBCursor cursor = null;
+	@Value("${mytime.attendance.dayWise}")
+	private Boolean dayWise;
+
+	String todayDate = MyTimeUtils.dfmt.format(new Date());
 
 	public List<EmpLoginData> fetchEmployeesData() throws MyTimeException {
 		String queryMonthDecider = null;
@@ -89,12 +91,12 @@ public class EmployeeDataService {
 				Calendar calendar = new GregorianCalendar();
 				int month = (calendar.get(Calendar.MONTH)) + 1;
 				int year = calendar.get(Calendar.YEAR);
-				
+
 				String dbURL = MyTimeUtils.driverUrl + file.getCanonicalPath();
 				MyTimeLogger.getInstance().info(dbURL);
 				connection = DbConnection.getDBConnection(dbURL);
 				Statement statement = connection.createStatement();
-				
+
 				while (month >= count) {
 					queryMonthDecider = count + "_" + year;
 					ResultSet resultSet = statement.executeQuery(query + queryMonthDecider.trim());
@@ -165,14 +167,14 @@ public class EmployeeDataService {
 
 	public List<EmpLoginData> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate, String toDate)
 			throws MyTimeException {
-			Query query = null;
-			if(employeeId == 0){
-				query = new Query(Criteria.where("dateOfLogin").gte(fromDate).lte(toDate));
-			}else{
-				query = new Query(Criteria.where("_id").gte(employeeId + "-" + fromDate).lte(employeeId + "-" + toDate));
-			}
-			query.with(new Sort(new Order(Direction.ASC, "employeeId"), new Order(Direction.DESC, "dateOfLogin")));
-			return mongoTemplate.find(query,EmpLoginData.class);
+		Query query = null;
+		if (employeeId == 0) {
+			query = new Query(Criteria.where("dateOfLogin").gte(fromDate).lte(toDate));
+		} else {
+			query = new Query(Criteria.where("_id").gte(employeeId + "-" + fromDate).lte(employeeId + "-" + toDate));
+		}
+		query.with(new Sort(new Order(Direction.ASC, "employeeId"), new Order(Direction.DESC, "dateOfLogin")));
+		return mongoTemplate.find(query, EmpLoginData.class);
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)
@@ -357,8 +359,15 @@ public class EmployeeDataService {
 		Iterator<EmpLoginData> iter = loginsData.iterator();
 		while (iter.hasNext()) {
 			EmpLoginData empLoginData1 = iter.next();
-			if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId())) {
-				singleEmpLogindata.add(empLoginData1);
+			if (dayWise) {
+				if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId())
+						&& todayDate.equals(MyTimeUtils.dfmt.format(empLoginData1.getFirstLogin()))) {
+					singleEmpLogindata.add(empLoginData1);
+				}
+			} else {
+				if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId())) {
+					singleEmpLogindata.add(empLoginData1);
+				}
 			}
 		}
 		map.put(empLoginData.getEmployeeId(), singleEmpLogindata);
