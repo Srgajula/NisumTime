@@ -310,7 +310,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 						 if(from == "TO") dataToPass.toEmail.push(emailId.trim());
 						 else if(from == "CC") dataToPass.ccEmail.push(emailId.trim());
 					 }else{
-						 $scope.invalidMsg = "Please enter only valid email id(s)!";
+						 $scope.invalidMsg = "Please enter only valid nisum email id(s)!";
 						 document.getElementById(elementId).focus();
 					 }
 				 }

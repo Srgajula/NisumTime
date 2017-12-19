@@ -14,7 +14,7 @@ md-progress-linear.md-default-theme .md-bar, md-progress-linear .md-bar {
 <form ng-cloak name="myForm">
 	<md-toolbar>
 	<div class="md-toolbar-tools"
-		style="background: rgba(0, 178, 226, .6) !important;">
+		style="background: cadetblue;">
 		<h2>Send Email</h2>
 		<span flex></span>
 		<md-button class="md-icon-button" ng-click="cancel()"> <i
@@ -41,9 +41,9 @@ md-progress-linear.md-default-theme .md-bar, md-progress-linear .md-bar {
 	</div>
 	</md-dialog-content>
 
-	<md-dialog-actions layout="row"> <md-button
-		class="md-raised" data-ng-click="validateFields()" style="color: rgb(63,81,181);">
-	Send </md-button> <md-button class="md-raised" ng-click="cancel()" style="color: rgb(63,81,181);">
+	<md-dialog-actions layout="row"> <md-button 
+		class="md-raised" data-ng-click="validateFields()" style="width:120px;background: cadetblue;color:white;">
+	Send </md-button> <md-button class="md-raised" ng-click="cancel()" style="width:120px;background: cadetblue;color:white;">
 	Cancel </md-button> <md-progress-linear ng-show="showLoader"
 		md-mode="indeterminate" style="left:0px;position:absolute;">
 	</md-progress-linear> 
