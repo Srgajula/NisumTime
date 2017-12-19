@@ -2,6 +2,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	var menuItems = myFactory.getMenuItems();
 	$window.onSignIn = onSignIn;
 	$window.onFailure = onFailure;
+	$scope.rolesData = [];
 	
 	function onSignIn(googleUser) {
 		var profile = googleUser.getBasicProfile();
@@ -9,6 +10,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		console.log('Email: ' + profile.getEmail()); 
 		console.log('Image URL: ' + profile.getImageUrl());
 		getUserRole(profile);
+		getAllUserRoles();
 	}
 	
 	function onFailure(error){
@@ -43,13 +45,24 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	    });
 	}
 	
+	function getAllUserRoles(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getUserRoles"
+	    }).then(function mySuccess(response) {
+	    	$scope.rolesData = response.data;
+	    }, function myError(response) {
+	    	$scope.rolesData = [];
+	    });
+	};
+	
 	function showRegisterEmployeeScreen(profile){
 		$mdDialog.show({
 	      controller: NewEmployeeController,
 	      templateUrl: 'templates/registerEmployee.html',
 	      parent: angular.element(document.body),
 	      clickOutsideToClose:false,
-	      locals:{dataToPass: profile},
+	      locals:{dataToPass: profile, rolesData:$scope.rolesData },
 	    })
 	    .then(function(result) {
 	    	if(result == "Cancelled"){ console.log(result);
@@ -66,7 +79,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	    });
 	}
 	
-	function NewEmployeeController($scope, $mdDialog, dataToPass) {
+	function NewEmployeeController($scope, $mdDialog, dataToPass, rolesData) {
 		$scope.alertMsg = "";
 		$scope.empId = "";
 		$scope.empName = dataToPass.getName();
@@ -83,6 +96,9 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			}else if(searchId != "" && !checkEmpIdRange(searchId)){
 				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
 				document.getElementById('empId').focus();
+			}else if(searchId != "" && checkRoleExistence(searchId)){
+				$scope.alertMsg = 'Employee is already registered';
+				document.getElementById('empId').focus();
 			}else{
 				$scope.alertMsg = "";
 			}
@@ -90,6 +106,15 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		
 		function checkEmpIdRange(searchId){
 			return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
+		}
+		
+		function checkRoleExistence(searchId){
+			for(var i in rolesData){
+				if(rolesData[i].employeeId == searchId){
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		$scope.validateFields = function(){
