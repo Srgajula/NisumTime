@@ -209,6 +209,9 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			}else if(searchId != "" && !checkRoleEmpIdRange(searchId)){
 				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
 				document.getElementById('empId').focus();
+			}else if(searchId != "" && checkRoleExistence(searchId)){
+				$scope.alertMsg = 'Employee ID is already assigned a role';
+				document.getElementById('empId').focus();
 			}else{
 				$scope.alertMsg = "";
 			}
@@ -218,10 +221,19 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
 		}
 		
+		function checkRoleExistence(searchId){
+			for(var i in gridOptionsData){
+				if(gridOptionsData[i].employeeId == searchId){
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		$scope.validateEmailId = function(){
 			var emailId = $scope.empEmail;
 			if(emailId != "" && !validateEmail(emailId)){
-				$scope.alertMsg = "Please enter a valid email id";
+				$scope.alertMsg = "Please enter a valid nisum email id";
 				document.getElementById('empEmail').focus();
 			}else{
 				$scope.alertMsg = "";
