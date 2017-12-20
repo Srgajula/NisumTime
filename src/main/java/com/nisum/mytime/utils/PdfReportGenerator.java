@@ -54,7 +54,7 @@ public class PdfReportGenerator {
 		Document doc = new Document();
 		PdfWriter docWriter = null;
 		try {
-			File file = resourceLoader.getResource("/reports/" + pdfFilename).getFile();
+			File file = resourceLoader.getResource("/WEB-INF/reports/" + pdfFilename).getFile();
 			docWriter = PdfWriter.getInstance(doc, new FileOutputStream(file.getPath()));
 			setPdfDocumentProperties(doc);
 			doc.open();

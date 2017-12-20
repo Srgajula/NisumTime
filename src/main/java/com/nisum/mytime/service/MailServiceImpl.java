@@ -53,7 +53,7 @@ public class MailServiceImpl implements MailService {
 			helper.setText("Hi,\n PFA for your login hours report for the period: " + emailObj.getFromDate() + " / "
 					+ emailObj.getToDate());
 			String fileName = emailObj.getEmpId() + "_" + emailObj.getFromDate() + "_" + emailObj.getToDate()+".pdf";
-			File file = resourceLoader.getResource("/reports/" + fileName).getFile();
+			File file = resourceLoader.getResource("/WEB-INF/reports/" + fileName).getFile();
 			FileSystemResource fileSystem = new FileSystemResource(file);
 			helper.addAttachment(fileSystem.getFilename(), fileSystem);
 			helper.setSentDate(new Date());
@@ -72,7 +72,7 @@ public class MailServiceImpl implements MailService {
 	public String deletePdfReport(String fileName) {
 		String response = "";
 		try {
-			File file = resourceLoader.getResource("/reports/" + fileName+".pdf").getFile();
+			File file = resourceLoader.getResource("/WEB-INF/reports/" + fileName+".pdf").getFile();
 			if(file.exists()){
 				boolean status = file.delete();
 				if(status){
