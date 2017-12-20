@@ -25,7 +25,7 @@
 }
 
 .card.hovercard .cardheader {
-    background: url("/images/profile-background.jpg");
+    background: url("/my-time/images/profile-background.jpg");
     background-size: cover;
     height: 95px;
 }

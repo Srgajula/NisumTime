@@ -15,7 +15,7 @@ var myApp = angular.module(
 //TODO: Replace this appUri with the domain name created
 myApp.constant('appConfig', { 
 			appName: "MyTime", 
-			appUri: "http://localhost:8080/", 
+			appUri: "http://localhost:8080/my-time/", 
 			version:"1.0", 
 			empStartId:16001, 
 			empEndId:16999

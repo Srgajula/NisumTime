@@ -13,6 +13,12 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+
+war {
+    baseName = 'my-time'
+    version = ''
+}
 
 group = 'com.nisum.mytime'
 version = '0.0.1-SNAPSHOT'
@@ -37,7 +43,7 @@ dependencies {
 	compile('org.quartz-scheduler:quartz:2.2.1')
 	compile('org.quartz-scheduler:quartz:2.3.0')
 	
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'1.5.8.RELEASE'
 	testCompile ('junit:junit:4.12')
 	compile('net.sf.ucanaccess:ucanaccess:4.0.1')
 	testCompile('org.hsqldb:hsqldb')
