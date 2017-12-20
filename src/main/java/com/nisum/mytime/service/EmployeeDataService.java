@@ -251,8 +251,8 @@ public class EmployeeDataService {
 		if (employeeId == 0) {
 			query = new Query(Criteria.where(MyTimeUtils.DATE_OF_LOGIN).gte(fromDate).lte(toDate));
 		} else {
-			query = new Query(Criteria.where(MyTimeUtils.ID).gte(employeeId + MyTimeUtils.UNDER_SCORE + fromDate)
-					.lte(employeeId + MyTimeUtils.UNDER_SCORE + toDate));
+			query = new Query(Criteria.where(MyTimeUtils.ID).gte(employeeId + MyTimeUtils.HYPHEN + fromDate)
+					.lte(employeeId + MyTimeUtils.HYPHEN + toDate));
 		}
 		query.with(new Sort(new Order(Direction.ASC, MyTimeUtils.EMPLOYEE_ID),
 				new Order(Direction.DESC, MyTimeUtils.DATE_OF_LOGIN)));

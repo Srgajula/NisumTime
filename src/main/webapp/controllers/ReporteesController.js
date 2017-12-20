@@ -125,7 +125,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate?empId=" + empId + "&fromDate=" + fromDate + "&toDate=" +toDate
 	    }).then(function mySuccess(response) {
 	    	var recs = response.data;
-	    	if(recs.length == 0 && type != "onload"){
+	    	if(recs.length == 0 && type == "onclick"){
 	    		showAlert('No data available');
 	    		setFieldsEmpty();
 	    	}else{
