@@ -1,5 +1,7 @@
 package com.nisum.mytime.schedular;
 
+import java.sql.SQLException;
+
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -21,7 +23,7 @@ public class MyTimeCronSchedularJob implements Job {
 			if (employeeDataService.fetchEmployeesDataOnDayBasis()) {
 				MyTimeLogger.getInstance().info("Shedular Executed Successfully Records Saved in DB");
 			}
-		} catch (MyTimeException e) {
+		} catch (MyTimeException | SQLException e) {
 			MyTimeLogger.getInstance().error("Shedular failed to Executed ::: " + e.getMessage());
 		}
 	}

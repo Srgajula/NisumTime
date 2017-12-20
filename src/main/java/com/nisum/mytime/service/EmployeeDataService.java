@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +53,8 @@ public class EmployeeDataService {
 	private String dateOnly = null;
 	private String empDatestr = null;
 	private Connection connection = null;
+	private Statement statement = null;
+	private ResultSet resultSet = null;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -97,11 +100,11 @@ public class EmployeeDataService {
 				String dbURL = MyTimeUtils.driverUrl + file.getCanonicalPath();
 				MyTimeLogger.getInstance().info(dbURL);
 				connection = DbConnection.getDBConnection(dbURL);
-				Statement statement = connection.createStatement();
+				statement = connection.createStatement();
 
 				while (month >= count) {
 					queryMonthDecider = count + MyTimeUtils.UNDER_SCORE + year;
-					ResultSet resultSet = statement.executeQuery(MyTimeUtils.QUERY + queryMonthDecider.trim());
+					resultSet = statement.executeQuery(MyTimeUtils.QUERY + queryMonthDecider.trim());
 					while (resultSet.next()) {
 						frstQuery = true;
 						if (resultSet.getString(4).length() >= 5) {
@@ -135,11 +138,21 @@ public class EmployeeDataService {
 		} catch (Exception sqlex) {
 			MyTimeLogger.getInstance().error(sqlex.getMessage());
 			throw new MyTimeException(sqlex.getMessage());
+		} finally {
+			try {
+				if (null != connection) {
+					connection.close();
+					statement.close();
+					resultSet.close();
+				}
+			} catch (SQLException e) {
+				MyTimeLogger.getInstance().error(e.getMessage());
+			}
 		}
 		return new ArrayList<>(emp.values());
 	}
 
-	public Boolean fetchEmployeesDataOnDayBasis() throws MyTimeException {
+	public Boolean fetchEmployeesDataOnDayBasis() throws MyTimeException, SQLException {
 		Boolean result = false;
 		StringBuilder queryMonthDecider = new StringBuilder();
 		long start_ms = System.currentTimeMillis();
@@ -157,13 +170,14 @@ public class EmployeeDataService {
 				String dbURL = MyTimeUtils.driverUrl + file.getCanonicalPath();
 				MyTimeLogger.getInstance().info(dbURL);
 				connection = DbConnection.getDBConnection(dbURL);
-				Statement statement = connection.createStatement();
+				statement = connection.createStatement();
 
+				queryMonthDecider.append(MyTimeUtils.QUERY);
 				queryMonthDecider.append(month);
 				queryMonthDecider.append(MyTimeUtils.UNDER_SCORE);
 				queryMonthDecider.append(year);
 
-				ResultSet resultSet = statement.executeQuery(MyTimeUtils.QUERY + queryMonthDecider);
+				resultSet = statement.executeQuery(queryMonthDecider.toString());
 				while (resultSet.next()) {
 					frstQuery = true;
 					if (resultSet.getString(4).length() >= 5) {
@@ -190,14 +204,20 @@ public class EmployeeDataService {
 				for (Entry<String, List<EmpLoginData>> empMap : map.entrySet()) {
 					calculatingEachEmployeeLoginsByDate(empMap.getValue(), emp);
 				}
+				employeeLoginsRepo.save(emp.values());
+				result = Boolean.TRUE;
 				MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
 			}
 		} catch (Exception sqlex) {
 			MyTimeLogger.getInstance().error(sqlex.getMessage());
 			throw new MyTimeException(sqlex.getMessage());
+		} finally {
+			if (null != connection) {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			}
 		}
-		employeeLoginsRepo.save(emp.values());
-		result = Boolean.TRUE;
 		return result;
 	}
 
