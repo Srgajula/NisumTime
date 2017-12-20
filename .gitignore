@@ -12,7 +12,7 @@ node_modules/
 
 vendor/
 
-/src/main/webapp/reports/
+/src/main/webapp/WEB-INF/reports/
 
 
 # Git
