@@ -346,14 +346,15 @@ public class EmployeeDataService {
 	}
 
 	private void getSingleEmploginData(List<EmpLoginData> loginsData, Map<String, List<EmpLoginData>> map,
-			EmpLoginData empLoginData) {
+			EmpLoginData empLoginData) throws ParseException {
 		List<EmpLoginData> singleEmpLogindata = new ArrayList<>();
 		Iterator<EmpLoginData> iter = loginsData.iterator();
 		while (iter.hasNext()) {
 			EmpLoginData empLoginData1 = iter.next();
 			if (dayWise) {
-				if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId())
-						&& todayDate.equals(MyTimeUtils.dfmt.format(empLoginData1.getFirstLogin()))) {
+				Date dt = MyTimeUtils.df.parse(empLoginData1.getFirstLogin());
+				dateOnly = MyTimeUtils.dfmt.format(dt);
+				if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId()) && todayDate.equals(dateOnly)) {
 					singleEmpLogindata.add(empLoginData1);
 				}
 			} else {
