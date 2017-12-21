@@ -13,7 +13,6 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -37,9 +36,6 @@ public class MailServiceImpl implements MailService {
 	@Autowired
 	ResourceLoader resourceLoader;
 
-	@Value("${spring.mail.username}")
-	private String fromEmail;
-
 	@Override
 	public String sendEmailWithAttachment(EmailDomain emailObj) {
 		String response = "Success";
@@ -48,7 +44,6 @@ public class MailServiceImpl implements MailService {
 			MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 			helper.setTo(emailObj.getToEmail());
 			helper.setCc(emailObj.getCcEmail());
-			helper.setFrom(fromEmail);
 			helper.setSubject(emailObj.getEmpId() + " - Login hours Report");
 			helper.setText("Hi,\n PFA for your login hours report for the period: " + emailObj.getFromDate() + " / "
 					+ emailObj.getToDate());
