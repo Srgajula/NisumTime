@@ -29,6 +29,7 @@ public class ReportsCleanUpScheduler {
 					flag = file.delete();
 				}
 			}
+			logger.info("Reports cleanup performed successfully");
 		} catch (IOException e) {
 			logger.error("Report deletion failed due to: ");
 		}

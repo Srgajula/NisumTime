@@ -31,9 +31,6 @@ public class EmailController {
 	@RequestMapping(value = "/deleteReport/{fileName}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> deletePdfReport(@PathVariable("fileName") String fileName) {
 		String response = mailService.deletePdfReport(fileName);
-		if ("Success".equals(response))
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		else
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
