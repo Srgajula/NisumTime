@@ -31,5 +31,6 @@ public class EmployeeRoles implements Serializable {
 	private String employeeName;
 	private String emailId;
 	private String role;
+	private String shift;
 
 }

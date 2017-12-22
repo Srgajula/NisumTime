@@ -23,7 +23,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		$mdDialog.show($mdDialog.alert().parent(
 				angular.element(document.querySelector('#popupContainer')))
 				.clickOutsideToClose(true).textContent(message).ariaLabel(
-						'Alert Dialog').ok('Got it!'));
+						'Alert Dialog').ok('Ok'));
 	}
 	
 	function getUserRole(profile){
@@ -171,10 +171,11 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
 			menuItems.push({"menu" : "Reports","icon" : "fa fa-flag fa-2x","path" : "templates/reports.html"});
-			menuItems.push({"menu" : "Assign Roles","icon" : "fa fa-universal-access fa-2x","path" : "templates/roles.html"});
+			menuItems.push({"menu" : "Manage Employees","icon" : "fa fa-universal-access fa-2x","path" : "templates/roles.html"});
 		}else if(role == "Manager"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
+			menuItems.push({"menu" : "Manage Reportees","icon" : "fa fa-universal-access fa-2x","path" : "templates/roles.html"});
 		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 		}

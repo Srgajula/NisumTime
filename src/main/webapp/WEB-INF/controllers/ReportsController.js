@@ -3,31 +3,38 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	$scope.searchId="";
 	// Date picker related code
 	var today = new Date();
-	var priorDt = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
 	$scope.maxDate = today;
-	$scope.fromDate = priorDt;
+	$scope.fromDate = today;
 	$scope.toDate = today;
 	$scope.reportMsg ="Please generate a report for preview.";
 	$scope.validateDates = function(dateValue, from) {
 		if(from == "FromDate"){
-			var toDt = $scope.toDate;
-			var diff = daysBetween(dateValue, toDt);
-			if(diff < 30 ){
-				showAlert('Date range should have minimum of 30 days difference');
-				$scope.fromDate = priorDt;
+			var toDat = $scope.toDate;
+			var difference = daysBetween(dateValue, toDat);
+			if(difference < 0 ){
+				showAlert('From Date should not be greater than To Date');
+				$scope.fromDate = today;
 				$scope.toDate = today;
 			}else{
 				$scope.fromDate = dateValue;
-				$scope.toDate = getCalculatedDate(dateValue, 'Add');
+				$scope.toDate = toDat;
 			}
 		}else if(from == "ToDate"){
-			$scope.toDate = dateValue;
-			$scope.fromDate = getCalculatedDate(dateValue, 'Substract');
+			var fromDat = $scope.fromDate;
+			var differene = daysBetween(fromDat, dateValue);
+			if(differene < 0 ){
+				showAlert('To Date should not be less than From Date');
+				$scope.fromDate = today;
+				$scope.toDate = today;
+			}else{
+				$scope.fromDate = fromDat;
+				$scope.toDate = dateValue;
+			}
 		}
 	};
 	
 	$scope.refreshPage = function(){
-		$scope.fromDate = priorDt;
+		$scope.fromDate = today;
 		$scope.toDate = today;
 		setDefaults();
 	};
@@ -36,7 +43,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		$mdDialog.show($mdDialog.alert().parent(
 				angular.element(document.querySelector('#popupContainer')))
 				.clickOutsideToClose(true).textContent(message).ariaLabel(
-						'Alert Dialog').ok('Got it!'));
+						'Alert Dialog').ok('Ok'));
 	}
 	
 	function treatAsUTC(date) {
@@ -50,15 +57,6 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	    return Math.round((treatAsUTC(toDate) - treatAsUTC(fromDate)) / millisecondsPerDay);
 	}
 	
-	function getCalculatedDate(selectedDate, type){
-		var futureDt = null;
-		if(type == "Add"){
-			futureDt = new Date(selectedDate.getTime() + (30 * 24 * 60 * 60 * 1000));
-		}else {
-			futureDt = new Date(selectedDate.getTime() - (30 * 24 * 60 * 60 * 1000));
-		}
-		return futureDt;
-	}
 	
 	$scope.pdfUrl = "";
 	$scope.scroll = 0;
@@ -105,30 +103,15 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	}
 	
 	$scope.generateReport = function(){
-		var searchId = $scope.searchId;
-		if(searchId == "" || searchId.length ==0){
-			showAlert('Please enter an Employee ID');
-		}else if(isNaN(searchId)){
-			showAlert('Please enter only digits');
-			$scope.searchId = "";
-		}else if(searchId != "" && (searchId.length < 5 || searchId.length > 5)){
-			showAlert('Employee ID should be 5 digits');
-			$scope.searchId = "";
-		}else if(searchId != "" && !checkEmpIdRange(searchId)){
-			showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
-			$scope.searchId = "";
-			document.getElementById('searchId').focus();
-		}else{
-			deletePreviousReport();
-			$scope.pdfUrl = "";
-			$scope.reportMsg ="";
-			parentData.empId = $scope.searchId;
-			parentData.fromDate = getFormattedDate($scope.fromDate);
-			parentData.toDate = getFormattedDate($scope.toDate);
-			generatePdfReport(parentData);
-			showProgressDialog();
-			$timeout(function(){previewPdfReport();},6000);
-		}
+		deletePreviousReport();
+		$scope.pdfUrl = "";
+		$scope.reportMsg ="";
+		parentData.empId = $scope.searchId;
+		parentData.fromDate = getFormattedDate($scope.fromDate);
+		parentData.toDate = getFormattedDate($scope.toDate);
+		generatePdfReport(parentData);
+		showProgressDialog();
+		$timeout(function(){previewPdfReport();},6000);
 	};
 	
 	function deletePreviousReport(){
@@ -136,8 +119,9 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		if(parentData.empId != ""){
 			empId = parentData.empId;
 		}else{
-			empId = $scope.empId;
+			empId = $scope.searchId;
 		}
+		if(empId == "") empId = 0;
 		var fileName = empId+"_"+parentData.fromDate+"_"+parentData.toDate;
 		$http({
 	        method : "GET",
@@ -167,16 +151,22 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 		if($scope.pdfUrl != "No data available"){
 			pdfTemplate = '<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf" scale="page-fit" page=1 style="width:940px;border-radius:5px;"></ng-pdf>';
 		}else{
-			pdfTemplate = '<p style="color: #fff; font-size: 1.35em; vertical-align: middle; margin-top: 200px; margin-left: 300px;">Searched employee data is not available...</p>';
+			pdfTemplate = '<p style="color: #fff; font-size: 1.35em; vertical-align: middle; margin-top: 200px; margin-left: 300px;">No data available for the search criteria...</p>';
 		}
 		$("#pdfReportPreview").html($compile(pdfTemplate)($scope));
 		$mdDialog.hide();
 	}
 	
 	function generatePdfReport(data){
+		var empId = "";
+		if(data.empId == ""){
+			empId = 0;
+		}else{
+			empId = data.empId;
+		}
 		$http({
 	        method : "GET",
-	        url : appConfig.appUri + "attendance/generatePdfReport/" + data.empId + "/" + data.fromDate + "/" +data.toDate
+	        url : appConfig.appUri + "attendance/generatePdfReport/" + empId + "/" + data.fromDate + "/" +data.toDate
 	    }).then(function mySuccess(response) {
 	    	if(response.data == "No data available"){
 	    		$scope.pdfUrl = response.data;

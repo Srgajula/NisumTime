@@ -44,10 +44,22 @@ public class MailServiceImpl implements MailService {
 			MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 			helper.setTo(emailObj.getToEmail());
 			helper.setCc(emailObj.getCcEmail());
-			helper.setSubject(emailObj.getEmpId() + " - Login hours Report");
-			helper.setText("Hi,\n PFA for your login hours report for the period: " + emailObj.getFromDate() + " / "
-					+ emailObj.getToDate());
-			String fileName = emailObj.getEmpId() + "_" + emailObj.getFromDate() + "_" + emailObj.getToDate()+".pdf";
+			String fromDate = emailObj.getFromDate();
+			String toDate = emailObj.getToDate();
+			String subject = "";
+			String mailContent = "";
+			String empId = emailObj.getEmpId();
+			if("".equals(empId)){
+				empId = "0";
+				subject = "All employees - Login hours Report for the period: "+fromDate+" to "+toDate;
+				mailContent = "Hi,\n PFA for All employees login hours report for the period: " + fromDate + " to "+ toDate;
+			}else{
+				subject = empId+ " - Login hours Report for the period: "+fromDate+" to "+toDate;
+				mailContent = "Hi,\n PFA for Employee ID: "+empId+" login hours report for the period: " + fromDate + " to "+ toDate;
+			}
+			helper.setSubject(subject);
+			helper.setText(mailContent);
+			String fileName = empId + "_" + fromDate + "_" + toDate+".pdf";
 			File file = resourceLoader.getResource("/WEB-INF/reports/" + fileName).getFile();
 			FileSystemResource fileSystem = new FileSystemResource(file);
 			helper.addAttachment(fileSystem.getFilename(), fileSystem);
@@ -68,7 +80,7 @@ public class MailServiceImpl implements MailService {
 		String response = "";
 		try {
 			File file = resourceLoader.getResource("/WEB-INF/reports/" + fileName+".pdf").getFile();
-			if(file.exists()){
+			if(null != file && file.exists()){
 				boolean status = file.delete();
 				if(status){
 					response = "Success";

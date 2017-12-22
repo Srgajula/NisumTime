@@ -4,9 +4,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	$scope.empName = myFactory.getEmpName();
 	$scope.empEmailId = myFactory.getEmpEmailId();
 	$scope.role = myFactory.getEmpRole();
-	
-	$scope.startDate = "";
-	$scope.endDate = "";
+	$scope.avgLoginHrs = "";
 	$scope.searchId="";
 	$scope.pageTitle = "";
 	
@@ -26,10 +24,10 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	$scope.toDate = today;
 
 	$scope.gridOptions = {
-		paginationPageSizes : [ 5, 10, 20, 30, 40, 50],
-		paginationPageSize : 5,
+		paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
+		paginationPageSize : 10,
 	    pageNumber: 1,
-		pageSize:5,
+		pageSize:10,
 		columnDefs : [ 
 				{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true},
 				{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
@@ -42,10 +40,8 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		    gridApi.core.on.rowsRendered($scope, function(gridApi) {
 		    	var length = gridApi.grid.renderContainers.body.visibleRowCache.length;
 		    	if(length > 0){
-		    		var firstRow = gridApi.grid.renderContainers.body.visibleRowCache[0].entity;
-			    	var lastRow = gridApi.grid.renderContainers.body.visibleRowCache[length-1].entity;
-			    	$scope.startDate = firstRow.dateOfLogin;
-			    	$scope.endDate = lastRow.dateOfLogin;
+		    		//Need to make this value dynamic
+		    		$scope.avgLoginHrs = "07:55 Hrs";
 		    	}
 		    });
 		}
@@ -59,8 +55,6 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	}
 	
 	$scope.refreshPage = function(){
-		$scope.startDate = "";
-		$scope.endDate = "";
 		$scope.searchId="";
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
@@ -186,7 +180,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		$mdDialog.show($mdDialog.alert().parent(
 				angular.element(document.querySelector('#popupContainer')))
 				.clickOutsideToClose(true).textContent(message).ariaLabel(
-						'Alert Dialog').ok('Got it!'));
+						'Alert Dialog').ok('Ok'));
 	}
 	
 	function getFormattedDate(date){
@@ -199,8 +193,6 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	
 	function setFieldsEmpty(){
 		$scope.searchId="";
-		$scope.startDate = "";
-		$scope.endDate = "";
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];

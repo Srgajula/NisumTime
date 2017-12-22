@@ -1,9 +1,9 @@
-<md-dialog aria-label="Role Template" style="width:470px;height:380px;">
+<md-dialog aria-label="Role Template" style="width:520px;height:440px;">
 <form ng-cloak name="myForm">
 	<md-toolbar>
 	<div class="md-toolbar-tools"
 		style="background: cadetblue;">
-		<h2>{{templateTitle}} Role</h2>
+		<h2>{{templateTitle}} Employee</h2>
 		<span flex></span>
 		<md-button class="md-icon-button" ng-click="cancel()"> <i
 			class="fa fa-times fa-2x"
@@ -23,6 +23,9 @@
 			<md-select ng-model="empRole" md-selected-text="getSelectedRole()">
 			<md-optgroup label="roles"> <md-option ng-value="role"
 				ng-repeat="role in roles">{{role}}</md-option> </md-optgroup> </md-select>
+			<md-select ng-model="empShift" md-selected-text="getSelectedShift()">
+			<md-optgroup label="shifts"> <md-option ng-value="shift"
+				ng-repeat="shift in shifts">{{shift}}</md-option> </md-optgroup> </md-select>
 			<div role="alert">
 				<span class="error" style="color: red;">{{alertMsg}}</span>
 			</div>

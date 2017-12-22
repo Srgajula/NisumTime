@@ -3,21 +3,19 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
 	$scope.empEmailId = myFactory.getEmpEmailId();
-	$scope.startDate = "";
-	$scope.endDate = "";
+	$scope.avgLoginHrs = "";
 	// Date picker related code
 	var today = new Date();
 	var priorDt = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
-	//today = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000);
 	$scope.maxDate = today;
 	$scope.fromDate = priorDt;
 	$scope.toDate = today;
 	
 	$scope.gridOptions = {
-		paginationPageSizes : [ 5, 10, 20, 30, 40, 50],
-		paginationPageSize : 5,
+		paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
+		paginationPageSize : 10,
 	    pageNumber: 1,
-		pageSize:5,
+		pageSize:10,
 		columnDefs : [ 
 				{field : 'dateOfLogin',displayName: 'Date', enableColumnMenu: true, enableSorting: true},
 				{field : 'firstLogin',displayName: 'Login Time', enableColumnMenu: false, enableSorting: false}, 
@@ -28,10 +26,8 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 		    gridApi.core.on.rowsRendered($scope, function(gridApi) {
 		    	var length = gridApi.grid.renderContainers.body.visibleRowCache.length;
 		    	if(length > 0){
-		    		var firstRow = gridApi.grid.renderContainers.body.visibleRowCache[0].entity;
-			    	var lastRow = gridApi.grid.renderContainers.body.visibleRowCache[length-1].entity;
-			    	$scope.startDate = firstRow.dateOfLogin;
-			    	$scope.endDate = lastRow.dateOfLogin;
+		    		//Need to make this value dynamic
+		    		$scope.avgLoginHrs = "07:55 Hrs";
 		    	}
 		    });
 		}
@@ -99,7 +95,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 		$mdDialog.show($mdDialog.alert().parent(
 				angular.element(document.querySelector('#popupContainer')))
 				.clickOutsideToClose(true).textContent(message).ariaLabel(
-						'Alert Dialog').ok('Got it!'));
+						'Alert Dialog').ok('Ok'));
 	}
 	
 	function treatAsUTC(date) {
