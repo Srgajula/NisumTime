@@ -2,13 +2,13 @@ package com.nisum.mytime.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +56,8 @@ public class EmployeeDataService {
 	private Connection connection = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
+	private Date currentDay;
+	private Date nextCurrentDay;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -73,9 +76,6 @@ public class EmployeeDataService {
 
 	@Value("${mytime.remote.directory}")
 	private String remoteFilesDirectory;
-
-	@Value("${mytime.attendance.dayWise}")
-	private Boolean dayWise;
 
 	@Autowired
 	private EmployeeAttendanceRepo employeeLoginsRepo;
@@ -166,16 +166,31 @@ public class EmployeeDataService {
 				Calendar calendar = new GregorianCalendar();
 				int month = (calendar.get(Calendar.MONTH)) + 1;
 				int year = calendar.get(Calendar.YEAR);
+				int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 				String dbURL = MyTimeUtils.driverUrl + file.getCanonicalPath();
 				MyTimeLogger.getInstance().info(dbURL);
 				connection = DbConnection.getDBConnection(dbURL);
 				statement = connection.createStatement();
 
+				Calendar calendar1 = Calendar.getInstance();
+				calendar1.set(year, (month - 1), day - 1, 6, 00, 00);
+				Date currentDayDate = calendar1.getTime();
+
+				Calendar calendar2 = Calendar.getInstance();
+				calendar2.set(year, (month - 1), day, 6, 00, 00);
+				Date nextDayDate = calendar2.getTime();
+
 				queryMonthDecider.append(MyTimeUtils.QUERY);
 				queryMonthDecider.append(month);
 				queryMonthDecider.append(MyTimeUtils.UNDER_SCORE);
 				queryMonthDecider.append(year);
+				queryMonthDecider.append(" WHERE LogDate between '");
+				queryMonthDecider.append(MyTimeUtils.df.format(currentDayDate) + "'");
+				queryMonthDecider.append(" AND '");
+				queryMonthDecider.append(MyTimeUtils.df.format(nextDayDate) + "'");
+
+				MyTimeLogger.getInstance().info(queryMonthDecider.toString());
 
 				resultSet = statement.executeQuery(queryMonthDecider.toString());
 				while (resultSet.next()) {
@@ -221,27 +236,33 @@ public class EmployeeDataService {
 		return result;
 	}
 
-	private File fetchRemoteFilesAndCopyToLocal() throws IOException {
+	private File fetchRemoteFilesAndCopyToLocal() throws MyTimeException {
 		File Finalfile = null;
-		if (Boolean.TRUE.equals(isRemoteFileTransfer)) {
-			SmbFile[] smbFiles = new SmbFile(remotePath).listFiles();
-			for (SmbFile file : smbFiles) {
-				if (file.getCanonicalPath().contains(mdbFile)) {
-					Finalfile = new File(localFileDirectory + file.getName());
-					try (InputStream in = file.getInputStream();
-							FileOutputStream out = new FileOutputStream(Finalfile)) {
-						IOUtils.copy(in, out);
+		try {
+			if (Boolean.TRUE.equals(isRemoteFileTransfer)) {
+				SmbFile[] smbFiles = new SmbFile(remotePath).listFiles();
+				for (SmbFile file : smbFiles) {
+					if (file.getCanonicalPath().contains(mdbFile)) {
+						Finalfile = new File(localFileDirectory + file.getName());
+						try (InputStream in = file.getInputStream();
+								FileOutputStream out = new FileOutputStream(Finalfile)) {
+							IOUtils.copy(in, out);
+						}
+					}
+				}
+			} else {
+				File dir = new File(remoteFilesDirectory);
+				for (File file : dir.listFiles()) {
+					if (file.getCanonicalPath().contains(mdbFile)) {
+						Finalfile = new File(file.getCanonicalPath());
 					}
 				}
 			}
-		} else {
-			File dir = new File(remoteFilesDirectory);
-			for (File file : dir.listFiles()) {
-				if (file.getCanonicalPath().contains(mdbFile)) {
-					Finalfile = new File(file.getCanonicalPath());
-				}
-			}
+		} catch (Exception e) {
+			MyTimeLogger.getInstance().error(e.getMessage());
+			throw new MyTimeException(e.getMessage());
 		}
+
 		return Finalfile;
 	}
 
@@ -260,7 +281,7 @@ public class EmployeeDataService {
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)
-			throws ParseException {
+			throws MyTimeException {
 		boolean first = true;
 		List<String> dates = new ArrayList<>();
 		List<String> firstAndLastLoginDates = new ArrayList<>();
@@ -268,80 +289,105 @@ public class EmployeeDataService {
 		Collections.sort(loginsData, new DateCompare());
 		int count = 0;
 		String employeeId = loginsData.get(0).getEmployeeId();
-		for (EmpLoginData empLoginData : loginsData) {
-			count++;
-			if (first) {
-				firstLoginAndLastRecordAdding(empLoginData, dates);
-				firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
-				internalEmpMap.put(dateOnly, empLoginData);
-				first = false;
-			} else {
-				empDatestr = empLoginData.getFirstLogin();
-				Date dt = MyTimeUtils.df.parse(empDatestr);
-				String timeOnly = MyTimeUtils.tdf.format(dt);
-				String nextDate = MyTimeUtils.dfmt.format(dt);
-				if (dateOnly.equals(nextDate)) {
-					dates.add(timeOnly);
-					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
-					if (count == loginsData.size()) {
-						addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly,
-								internalEmpMap);
-						internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
-						empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
-					}
-				} else {
-					EmpLoginData empLoginData1 = internalEmpMap.get(dateOnly);
-					addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, dateOnly, internalEmpMap);
-					internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
-					empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
-					firstLoginAndLastRecordAdding(empLoginData, dates);
-					firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
+		try {
+			for (EmpLoginData empLoginData : loginsData) {
+				count++;
+				if (first) {
+					firstLoginAndLastRecordAdding(empLoginData, dates, firstAndLastLoginDates);
 					internalEmpMap.put(dateOnly, empLoginData);
-					if (count == loginsData.size()) {
-						addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, dateOnly,
-								internalEmpMap);
+					first = false;
+				} else {
+					empDatestr = empLoginData.getFirstLogin();
+					Date dt = MyTimeUtils.df.parse(empDatestr);
+					String timeOnly = MyTimeUtils.tdf.format(dt);
+					if (dt.after(currentDay) && dt.before(nextCurrentDay)) {
+						dates.add(timeOnly);
+						firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
+						if (count == loginsData.size()) {
+							addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, internalEmpMap);
+							internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
+							empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
+						}
+					} else {
+						EmpLoginData empLoginData1 = internalEmpMap.get(dateOnly);
+						addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, internalEmpMap);
 						internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
 						empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
+						firstLoginAndLastRecordAdding(empLoginData, dates, firstAndLastLoginDates);
+						internalEmpMap.put(dateOnly, empLoginData);
+						if (count == loginsData.size()) {
+							addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, internalEmpMap);
+							internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
+							empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
+						}
 					}
 				}
 			}
+		} catch (ParseException e) {
+			MyTimeLogger.getInstance().error(e.getMessage());
+			throw new MyTimeException(e.getMessage());
 		}
 	}
 
-	private void firstLoginAndLastRecordAdding(EmpLoginData empLoginData, List<String> dates) throws ParseException {
-		empDatestr = empLoginData.getFirstLogin();
-		Date dt = MyTimeUtils.df.parse(empDatestr);
-		String timeOnly = MyTimeUtils.tdf.format(dt);
-		dateOnly = MyTimeUtils.dfmt.format(dt);
-		empLoginData.setDateOfLogin(dateOnly);
-		dates.add(timeOnly);
+	private void firstLoginAndLastRecordAdding(EmpLoginData empLoginData, List<String> dates,
+			List<String> firstAndLastLoginDates) throws MyTimeException {
+		try {
+			empDatestr = empLoginData.getFirstLogin();
+			Date dt;
+			dt = MyTimeUtils.df.parse(empDatestr);
+			String timeOnly = MyTimeUtils.tdf.format(dt);
+			dateOnly = MyTimeUtils.dfmt.format(dt);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(dt);
+			calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+					6, 00, 00);
+			currentDay = calendar.getTime();
+			nextCurrentDay = DateUtils.addHours(currentDay, 24);
+			if (dt.after(currentDay) && dt.before(nextCurrentDay)) {
+				empLoginData.setDateOfLogin(dateOnly);
+				dates.add(timeOnly);
+				firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
+			}
+		} catch (ParseException e) {
+			MyTimeLogger.getInstance().error(e.getMessage());
+			throw new MyTimeException(e.getMessage());
+		}
 	}
 
 	private EmpLoginData addingEmpDatesBasedonLogins(EmpLoginData empLoginData, List<String> dates,
-			List<String> firstAndLastLoginDates, String dateOnly, Map<String, EmpLoginData> empMap)
-			throws ParseException {
+			List<String> firstAndLastLoginDates, Map<String, EmpLoginData> empMap) throws MyTimeException {
 		String roundingMinutes = null;
-		String min = dates.get(0);
-		String max = dates.get(dates.size() - 1);
-		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-		Date maxDate = format.parse(max);
-		Date minDate = format.parse(min);
-		empLoginData.setFirstLogin(min);
-		empLoginData.setLastLogout(max);
-		long diffHours = (maxDate.getTime() - minDate.getTime());
-		int seconds = ((int) diffHours) / 1000;
-		int hours = seconds / 3600;
-		int minutes = (seconds % 3600) / 60;
-		if (minutes < 10) {
-			roundingMinutes = MyTimeUtils.ZERO + minutes;
-			empLoginData.setTotalLoginTime(hours + MyTimeUtils.COLON + roundingMinutes);
-		} else {
-			empLoginData.setTotalLoginTime(hours + MyTimeUtils.COLON + minutes);
+		try {
+			if (!dates.isEmpty()) {
+				String min = dates.get(0);
+				String max = dates.get(dates.size() - 1);
+				empLoginData.setFirstLogin(min);
+				empLoginData.setLastLogout(max);
+				dates.clear();
+			}
+			if (!firstAndLastLoginDates.isEmpty()) {
+				DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+				Date calMinDt = (Date) formatter.parse(firstAndLastLoginDates.get(0));
+				Date calMaxDt = (Date) formatter.parse(firstAndLastLoginDates.get(firstAndLastLoginDates.size() - 1));
+
+				long calDtDiffHours = (calMaxDt.getTime() - calMinDt.getTime());
+				int seconds = ((int) calDtDiffHours) / 1000;
+				int hours = seconds / 3600;
+				int minutes = (seconds % 3600) / 60;
+				if (minutes < 10) {
+					roundingMinutes = MyTimeUtils.ZERO + minutes;
+					empLoginData.setTotalLoginTime(hours + MyTimeUtils.COLON + roundingMinutes);
+				} else {
+					empLoginData.setTotalLoginTime(hours + MyTimeUtils.COLON + minutes);
+				}
+				firstAndLastLoginDates.clear();
+			}
+			empLoginData.setDateOfLogin(dateOnly);
+			empMap.put(dateOnly, empLoginData);
+		} catch (Exception e) {
+			MyTimeLogger.getInstance().error(e.getMessage());
+			throw new MyTimeException(e.getMessage());
 		}
-		empLoginData.setDateOfLogin(dateOnly);
-		empMap.put(dateOnly, empLoginData);
-		dates.clear();
-		firstAndLastLoginDates.clear();
 		return empLoginData;
 	}
 
@@ -351,16 +397,8 @@ public class EmployeeDataService {
 		Iterator<EmpLoginData> iter = loginsData.iterator();
 		while (iter.hasNext()) {
 			EmpLoginData empLoginData1 = iter.next();
-			if (dayWise) {
-				Date dt = MyTimeUtils.df.parse(empLoginData1.getFirstLogin());
-				dateOnly = MyTimeUtils.dfmt.format(dt);
-				if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId()) && todayDate.equals(dateOnly)) {
-					singleEmpLogindata.add(empLoginData1);
-				}
-			} else {
-				if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId())) {
-					singleEmpLogindata.add(empLoginData1);
-				}
+			if (empLoginData.getEmployeeId().equals(empLoginData1.getEmployeeId())) {
+				singleEmpLogindata.add(empLoginData1);
 			}
 		}
 		map.put(empLoginData.getEmployeeId(), singleEmpLogindata);
