@@ -51,6 +51,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
+		$scope.isVisible = false;
 		$scope.setPageDefaults();
 	};
 	
@@ -196,6 +197,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
+		$scope.isVisible = false;
 	}
 	
 	function treatAsUTC(date) {
