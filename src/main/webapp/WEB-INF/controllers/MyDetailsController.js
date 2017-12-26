@@ -21,16 +21,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 				{field : 'firstLogin',displayName: 'Login Time', enableColumnMenu: false, enableSorting: false}, 
 				{field : 'lastLogout',displayName: 'Logout Time', enableColumnMenu: false, enableSorting: false}, 
 				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)', enableColumnMenu: false, enableSorting: false} 
-			],
-		onRegisterApi: function(gridApi) {
-		    gridApi.core.on.rowsRendered($scope, function(gridApi) {
-		    	var length = gridApi.grid.renderContainers.body.visibleRowCache.length;
-		    	if(length > 0){
-		    		//Need to make this value dynamic
-		    		$scope.avgLoginHrs = "07:55 Hrs";
-		    	}
-		    });
-		}
+			]
 	};
 	$scope.gridOptions.data = [];
 	
@@ -43,6 +34,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate?empId=" + empId + "&fromDate=" + fromDate + "&toDate=" +toDate
 	    }).then(function mySuccess(response) {
 	        $scope.gridOptions.data = response.data;
+	        $scope.avgLoginHrs = response.data[0].totalAvgTime + " Hrs";
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
 	    	$scope.gridOptions.data = [];

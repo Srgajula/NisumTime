@@ -5,6 +5,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	$scope.empEmailId = myFactory.getEmpEmailId();
 	$scope.role = myFactory.getEmpRole();
 	$scope.avgLoginHrs = "";
+	$scope.isVisible = false;
 	$scope.searchId="";
 	$scope.pageTitle = "";
 	
@@ -35,16 +36,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 				{field : 'firstLogin',displayName: 'Login Time', enableColumnMenu: false,enableSorting: false}, 
 				{field : 'lastLogout',displayName: 'Logout Time', enableColumnMenu: false, enableSorting: false}, 
 				{field : 'totalLoginTime',displayName: 'Total Hours(HH:MM)', enableColumnMenu: false, enableSorting: false} 
-			],
-		onRegisterApi: function(gridApi) {
-		    gridApi.core.on.rowsRendered($scope, function(gridApi) {
-		    	var length = gridApi.grid.renderContainers.body.visibleRowCache.length;
-		    	if(length > 0){
-		    		//Need to make this value dynamic
-		    		$scope.avgLoginHrs = "07:55 Hrs";
-		    	}
-		    });
-		}
+			]
 	};
 	$scope.gridOptions.data = [];
 	
@@ -123,7 +115,15 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	    		showAlert('No data available');
 	    		setFieldsEmpty();
 	    	}else{
-	    		$scope.gridOptions.data = response.data;
+	    		if(empId == 0){
+	    			$scope.isVisible = false;
+	    			$scope.gridOptions.data = response.data;
+	    		}else{
+	    			$scope.isVisible = true;
+	    			$scope.avgLoginHrs = response.data[0].totalAvgTime +" Hrs";
+	    			$scope.gridOptions.data = response.data;
+	    		}
+	    		
 	    	}
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");

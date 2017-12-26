@@ -126,7 +126,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('Role assigned successfully');
+		    	if(result == "Add") showAlert('Role assigned successfully');
 		    	else if(result == "Update") showAlert('Role updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
 		    	else showAlert('Role assigning/updation failed!!!');
@@ -179,7 +179,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		$scope.alertMsg = "";
 		$scope.isDisabled = false;
 		$scope.result = "";
-		if(dataToPass.action == "Assign"){
+		if(dataToPass.action == "Add"){
 			$scope.empId = "";
 			$scope.empName = "";
 			$scope.empRole;
@@ -195,7 +195,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			$scope.isDisabled = true;
 		}
 		$scope.roles = ["HR","Manager","Employee"];
-		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 PM)"];
+		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
 		$scope.getSelectedRole = function(){
 			if ($scope.empRole !== undefined) {
 				return $scope.empRole;
@@ -276,6 +276,9 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			}else if(searchId != "" && !checkRoleEmpIdRange(searchId)){
 				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
 				document.getElementById('empId').focus();
+			}else if(searchId != "" && checkRoleExistence(searchId) && $scope.templateTitle == "Add"){
+				$scope.alertMsg = 'Employee ID is already assigned a role';
+				document.getElementById('empId').focus();
 			}else if(empName == ""){
 				$scope.alertMsg = "Employee Name is mandatory";
 				document.getElementById('empName').focus();
@@ -303,7 +306,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		function updateGrid(action, record){
 			if($scope.alertMsg == ""){
 				if($scope.result == "Success"){
-					if(action == "Assign"){
+					if(action == "Add"){
 						gridOptionsData.push(record);
 					}else if(action == "Update"){
 						var existingRecord = getRowEntity($scope.empId);
@@ -320,7 +323,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		
 		function addOrUpdateRole(record, action){
 			var urlRequest  = "";
-			if(action == "Assign"){
+			if(action == "Add"){
 				urlRequest = appConfig.appUri+ "user/assignEmployeeRole";
 			}else if(action == "Update"){
 				urlRequest = appConfig.appUri+ "user/updateEmployeeRole";

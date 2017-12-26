@@ -58,12 +58,7 @@ public class PdfReportGenerator {
 			docWriter = PdfWriter.getInstance(doc, new FileOutputStream(file.getPath()));
 			setPdfDocumentProperties(doc);
 			doc.open();
-			if (employeeId == 0) {
-				preparePdfDocumentForAllEmployees(doc, empLoginDatas);
-			} else {
-				preparePdfDocument(doc, empLoginDatas);
-			}
-
+			preparePdfDocument(doc, empLoginDatas, employeeId);
 		} catch (Exception dex) {
 			MyTimeLogger.getInstance()
 					.error("DocumentException while generating {} " + pdfFilename + "\n" + dex.getMessage());
@@ -88,27 +83,34 @@ public class PdfReportGenerator {
 		doc.setPageSize(PageSize.A4);
 	}
 
-	private void preparePdfDocument(Document doc, List<EmpLoginData> empLoginDatas) throws DocumentException {
+	private void preparePdfDocument(Document doc, List<EmpLoginData> empLoginDatas, long employeeId) throws DocumentException {
 		boolean isFirst = true;
 		Paragraph paragraph = new Paragraph();
 		Paragraph paragraph1 = new Paragraph();
-
-		float[] columnWidths = { 1f, 1f, 1f, 1f };
-		PdfPTable table = new PdfPTable(columnWidths);
-		table.setWidthPercentage(100f);
-
-		prepareTableHeader(table, "Single");
+		float[] columnWidths = null;
+		PdfPTable table = null;
+		if(employeeId == 0){
+			columnWidths = new float[]{ 1f, 1f, 1f, 1f, 1f, 1f  };
+			table = new PdfPTable(columnWidths);
+			table.setWidthPercentage(100f);
+			prepareTableHeader(table, "All");
+		}else{
+			columnWidths = new float[]{ 1f, 1f, 1f, 1f};
+			table = new PdfPTable(columnWidths);
+			table.setWidthPercentage(100f);
+			prepareTableHeader(table, "Single");
+		}
 
 		for (EmpLoginData data : empLoginDatas) {
-			if (isFirst) {
+			if (isFirst && employeeId != 0) {
 				Anchor anchorTarget = new Anchor(
 						"Employee Id : " + data.getEmployeeId() + "\nEmployee Name : " + data.getEmployeeName());
 				isFirst = false;
 				paragraph1.add(anchorTarget);
 			}
 
-			prepareTableRow(table, data, "Single");
-
+			if(employeeId == 0) prepareTableRow(table, data, "All");
+			else prepareTableRow(table, data, "Single");
 		}
 
 		paragraph.add(table);
@@ -117,59 +119,12 @@ public class PdfReportGenerator {
 		doc.add(paragraph);
 	}
 
-	private void preparePdfDocumentForAllEmployees(Document doc, List<EmpLoginData> empLoginDatas)
-			throws DocumentException {
-		boolean isFirst = true;
-		String empId = "";
-		Paragraph paragraph = null;
-		Paragraph paragraph1 = null;
-		float[] columnWidths = { 1f, 1f, 1f, 1f, 1f };
-		PdfPTable table = null;
-		for (EmpLoginData data : empLoginDatas) {
-			if (isFirst && !empId.equals(data.getEmployeeId())) {
-				paragraph = new Paragraph();
-				paragraph1 = new Paragraph();
-				Anchor anchorTarget = new Anchor(
-						"Employee Id : " + data.getEmployeeId() + "\nEmployee Name : " + data.getEmployeeName());
-				isFirst = false;
-				paragraph1.add(anchorTarget);
-				table = new PdfPTable(columnWidths);
-				table.setWidthPercentage(100f);
-				prepareTableHeader(table, "All");
-				prepareTableRow(table, data, "All");
-				doc.add(paragraph1);
-			} else if (!isFirst && empId.equals(data.getEmployeeId())) {
-				prepareTableRow(table, data, "All");
-			} else {
-				paragraph.add(table);
-				paragraph.setSpacingBefore(1);
-				paragraph.setSpacingAfter(1);
-				doc.add(paragraph);
-				paragraph = new Paragraph();
-				paragraph1 = new Paragraph();
-				Anchor anchorTarget = new Anchor(
-						"Employee Id : " + data.getEmployeeId() + "\nEmployee Name : " + data.getEmployeeName());
-				isFirst = false;
-				paragraph1.add(anchorTarget);
-				table = new PdfPTable(columnWidths);
-				table.setWidthPercentage(100f);
-				prepareTableHeader(table, "All");
-				prepareTableRow(table, data, "All");
-				doc.add(paragraph1);
-			}
-			empId = data.getEmployeeId();
-		}
-		paragraph.add(table);
-		paragraph.setSpacingBefore(1);
-		paragraph.setSpacingAfter(1);
-		doc.add(paragraph);
-	}
-
 	private void prepareTableHeader(PdfPTable table, String tableFor) {
 
 		Font bfBold12 = new Font(FontFamily.TIMES_ROMAN, 12, Font.BOLD, new BaseColor(0, 0, 0));
 		if ("All".equals(tableFor)) {
 			insertCell(table, "ID ", Element.ALIGN_CENTER, 1, bfBold12);
+			insertCell(table, "Name ", Element.ALIGN_CENTER, 1, bfBold12);
 		}
 		insertCell(table, "Date ", Element.ALIGN_CENTER, 1, bfBold12);
 		insertCell(table, "Login Time", Element.ALIGN_CENTER, 1, bfBold12);
@@ -182,12 +137,13 @@ public class PdfReportGenerator {
 	private void prepareTableRow(PdfPTable table, EmpLoginData data, String tableFor) {
 		Font bf12 = new Font(FontFamily.TIMES_ROMAN, 12);
 		if ("All".equals(tableFor)) {
-			insertCell(table, data.getEmployeeId(), Element.ALIGN_CENTER, 1, bf12);
+			insertCell(table, (data.getEmployeeId() == null? "" : data.getEmployeeId()), Element.ALIGN_CENTER, 1, bf12);
+			insertCell(table, (data.getEmployeeName() == null? "" : data.getEmployeeName()), Element.ALIGN_CENTER, 1, bf12);
 		}
-		insertCell(table, data.getDateOfLogin(), Element.ALIGN_CENTER, 1, bf12);
-		insertCell(table, data.getFirstLogin(), Element.ALIGN_CENTER, 1, bf12);
-		insertCell(table, data.getLastLogout(), Element.ALIGN_CENTER, 1, bf12);
-		insertCell(table, data.getTotalLoginTime(), Element.ALIGN_CENTER, 1, bf12);
+		insertCell(table, (data.getDateOfLogin() == null? "" : data.getDateOfLogin()), Element.ALIGN_CENTER, 1, bf12);
+		insertCell(table, (data.getFirstLogin() == null? "" : data.getFirstLogin()), Element.ALIGN_CENTER, 1, bf12);
+		insertCell(table, (data.getLastLogout() == null? "" : data.getLastLogout()), Element.ALIGN_CENTER, 1, bf12);
+		insertCell(table, (data.getTotalLoginTime() == null? "" : data.getTotalLoginTime()), Element.ALIGN_CENTER, 1, bf12);
 	}
 
 	private void insertCell(PdfPTable table, String text, int align, int colspan, Font font) {
