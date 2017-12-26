@@ -1,6 +1,7 @@
 package com.nisum.mytime.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate)
+	public Map<List<EmpLoginData>, String> employeeLoginsBasedOnDate(long id, String fromDate, String toDate)
 			throws MyTimeException {
 		return employeeDataBaseService.fetchEmployeeLoginsBasedOnDates(id, fromDate, toDate);
 	}

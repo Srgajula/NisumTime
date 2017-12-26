@@ -1,6 +1,7 @@
 package com.nisum.mytime.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,17 +25,16 @@ public class AttendanceController {
 	private UserService userService;
 
 	@RequestMapping(value = "employeeLoginsBasedOnDate", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EmpLoginData>> employeeLoginsBasedOnDate(@RequestParam("empId") long id,
+	public ResponseEntity<Map<List<EmpLoginData>, String>> employeeLoginsBasedOnDate(@RequestParam("empId") long id,
 			@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) throws MyTimeException {
-		List<EmpLoginData> message = userService.employeeLoginsBasedOnDate(id, fromDate, toDate);
+		Map<List<EmpLoginData>, String> message = userService.employeeLoginsBasedOnDate(id, fromDate, toDate);
 		return new ResponseEntity<>(message, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "generatePdfReport/{id}/{fromDate}/{toDate}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> generatePdfReport(@PathVariable("id") long id,
-			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate)
-			throws MyTimeException {
-		String result= userService.generatePdfReport(id, fromDate, toDate);
+			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate) throws MyTimeException {
+		String result = userService.generatePdfReport(id, fromDate, toDate);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 

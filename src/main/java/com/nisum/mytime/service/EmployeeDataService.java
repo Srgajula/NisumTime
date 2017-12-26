@@ -29,14 +29,12 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.nisum.mytime.configuration.DbConnection;
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.DateCompare;
@@ -56,8 +54,9 @@ public class EmployeeDataService {
 	private Connection connection = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
-	private Date currentDay;
-	private Date nextCurrentDay;
+	private Date currentDay = null;
+	private Date nextCurrentDay = null;
+	private DBCursor cursor = null;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -266,18 +265,44 @@ public class EmployeeDataService {
 		return Finalfile;
 	}
 
-	public List<EmpLoginData> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate, String toDate)
-			throws MyTimeException {
-		Query query = null;
-		if (employeeId == 0) {
-			query = new Query(Criteria.where(MyTimeUtils.DATE_OF_LOGIN).gte(fromDate).lte(toDate));
-		} else {
-			query = new Query(Criteria.where(MyTimeUtils.ID).gte(employeeId + MyTimeUtils.HYPHEN + fromDate)
-					.lte(employeeId + MyTimeUtils.HYPHEN + toDate));
+	public Map<List<EmpLoginData>, String> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate,
+			String toDate) throws MyTimeException {
+		long start_ms = System.currentTimeMillis();
+
+		float countHours = 0;
+		float countMin = 0;
+		List<EmpLoginData> listOfEmpLoginData = new ArrayList<>();
+		Map<List<EmpLoginData>, String> map = new HashMap<>();
+
+		BasicDBObject gtQuery = new BasicDBObject();
+		gtQuery.put("_id",
+				new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
+		cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
+		while (cursor.hasNext()) {
+			DBObject dbObject = cursor.next();
+			EmpLoginData empLoginData = new EmpLoginData();
+			empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
+			empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
+			empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
+			empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
+			empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
+			empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
+			String[] s = empLoginData.getTotalLoginTime().split(":");
+			countHours = countHours + (Integer.valueOf(s[0]));
+			countMin = countMin + (Integer.valueOf(s[1]));
+
+			listOfEmpLoginData.add(empLoginData);
 		}
-		query.with(new Sort(new Order(Direction.ASC, MyTimeUtils.EMPLOYEE_ID),
-				new Order(Direction.DESC, MyTimeUtils.DATE_OF_LOGIN)));
-		return mongoTemplate.find(query, EmpLoginData.class);
+
+		float totalAvgTime = (float) (Math
+				.round((countHours / listOfEmpLoginData.size() + countMin / (listOfEmpLoginData.size() * 60)) * 100.0)
+				/ 100.0);
+
+		MyTimeLogger.getInstance().info(" Total Time Taken for " + (System.currentTimeMillis() - start_ms));
+
+		map.put(listOfEmpLoginData, String.valueOf(totalAvgTime).replace(".", ":"));
+
+		return map;
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)

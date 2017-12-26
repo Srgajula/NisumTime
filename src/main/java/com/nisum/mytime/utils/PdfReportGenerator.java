@@ -3,6 +3,8 @@ package com.nisum.mytime.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -35,22 +37,27 @@ public class PdfReportGenerator {
 	private EmployeeDataService employeeDataBaseService;
 
 	public String generateEmployeeReport(long employeeId, String startDate, String endDate) throws MyTimeException {
-
+		List<EmpLoginData> list = null;
 		String fileName = employeeId + "_" + startDate + "_" + endDate + ".pdf";
-		List<EmpLoginData> empLoginDetails = getEmployeeData(employeeId, startDate, endDate);
-		if(empLoginDetails.isEmpty()){
+		Map<List<EmpLoginData>, String> empLoginDetails = getEmployeeData(employeeId, startDate, endDate);
+		if (empLoginDetails.isEmpty()) {
 			return "No data available";
-		}else{
-			return createPDF(fileName, empLoginDetails, employeeId);
+		} else {
+			for (Entry<List<EmpLoginData>, String> entry : empLoginDetails.entrySet()) {
+				list = entry.getKey();
+			}
+			return createPDF(fileName, list, employeeId);
 		}
 	}
 
-	private List<EmpLoginData> getEmployeeData(long employeeId, String fromDate, String toDate) throws MyTimeException {
+	private Map<List<EmpLoginData>, String> getEmployeeData(long employeeId, String fromDate, String toDate)
+			throws MyTimeException {
 
 		return employeeDataBaseService.fetchEmployeeLoginsBasedOnDates(employeeId, fromDate, toDate);
 	}
 
-	private String createPDF(String pdfFilename, List<EmpLoginData> empLoginDatas, long employeeId) throws MyTimeException {
+	private String createPDF(String pdfFilename, List<EmpLoginData> empLoginDatas, long employeeId)
+			throws MyTimeException {
 		Document doc = new Document();
 		PdfWriter docWriter = null;
 		try {
@@ -58,12 +65,12 @@ public class PdfReportGenerator {
 			docWriter = PdfWriter.getInstance(doc, new FileOutputStream(file.getPath()));
 			setPdfDocumentProperties(doc);
 			doc.open();
-			if(employeeId == 0){
+			if (employeeId == 0) {
 				preparePdfDocumentForAllEmployees(doc, empLoginDatas);
-			}else{
+			} else {
 				preparePdfDocument(doc, empLoginDatas);
 			}
-			
+
 		} catch (Exception dex) {
 			MyTimeLogger.getInstance()
 					.error("DocumentException while generating {} " + pdfFilename + "\n" + dex.getMessage());
@@ -78,7 +85,7 @@ public class PdfReportGenerator {
 		}
 		return pdfFilename;
 	}
-	
+
 	private void setPdfDocumentProperties(Document doc) {
 		doc.addAuthor("Nisum Consulting Pvt. Ltd.");
 		doc.addCreationDate();
@@ -87,7 +94,7 @@ public class PdfReportGenerator {
 		doc.addTitle("Nisum MyTime Employee Report");
 		doc.setPageSize(PageSize.A4);
 	}
-	
+
 	private void preparePdfDocument(Document doc, List<EmpLoginData> empLoginDatas) throws DocumentException {
 		boolean isFirst = true;
 		Paragraph paragraph = new Paragraph();
@@ -116,9 +123,9 @@ public class PdfReportGenerator {
 		paragraph.setSpacingBefore(1);
 		doc.add(paragraph);
 	}
-	
 
-	private void preparePdfDocumentForAllEmployees(Document doc, List<EmpLoginData> empLoginDatas) throws DocumentException {
+	private void preparePdfDocumentForAllEmployees(Document doc, List<EmpLoginData> empLoginDatas)
+			throws DocumentException {
 		boolean isFirst = true;
 		String empId = "";
 		Paragraph paragraph = null;
@@ -138,9 +145,9 @@ public class PdfReportGenerator {
 				prepareTableHeader(table, "All");
 				prepareTableRow(table, data, "All");
 				doc.add(paragraph1);
-			}else if(!isFirst && empId.equals(data.getEmployeeId())){
+			} else if (!isFirst && empId.equals(data.getEmployeeId())) {
 				prepareTableRow(table, data, "All");
-			}else{
+			} else {
 				paragraph.add(table);
 				paragraph.setSpacingBefore(1);
 				paragraph.setSpacingAfter(1);
@@ -168,7 +175,7 @@ public class PdfReportGenerator {
 	private void prepareTableHeader(PdfPTable table, String tableFor) {
 
 		Font bfBold12 = new Font(FontFamily.TIMES_ROMAN, 12, Font.BOLD, new BaseColor(0, 0, 0));
-		if("All".equals(tableFor)){
+		if ("All".equals(tableFor)) {
 			insertCell(table, "ID ", Element.ALIGN_CENTER, 1, bfBold12);
 		}
 		insertCell(table, "Date ", Element.ALIGN_CENTER, 1, bfBold12);
@@ -181,7 +188,7 @@ public class PdfReportGenerator {
 
 	private void prepareTableRow(PdfPTable table, EmpLoginData data, String tableFor) {
 		Font bf12 = new Font(FontFamily.TIMES_ROMAN, 12);
-		if("All".equals(tableFor)){
+		if ("All".equals(tableFor)) {
 			insertCell(table, data.getEmployeeId(), Element.ALIGN_CENTER, 1, bf12);
 		}
 		insertCell(table, data.getDateOfLogin(), Element.ALIGN_CENTER, 1, bf12);
@@ -189,7 +196,7 @@ public class PdfReportGenerator {
 		insertCell(table, data.getLastLogout(), Element.ALIGN_CENTER, 1, bf12);
 		insertCell(table, data.getTotalLoginTime(), Element.ALIGN_CENTER, 1, bf12);
 	}
-	
+
 	private void insertCell(PdfPTable table, String text, int align, int colspan, Font font) {
 
 		PdfPCell cell = new PdfPCell(new Phrase(text.trim(), font));
