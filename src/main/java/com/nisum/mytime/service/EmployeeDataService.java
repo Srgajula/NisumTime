@@ -273,10 +273,15 @@ public class EmployeeDataService {
 		float countMin = 0;
 		List<EmpLoginData> listOfEmpLoginData = new ArrayList<>();
 
-		BasicDBObject gtQuery = new BasicDBObject();
-		gtQuery.put("_id",
-				new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
-		cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
+		if (employeeId > 0) {
+			BasicDBObject gtQuery = new BasicDBObject();
+			gtQuery.put("_id",
+					new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
+			cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
+		} else {
+			return employeeLoginsRepo.findAll();
+		}
+
 		while (cursor.hasNext()) {
 			DBObject dbObject = cursor.next();
 			EmpLoginData empLoginData = new EmpLoginData();
