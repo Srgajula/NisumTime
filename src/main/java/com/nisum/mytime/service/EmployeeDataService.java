@@ -29,7 +29,12 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.BasicDBObject;
@@ -268,44 +273,53 @@ public class EmployeeDataService {
 	public List<EmpLoginData> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate, String toDate)
 			throws MyTimeException {
 		long start_ms = System.currentTimeMillis();
-
+		Query query = null;
 		float countHours = 0;
 		float countMin = 0;
 		List<EmpLoginData> listOfEmpLoginData = new ArrayList<>();
 
 		if (employeeId > 0) {
+
 			BasicDBObject gtQuery = new BasicDBObject();
 			gtQuery.put("_id",
 					new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
-			cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery);
-		} else {
-			return employeeLoginsRepo.findAll();
+
+			cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery)
+					.sort(new BasicDBObject(MyTimeUtils.DATE_OF_LOGIN, -1));
+
+			while (cursor.hasNext()) {
+				DBObject dbObject = cursor.next();
+				EmpLoginData empLoginData = new EmpLoginData();
+				empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
+				empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
+				empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
+				empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
+				empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
+				empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
+				String[] s = empLoginData.getTotalLoginTime().split(":");
+				countHours = countHours + (Integer.valueOf(s[0]));
+				countMin = countMin + (Integer.valueOf(s[1]));
+
+				listOfEmpLoginData.add(empLoginData);
+
+			}
+			float totalAvgTime = (float) (countHours + (countMin / 60)) / listOfEmpLoginData.size();
+
+			listOfEmpLoginData.get(0).setTotalAvgTime(String.valueOf(totalAvgTime).replace(".", ":"));
+
+			MyTimeLogger.getInstance()
+					.info(" Total Time Taken for with id based " + (System.currentTimeMillis() - start_ms));
+
+		} else if (employeeId == 0) {
+			query = new Query(Criteria.where(MyTimeUtils.DATE_OF_LOGIN).gte(fromDate).lte(toDate));
+			query.with(new Sort(new Order(Direction.ASC, MyTimeUtils.EMPLOYEE_ID),
+					new Order(Direction.DESC, MyTimeUtils.DATE_OF_LOGIN)));
+
+			MyTimeLogger.getInstance().info(" Total Time Taken for with fecth All Employee based on Dates :::  "
+					+ (System.currentTimeMillis() - start_ms));
+
+			listOfEmpLoginData = mongoTemplate.find(query, EmpLoginData.class);
 		}
-
-		while (cursor.hasNext()) {
-			DBObject dbObject = cursor.next();
-			EmpLoginData empLoginData = new EmpLoginData();
-			empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
-			empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
-			empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
-			empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
-			empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
-			empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
-			String[] s = empLoginData.getTotalLoginTime().split(":");
-			countHours = countHours + (Integer.valueOf(s[0]));
-			countMin = countMin + (Integer.valueOf(s[1]));
-
-			listOfEmpLoginData.add(empLoginData);
-		}
-
-		float totalAvgTime = (float) (Math
-				.round((countHours / listOfEmpLoginData.size() + countMin / (listOfEmpLoginData.size() * 60)) * 100.0)
-				/ 100.0);
-
-		MyTimeLogger.getInstance().info(" Total Time Taken for " + (System.currentTimeMillis() - start_ms));
-
-		listOfEmpLoginData.get(0).setTotalAvgTime(String.valueOf(totalAvgTime).replace(".", ":"));
-
 		return listOfEmpLoginData;
 	}
 
