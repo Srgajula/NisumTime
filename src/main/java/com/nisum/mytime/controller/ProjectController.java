@@ -1,8 +1,6 @@
 package com.nisum.mytime.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,14 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmployeeRoles;
+import com.nisum.mytime.model.Project;
+import com.nisum.mytime.service.ProjectService;
 import com.nisum.mytime.service.UserService;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/project")
+public class ProjectController {
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ProjectService projectService;
 
 	@RequestMapping(value = "/employee", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> getEmployeeRole(@RequestParam("emailId") String emailId)
@@ -38,10 +40,10 @@ public class UserController {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/assignEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EmployeeRoles> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
-		EmployeeRoles employeeRole = userService.assigingEmployeeRole(employeeRoles);
-		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
+	@RequestMapping(value = "/addProject", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Project> addProject(@RequestBody Project employeeRoles) throws MyTimeException {
+		Project project = projectService.addProject(employeeRoles);
+		return new ResponseEntity<>(project, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/updateEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -56,10 +58,10 @@ public class UserController {
 		return new ResponseEntity<>("Success", HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/getUserRoles", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EmployeeRoles>> getUserRoles() throws MyTimeException {
-		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
-		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	@RequestMapping(value = "/getProjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Project>> getProjects() throws MyTimeException {
+		List<Project> projects = projectService.getProjects();
+		return new ResponseEntity<>(projects, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getEmployeeRoleData", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,17 +70,5 @@ public class UserController {
 		EmployeeRoles employeesRole = userService.getEmployeesRoleData(empId);
 		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
 	}
-	@RequestMapping(value = "/getManagers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<EmployeeRoles>> getManagers() throws MyTimeException {
-		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
-		/*List<EmployeeRoles> managers=new ArrayList<>();
-		for(EmployeeRoles emp:employeesRoles) {
-			if(emp.getRole().equalsIgnoreCase("Manager")) {
-				managers.add(emp)	;		}
-		}*/
-		List<EmployeeRoles> managers = employeesRoles.stream().filter(e -> e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
-		
-		return new ResponseEntity<>(managers, HttpStatus.OK);
-	}
-	
+
 }
