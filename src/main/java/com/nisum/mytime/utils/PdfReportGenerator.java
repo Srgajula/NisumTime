@@ -3,8 +3,6 @@ package com.nisum.mytime.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -37,21 +35,16 @@ public class PdfReportGenerator {
 	private EmployeeDataService employeeDataBaseService;
 
 	public String generateEmployeeReport(long employeeId, String startDate, String endDate) throws MyTimeException {
-		List<EmpLoginData> list = null;
 		String fileName = employeeId + "_" + startDate + "_" + endDate + ".pdf";
-		Map<List<EmpLoginData>, String> empLoginDetails = getEmployeeData(employeeId, startDate, endDate);
+		List<EmpLoginData> empLoginDetails = getEmployeeData(employeeId, startDate, endDate);
 		if (empLoginDetails.isEmpty()) {
 			return "No data available";
 		} else {
-			for (Entry<List<EmpLoginData>, String> entry : empLoginDetails.entrySet()) {
-				list = entry.getKey();
-			}
-			return createPDF(fileName, list, employeeId);
+			return createPDF(fileName, empLoginDetails, employeeId);
 		}
 	}
 
-	private Map<List<EmpLoginData>, String> getEmployeeData(long employeeId, String fromDate, String toDate)
-			throws MyTimeException {
+	private List<EmpLoginData> getEmployeeData(long employeeId, String fromDate, String toDate) throws MyTimeException {
 
 		return employeeDataBaseService.fetchEmployeeLoginsBasedOnDates(employeeId, fromDate, toDate);
 	}

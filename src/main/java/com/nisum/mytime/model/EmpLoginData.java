@@ -33,5 +33,6 @@ public class EmpLoginData implements Serializable {
 	private String lastLogout;
 	private String totalLoginTime;
 	private String direction;
+	private String totalAvgTime;
 
 }

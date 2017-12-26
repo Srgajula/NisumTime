@@ -265,14 +265,13 @@ public class EmployeeDataService {
 		return Finalfile;
 	}
 
-	public Map<List<EmpLoginData>, String> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate,
-			String toDate) throws MyTimeException {
+	public List<EmpLoginData> fetchEmployeeLoginsBasedOnDates(long employeeId, String fromDate, String toDate)
+			throws MyTimeException {
 		long start_ms = System.currentTimeMillis();
 
 		float countHours = 0;
 		float countMin = 0;
 		List<EmpLoginData> listOfEmpLoginData = new ArrayList<>();
-		Map<List<EmpLoginData>, String> map = new HashMap<>();
 
 		BasicDBObject gtQuery = new BasicDBObject();
 		gtQuery.put("_id",
@@ -300,9 +299,9 @@ public class EmployeeDataService {
 
 		MyTimeLogger.getInstance().info(" Total Time Taken for " + (System.currentTimeMillis() - start_ms));
 
-		map.put(listOfEmpLoginData, String.valueOf(totalAvgTime).replace(".", ":"));
+		listOfEmpLoginData.get(0).setTotalAvgTime(String.valueOf(totalAvgTime).replace(".", ":"));
 
-		return map;
+		return listOfEmpLoginData;
 	}
 
 	private void calculatingEachEmployeeLoginsByDate(List<EmpLoginData> loginsData, Map<String, EmpLoginData> empMap)
