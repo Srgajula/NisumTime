@@ -1,6 +1,5 @@
 package com.nisum.mytime.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,13 +70,7 @@ public class UserController {
 	@RequestMapping(value = "/getManagers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeRoles>> getManagers() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
-		/*List<EmployeeRoles> managers=new ArrayList<>();
-		for(EmployeeRoles emp:employeesRoles) {
-			if(emp.getRole().equalsIgnoreCase("Manager")) {
-				managers.add(emp)	;		}
-		}*/
 		List<EmployeeRoles> managers = employeesRoles.stream().filter(e -> e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
-		
 		return new ResponseEntity<>(managers, HttpStatus.OK);
 	}
 	
