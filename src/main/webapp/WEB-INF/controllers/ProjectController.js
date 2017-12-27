@@ -149,21 +149,21 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 	
 	$scope.deleteRole = function(row){
 	    var confirm = $mdDialog.confirm()
-	          .textContent('Are you sure want to delete the role?')
+	          .textContent('Are you sure you want to delete this project?')
 	          .ok('Ok')
 	          .cancel('Cancel');
 	    $mdDialog.show(confirm).then(function() {
-			deleteUserRole(row.entity.employeeId);
+			deleteUserRole(row.entity.projectId);
 			$timeout(function(){updateGridAfterDelete(row)},500);
 	    }, function() {
 	    	console.log("Cancelled dialog");
 	    });
 	};
 	
-	function deleteUserRole(empId){
+	function deleteUserRole(projectId){
 		var req = {
 				method : 'DELETE',
-				url : appConfig.appUri+ "user/deleteEmployee?empId="+empId
+				url : appConfig.appUri+ "project/deleteProject?projectId="+projectId
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result = response.data;
@@ -191,7 +191,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.isDisabled = false;
 		$scope.result = "";
 		$scope.managerDetails = managers;
-		$scope.managerModel;
+		
 		if(dataToPass.action == "Assign"){
 			$scope.projectId = "";
 			$scope.projectName = "";
@@ -204,7 +204,8 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.managerId = dataToPass.managerId;
 		$scope.managerName = dataToPass.managerName;
 	  //  $scope.managerModel = dataToPass.managerModel;
-			
+	 	$scope.managerModel.managerId=$scope.managerId;
+		$scope.managerModel.employeeName=$scope.managerName;
 			$scope.isDisabled = true;
 	}
 		//$scope.roles = ["HR","Manager","Employee"];

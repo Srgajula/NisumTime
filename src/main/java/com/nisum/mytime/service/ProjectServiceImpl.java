@@ -24,102 +24,106 @@ import com.nisum.mytime.utils.PdfReportGenerator;
 @Service("projectService")
 public class ProjectServiceImpl implements ProjectService {
 
-	@Autowired
-	private EmployeeAttendanceRepo employeeLoginsRepo;
+    @Autowired
+    private EmployeeAttendanceRepo employeeLoginsRepo;
 
-	@Autowired
-	private EmployeeRolesRepo employeeRolesRepo;
-	
-	@Autowired
-	private ProjectRepo projectRepo;
-	@Autowired
-	private ProjectTeamMatesRepo projectTeamMatesRepo;
-	
-	@Autowired
-	private EmployeeDataService employeeDataBaseService;
+    @Autowired
+    private EmployeeRolesRepo employeeRolesRepo;
 
-	@Autowired
-	private PdfReportGenerator pdfReportGenerator;
+    @Autowired
+    private ProjectRepo projectRepo;
+    @Autowired
+    private ProjectTeamMatesRepo projectTeamMatesRepo;
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+    @Autowired
+    private EmployeeDataService employeeDataBaseService;
 
+    @Autowired
+    private PdfReportGenerator pdfReportGenerator;
 
-	@Override
-	public Boolean fetchEmployeesData() throws MyTimeException {
-		Boolean result = false;
-		List<EmpLoginData> listOfEmpLoginData = employeeDataBaseService.fetchEmployeesData();
-		employeeLoginsRepo.save(listOfEmpLoginData);
-		result = true;
-		return result;
-	}
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
-	@Override
-	public List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate)
-			throws MyTimeException {
-		return employeeDataBaseService.fetchEmployeeLoginsBasedOnDates(id, fromDate, toDate);
-	}
+    @Override
+    public Boolean fetchEmployeesData() throws MyTimeException {
+        Boolean result = false;
+        List<EmpLoginData> listOfEmpLoginData = employeeDataBaseService
+                .fetchEmployeesData();
+        employeeLoginsRepo.save(listOfEmpLoginData);
+        result = true;
+        return result;
+    }
 
-	@Override
-	public String generatePdfReport(long id, String fromDate, String toDate) throws MyTimeException {
-		return pdfReportGenerator.generateEmployeeReport(id, fromDate, toDate);
-	}
+    @Override
+    public List<EmpLoginData> employeeLoginsBasedOnDate(long id,
+            String fromDate, String toDate) throws MyTimeException {
+        return employeeDataBaseService.fetchEmployeeLoginsBasedOnDates(id,
+                fromDate, toDate);
+    }
 
-	@Override
-	public List<Project> getProjects() throws MyTimeException {
-		return projectRepo.findAll();
-	}
+    @Override
+    public String generatePdfReport(long id, String fromDate, String toDate)
+            throws MyTimeException {
+        return pdfReportGenerator.generateEmployeeReport(id, fromDate, toDate);
+    }
 
-	@Override
-	public Project addProject(Project project) throws MyTimeException {
-		return projectRepo.save(project);
-	}
+    @Override
+    public List<Project> getProjects() throws MyTimeException {
+        return projectRepo.findAll();
+    }
 
-	@Override
-	public EmployeeRoles getEmployeesRole(String emailId) {
-		return employeeRolesRepo.findByEmailId(emailId);
+    @Override
+    public Project addProject(Project project) throws MyTimeException {
+        return projectRepo.save(project);
+    }
 
-	}
+    @Override
+    public EmployeeRoles getEmployeesRole(String emailId) {
+        return employeeRolesRepo.findByEmailId(emailId);
 
-	@Override
-	public void deleteProject(String projectId) {
-		Project project = projectRepo.findByProjectId(projectId);
-		projectRepo.delete(project);
-	}
+    }
 
-	@Override
-	public Project updateProject(Project project) {
-		Query query = new Query(Criteria.where("projectId").is(project.getProjectId()));
-		Update update = new Update();
-		update.set("projectName", project.getProjectName());
-		update.set("managerId", project.getManagerId());
-		update.set("employeeIds", project.getEmployeeIds());
-		FindAndModifyOptions options = new FindAndModifyOptions();
-		options.returnNew(true);
-		options.upsert(true);
-		return mongoTemplate.findAndModify(query, update, options, Project.class);
-	}
+    @Override
+    public void deleteProject(String projectId) {
+        Project project = projectRepo.findByProjectId(projectId);
+        projectRepo.delete(project);
+    }
 
-	@Override
-	public EmployeeRoles getEmployeesRoleData(String employeeId) {
-		return employeeRolesRepo.findByEmployeeId(employeeId);
-	}
+    @Override
+    public Project updateProject(Project project) {
+        Query query = new Query(
+                Criteria.where("projectId").is(project.getProjectId()));
+        Update update = new Update();
+        update.set("managerId", project.getManagerId());
+        update.set("managerName", project.getManagerName());
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        options.returnNew(true);
+        options.upsert(true);
+        return mongoTemplate.findAndModify(query, update, options,
+                Project.class);
+    }
 
-	@Override
-	public List<ProjectTeamMate> getTeamDetails(String empId) {
-		return projectTeamMatesRepo.findByManagerId(empId);
-		
-	}
+    @Override
+    public EmployeeRoles getEmployeesRoleData(String employeeId) {
+        return employeeRolesRepo.findByEmployeeId(employeeId);
+    }
 
-	@Override
-	public ProjectTeamMate addProject(ProjectTeamMate project) throws MyTimeException {
-		return projectTeamMatesRepo.save(project);
-	}
+    @Override
+    public List<ProjectTeamMate> getTeamDetails(String empId) {
+        return projectTeamMatesRepo.findByManagerId(empId);
 
-	@Override
-	public List<Project> getProjects(String managerId) throws MyTimeException {
-		 return   projectRepo.findByManagerId(managerId);
-		
-	}
+    }
+
+    @Override
+    public ProjectTeamMate addProject(ProjectTeamMate project)
+            throws MyTimeException {
+        return projectTeamMatesRepo.save(project);
+    }
+
+    @Override
+    public List<Project> getProjects(String managerId) throws MyTimeException {
+        return projectRepo.findByManagerId(managerId);
+
+    }
 
 }
