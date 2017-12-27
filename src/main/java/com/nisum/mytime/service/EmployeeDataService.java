@@ -186,10 +186,10 @@ public class EmployeeDataService {
 				queryMonthDecider.append(month);
 				queryMonthDecider.append(MyTimeUtils.UNDER_SCORE);
 				queryMonthDecider.append(year);
-				queryMonthDecider.append(" WHERE LogDate between '");
-				queryMonthDecider.append(MyTimeUtils.df.format(currentDayDate) + "'");
-				queryMonthDecider.append(" AND '");
-				queryMonthDecider.append(MyTimeUtils.df.format(nextDayDate) + "'");
+				queryMonthDecider.append(MyTimeUtils.WHERE_COND);
+				queryMonthDecider.append(MyTimeUtils.df.format(currentDayDate) + MyTimeUtils.SINGLE_QUOTE);
+				queryMonthDecider.append(MyTimeUtils.AND_COND);
+				queryMonthDecider.append(MyTimeUtils.df.format(nextDayDate) + MyTimeUtils.SINGLE_QUOTE);
 
 				MyTimeLogger.getInstance().info(queryMonthDecider.toString());
 
@@ -281,18 +281,18 @@ public class EmployeeDataService {
 				gtQuery.put(MyTimeUtils.ID, new BasicDBObject("$gte", employeeId + MyTimeUtils.HYPHEN + fromDate)
 						.append("$lte", employeeId + MyTimeUtils.HYPHEN + toDate));
 
-				cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery)
+				cursor = mongoTemplate.getCollection(MyTimeUtils.EMPLOYEE_COLLECTION).find(gtQuery)
 						.sort(new BasicDBObject(MyTimeUtils.DATE_OF_LOGIN, -1));
 
 				while (cursor.hasNext()) {
 					DBObject dbObject = cursor.next();
 					EmpLoginData empLoginData = new EmpLoginData();
-					empLoginData.setEmployeeId(dbObject.get("employeeId").toString());
-					empLoginData.setEmployeeName(dbObject.get("employeeName").toString());
-					empLoginData.setDateOfLogin(dbObject.get("dateOfLogin").toString());
-					empLoginData.setFirstLogin(dbObject.get("firstLogin").toString());
-					empLoginData.setLastLogout(dbObject.get("lastLogout").toString());
-					empLoginData.setTotalLoginTime(dbObject.get("totalLoginTime").toString());
+					empLoginData.setEmployeeId(dbObject.get(MyTimeUtils.EMPLOYEE_ID).toString());
+					empLoginData.setEmployeeName(dbObject.get(MyTimeUtils.EMPLOYEE_NAME).toString());
+					empLoginData.setDateOfLogin(dbObject.get(MyTimeUtils.DATE_OF_LOGIN).toString());
+					empLoginData.setFirstLogin(dbObject.get(MyTimeUtils.FIRST_LOGIN).toString());
+					empLoginData.setLastLogout(dbObject.get(MyTimeUtils.LAST_LOGOUT).toString());
+					empLoginData.setTotalLoginTime(dbObject.get(MyTimeUtils.TOTAL_LOGIN_TIME).toString());
 					Date d = MyTimeUtils.tdf.parse(empLoginData.getTotalLoginTime());
 					countHours += d.getTime();
 					listOfEmpLoginData.add(empLoginData);
@@ -303,21 +303,21 @@ public class EmployeeDataService {
 							.setTotalAvgTime(MyTimeUtils.tdf.format(countHours / listOfEmpLoginData.size()));
 				}
 
-				MyTimeLogger.getInstance()
-						.info(" Total Time Taken for with id based " + (System.currentTimeMillis() - start_ms));
+				MyTimeLogger.getInstance().info(" Time Taken fecth Employee data based on Dates ::: "
+						+ (System.currentTimeMillis() - start_ms));
 
 			} else if (employeeId == 0) {
 				query = new Query(Criteria.where(MyTimeUtils.DATE_OF_LOGIN).gte(fromDate).lte(toDate));
 				query.with(new Sort(new Order(Direction.ASC, MyTimeUtils.EMPLOYEE_ID),
 						new Order(Direction.DESC, MyTimeUtils.DATE_OF_LOGIN)));
 
-				MyTimeLogger.getInstance().info(" Total Time Taken for with fecth All Employee based on Dates :::  "
-						+ (System.currentTimeMillis() - start_ms));
-
 				listOfEmpLoginData = mongoTemplate.find(query, EmpLoginData.class);
+
+				MyTimeLogger.getInstance().info("Time Taken for with fecth All Employees data based on Dates :::  "
+						+ (System.currentTimeMillis() - start_ms));
 			}
 		} catch (Exception e) {
-			MyTimeLogger.getInstance().info(e.getMessage());
+			MyTimeLogger.getInstance().error(e.getMessage());
 			throw new MyTimeException(e.getMessage());
 		}
 

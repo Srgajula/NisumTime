@@ -1,5 +1,6 @@
 package com.nisum.mytime.controller;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.AttendenceData;
 import com.nisum.mytime.model.EmpLoginData;
+import com.nisum.mytime.service.AttendanceService;
 import com.nisum.mytime.service.UserService;
 
 @RestController
@@ -22,6 +25,9 @@ public class AttendanceController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private AttendanceService attendanceService;
 
 	@RequestMapping(value = "employeeLoginsBasedOnDate", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmpLoginData>> employeeLoginsBasedOnDate(@RequestParam("empId") long id,
@@ -35,6 +41,13 @@ public class AttendanceController {
 			@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate) throws MyTimeException {
 		String result = userService.generatePdfReport(id, fromDate, toDate);
 		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "attendanciesReport/{reportDate}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AttendenceData>> attendanciesReport(@PathVariable("reportDate") String reportDate)
+			throws MyTimeException, SQLException {
+		List<AttendenceData> lisOfAttendenceData = attendanceService.getAttendanciesReport(reportDate);
+		return new ResponseEntity<>(lisOfAttendenceData, HttpStatus.OK);
 	}
 
 }
