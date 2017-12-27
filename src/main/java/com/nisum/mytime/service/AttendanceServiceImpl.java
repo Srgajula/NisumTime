@@ -33,8 +33,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Value("${mytime.attendance.fileName}")
 	private String mdbFile;
 
-	@Value("${mytime.remote.directory}")
-	private String remoteFilesDirectory;
+	@Value("${mytime.localFile.directory}")
+	private String localFileDirectory;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -57,7 +57,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		long start_ms = System.currentTimeMillis();
 
 		try {
-			File dir = new File(remoteFilesDirectory);
+			File dir = new File(localFileDirectory);
 			for (File file : dir.listFiles()) {
 				if (file.getCanonicalPath().contains(mdbFile)) {
 					finalfile = new File(file.getCanonicalPath());
