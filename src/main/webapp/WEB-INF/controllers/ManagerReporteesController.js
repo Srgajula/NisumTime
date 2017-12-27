@@ -1,4 +1,4 @@
-myApp.controller("employeesController", function($scope, $http, myFactory, $mdDialog, appConfig) {
+myApp.controller("reporteesController", function($scope, $http, myFactory, $mdDialog, appConfig) {
 	$scope.records = [];
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
@@ -6,11 +6,12 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	$scope.role = myFactory.getEmpRole();
 	$scope.avgLoginHrs = "";
 	$scope.isVisible = false;
-	$scope.searchId="";
+	$scope.reportees = [];
+	$scope.reporteeDetail;
 	
 	// Date picker related code
 	var today = new Date();
-	var priorDt = today;
+	var priorDt = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
 	
 	$scope.maxDate = today;
 	$scope.fromDate = priorDt;
@@ -32,79 +33,56 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	};
 	$scope.gridOptions.data = [];
 	
-	$scope.setPageDefaults = function(){
-		getData(0, getFormattedDate($scope.fromDate), getFormattedDate($scope.toDate), 'onload');
-	}
-	
 	$scope.refreshPage = function(){
-		$scope.searchId="";
+		$scope.reporteeDetail = undefined;
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
-		$scope.isVisible = false;
-		$scope.setPageDefaults();
+	};
+	
+	$scope.getReporteesDetails = function(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "projectTeam/getTeamDetails?employeeId=" + $scope.empId
+	    }).then(function mySuccess(response) {
+    			$scope.reportees = response.data;
+	    }, function myError(response) {
+	    	$scope.reportees = [];
+	    });
+	};
+	
+	$scope.getSelectedReportee = function(){
+		if ($scope.reporteeDetail !== undefined) {
+			return $scope.reporteeDetail.employeeName;
+		} else {
+			return "Select an Employee ID";
+		}
 	};
 	
 	$scope.getEmployeeData = function(type){
-		var searchId = $scope.searchId;
+		var searchId = $scope.reporteeDetail;
 		var fromDate = getFormattedDate($scope.fromDate);
 		var toDate = getFormattedDate($scope.toDate);
-		if(type == "blur"){
-			if(searchId != "" && isNaN(searchId)){
-				showAlert('Please enter only digits');
-				setFieldsEmpty();
-			}else if(searchId != "" && ((searchId.length >0 && searchId.length <5) || searchId.length>5)){
-				showAlert('Employee ID should be 5 digits');
-				setFieldsEmpty();
-			}else if(searchId != "" && !checkEmpIdRange(searchId)){
-				showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
-				setFieldsEmpty();
-			}else{
-				if(searchId == "") getData(0, fromDate, toDate, 'onblur');
-				else getData(searchId, fromDate, toDate, 'onblur');
-			}
-		}else if(type == "click"){
-			if(searchId == ""){
-				getData(0, fromDate, toDate, 'onclick');
-			}else if(searchId != "" && isNaN(searchId)){
-				showAlert('Please enter only digits');
-				setFieldsEmpty();
-			}else if(searchId != "" && !checkEmpIdRange(searchId)){
-				showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
-				setFieldsEmpty();
-			}else if(searchId != ""&& (searchId.length < 5 || searchId.length > 5)){
-				showAlert('Employee ID should be 5 digits');
-				setFieldsEmpty();
-			}else{
-				getData(searchId, fromDate, toDate, 'onclick');
-			}
+		if(searchId == undefined){
+			showAlert('Please select an Employee ID');
+			document.getElementById('reporteeDetail').focus();
+		}else{
+			getData(searchId.employeeId, fromDate, toDate);
 		}
 		
 	}
 	
-	function checkEmpIdRange(searchId){
-		return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
-	}
-	
-	function getData(empId, fromDate, toDate, type){
+	function getData(empId, fromDate, toDate){
 		$http({
 	        method : "GET",
 	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate?empId=" + empId + "&fromDate=" + fromDate + "&toDate=" +toDate
 	    }).then(function mySuccess(response) {
 	    	var recs = response.data;
-	    	if(recs.length == 0 && type == "onclick"){
+	    	if(recs.length == 0){
 	    		showAlert('No data available');
 	    		setFieldsEmpty();
 	    	}else{
-	    		if(empId == 0){
-	    			$scope.isVisible = false;
-	    			$scope.gridOptions.data = response.data;
-	    		}else{
-	    			$scope.isVisible = true;
-	    			$scope.avgLoginHrs = response.data[0].totalAvgTime +" Hrs";
-	    			$scope.gridOptions.data = response.data;
-	    		}
-	    		
+	    		$scope.gridOptions.data = response.data;
 	    	}
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
@@ -114,27 +92,20 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 
 	$scope.validateDates = function(dateValue, from) {
 		if(from == "FromDate"){
-			var toDat = $scope.toDate;
-			var difference = daysBetween(dateValue, toDat);
-			if(difference < 0 ){
-				showAlert('From Date should not be greater than To Date');
+			var toDt = $scope.toDate;
+			var diff = daysBetween(dateValue, toDt);
+			if(diff < 30 ){
+				showAlert('Date range should have minimum of 30 days difference');
 				$scope.fromDate = priorDt;
 				$scope.toDate = today;
+				setFieldsEmpty();
 			}else{
 				$scope.fromDate = dateValue;
-				$scope.toDate = toDat;
+				$scope.toDate = getCalculatedDate(dateValue, 'Add');
 			}
 		}else if(from == "ToDate"){
-			var fromDat = $scope.fromDate;
-			var differene = daysBetween(fromDat, dateValue);
-			if(differene < 0 ){
-				showAlert('To Date should not be less than From Date');
-				$scope.fromDate = priorDt;
-				$scope.toDate = today;
-			}else{
-				$scope.fromDate = fromDat;
-				$scope.toDate = dateValue;
-			}
+			$scope.toDate = dateValue;
+			$scope.fromDate = getCalculatedDate(dateValue, 'Substract');
 		}
 	};
 	
@@ -154,11 +125,10 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	}
 	
 	function setFieldsEmpty(){
-		$scope.searchId="";
+		$scope.reporteeDetail = undefined;
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
-		$scope.isVisible = false;
 	}
 	
 	function treatAsUTC(date) {
@@ -172,4 +142,13 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	    return Math.round((treatAsUTC(toDate) - treatAsUTC(fromDate)) / millisecondsPerDay);
 	}
 	
+	function getCalculatedDate(selectedDate, type){
+		var futureDt = null;
+		if(type == "Add"){
+			futureDt = new Date(selectedDate.getTime() + (30 * 24 * 60 * 60 * 1000));
+		}else {
+			futureDt = new Date(selectedDate.getTime() - (30 * 24 * 60 * 60 * 1000));
+		}
+		return futureDt;
+	}
 });
