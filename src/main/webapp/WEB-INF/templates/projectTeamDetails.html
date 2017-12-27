@@ -1,5 +1,5 @@
 
-<md-dialog aria-label="Team Details" style="width:920px;height:600px;">
+<md-dialog aria-label="Team Details" style="width:1000px;height:600px;">
 
 <form ng-cloak name="myForm">
 	<md-toolbar>
@@ -17,7 +17,20 @@
 	<div class="md-dialog-content">
 		<div class="form-group">
 		 	<div class="row col-lg-12" style="margin-left: 0px;">
-
+		 	<div class="row col-lg-12">
+			<div class="col-xs-4">
+				<p>
+					<b>Project Name:</b> {{projectName}}
+				</p>
+			</div>
+			<div class="col-xs-4" style="margin-left: 100px;">
+				<p>
+					<b>Manager Name:</b>&nbsp;&nbsp;&nbsp; {{managerName}}
+				</p>
+			</div>
+			
+		</div>
+		 	
 		<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination
 			class="myGrid">
 			<div class="watermark" ng-show="!gridOptions.data.length">No

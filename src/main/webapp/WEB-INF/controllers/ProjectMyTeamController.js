@@ -1,58 +1,71 @@
-myApp.controller("projectController",function($scope, myFactory, $mdDialog, $http, appConfig, $timeout){
+myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog, $http, appConfig, $timeout){
 	$scope.records = [];
 	$scope.empSearchId = "";
+	
 	$scope.parentData = {
-			"projectId": "",
-			"projectName": "",
+			"employeeId": "",
+			"employeeName": "",
+			"emailId":"",
+			"role": "",
+			"shift": "",
+			"projectId":"",
+			"projectName":"",
 			"managerId":"",
-			"managerName": "",
+			"managerName":"",
+			"experience":"",
+			"designation":"",
 			"action":""
 	};
-	
-	$scope.managers = [];
-	
-	var getCellTemplate = '<p class="col-lg-12"><i class="fa fa-book fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'View\')"></i>'+
-	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Update\')"></i>'+
+	$scope.employees = [];
+	$scope.projects = [];
+	var getCellTemplate = '<p class="col-lg-12"><i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Update\')"></i>'+
 	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-minus-circle fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Delete\')"></i></p>';
-
 	$scope.gridOptions = {
 		paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 		paginationPageSize : 10,
 	    pageNumber: 1,
 		pageSize:10,
 		columnDefs : [ 
-			{field : 'projectId',displayName: 'Project ID', enableColumnMenu: true, enableSorting: true, width:120},
-			{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
-			{field : 'managerId',displayName: 'Manager ID ', enableColumnMenu: false, enableSorting: false},
-			{field : 'managerName',displayName: 'Manager Name ', enableColumnMenu: false, enableSorting: false},
-			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:130} 
+			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true, width:120},
+			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
+			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
+			//{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false, width:100}, 
+			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false},
+			{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false}
+		//	{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
 		]
 	};
 	$scope.gridOptions.data = $scope.records;
 	
 	$scope.getRowData = function(row, action){
+		$scope.parentData.employeeId = row.entity.employeeId;
+		$scope.parentData.employeeName = row.entity.employeeName;
+		$scope.parentData.emailId = row.entity.emailId;
+		$scope.parentData.role = row.entity.role;
+		$scope.parentData.shift = row.entity.shift;
 		$scope.parentData.projectId = row.entity.projectId;
 		$scope.parentData.projectName = row.entity.projectName;
 		$scope.parentData.managerId = row.entity.managerId;
 		$scope.parentData.managerName = row.entity.managerName;
+		$scope.parentData.experience = row.entity.experience;
+		$scope.parentData.designation = row.entity.designation;
+		
 		if(action == "Update")
-			$scope.addProject(action, $scope.parentData);
+			$scope.updateEmployee(action, $scope.parentData);
 		else if(action == "Delete")
 			$scope.deleteRole(row);
-		else if(action == "View")
-			$scope.viewTeamDetails(action, $scope.parentData);
 	}
 	
 	$scope.refreshPage = function(){
 		$scope.empSearchId = "";
-		$scope.getProjects();
-		$scope.getManagerDetails();
+		$scope.getUserRoles();
+		$scope.getEmployeesToTeam();
 	}
 	
-	$scope.getProjects = function(){
+	$scope.getMyTeamDetails = function(){
 		$http({
 	        method : "GET",
-	        url : appConfig.appUri + "project/getProjects"
+	        url : appConfig.appUri + "/projectTeam/getMyTeamDetails?employeeId="+myFactory.getEmpId()
 	    }).then(function mySuccess(response) {
 	        $scope.gridOptions.data = response.data;
 	    }, function myError(response) {
@@ -60,17 +73,31 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 	    	$scope.gridOptions.data = [];
 	    });
 	};
-	$scope.getManagerDetails = function(){
+	$scope.getEmployeesToTeam = function(){
 		$http({
 	        method : "GET",
-	        url : appConfig.appUri + "/user/getManagers"
+	        url : appConfig.appUri + "/projectTeam/getEmployeesToTeam"
 	    }).then(function mySuccess(response) {
-	        $scope.managers=response.data;
+	        $scope.employees=response.data;
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
 	    	$scope.gridOptions.data = [];
 	    });
 	};
+	
+	$scope.getProjects = function(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "/projectTeam/getProjects?employeeId="+myFactory.getEmpId()
+	    }).then(function mySuccess(response) {
+	        $scope.projects = response.data;
+	    }, function myError(response) {
+	    	showAlert("Something went wrong while fetching data!!!");
+	    	$scope.gridOptions.data = [];
+	    });
+	};
+	
+	
 	$scope.validateEmpId = function(){
 		var searchId = $scope.empSearchId;
 		if(searchId !="" && isNaN(searchId)){
@@ -129,36 +156,36 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 						'Alert Dialog').ok('Ok'));
 	}
 	
-	$scope.addProject = function(action, userData){
+	$scope.assignRole = function(action, userData){
 		userData.action = action;
 		$mdDialog.show({
-		      controller: AddProjectController,
-		      templateUrl: 'templates/newProject.html',
+		      controller: AddRoleController,
+		      templateUrl: 'templates/newTeamMate.html',
 		      parent: angular.element(document.body),
 		      clickOutsideToClose:true,
-		      locals:{dataToPass: userData,gridOptionsData: $scope.gridOptions.data, managers: $scope.managers},
+		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees, projects: $scope.projects},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('Manager assigned successfully');
-		    	else if(result == "Update") showAlert('Manager updated successfully');
+		    	if(result == "Assign") showAlert('Role assigned successfully');
+		    	else if(result == "Update") showAlert('Role updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
-		    	else showAlert('Manager assigning/updation failed!!!');
+		    	else showAlert('Role assigning/updation failed!!!');
 		    });
 	};
-	$scope.viewTeamDetails = function(action, userData){
+	$scope.updateEmployee = function(action, userData){
 		userData.action = action;
 		$mdDialog.show({
-		      controller: AddProjectController,
-		      templateUrl: 'templates/projectTeamDetails.html',
+		      controller: AddRoleController,
+		      templateUrl: 'templates/UpdateTeamMate.html',
 		      parent: angular.element(document.body),
 		      clickOutsideToClose:true,
-		      locals:{dataToPass: userData,gridOptionsData: $scope.gridOptions.data, managers: $scope.managers},
+		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees, projects: $scope.projects},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('Manager assigned successfully');
-		    	else if(result == "Update") showAlert('Manager updated successfully');
+		    	if(result == "Assign") showAlert('Role assigned successfully');
+		    	else if(result == "Update") showAlert('Role updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
-		    	else showAlert('Manager assigning/updation failed!!!');
+		    	else showAlert('Role assigning/updation failed!!!');
 		    });
 	};
 	$scope.cancel = function() {
@@ -167,21 +194,21 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 	
 	$scope.deleteRole = function(row){
 	    var confirm = $mdDialog.confirm()
-	          .textContent('Are you sure you want to delete this project?')
+	          .textContent('Are you sure want to delete the role?')
 	          .ok('Ok')
 	          .cancel('Cancel');
 	    $mdDialog.show(confirm).then(function() {
-			deleteUserRole(row.entity.projectId);
+			deleteUserRole(row.entity.employeeId);
 			$timeout(function(){updateGridAfterDelete(row)},500);
 	    }, function() {
 	    	console.log("Cancelled dialog");
 	    });
 	};
 	
-	function deleteUserRole(projectId){
+	function deleteUserRole(empId){
 		var req = {
 				method : 'DELETE',
-				url : appConfig.appUri+ "project/deleteProject?projectId="+projectId
+				url : appConfig.appUri+ "user/deleteEmployee?empId="+empId
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result = response.data;
@@ -195,89 +222,69 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		if($scope.result == "Success" || $scope.result == ""){
 			var index = $scope.gridOptions.data.indexOf(row.entity);
 			$scope.gridOptions.data.splice(index, 1);
-			showAlert('Project deleted successfully');
+			showAlert('Role deleted successfully');
 		}else if($scope.result == "Error"){
 			showAlert('Something went wrong while deleting the role.')
 		}
     	
 	}
 	
-	
-	function AddProjectController($scope, $mdDialog, dataToPass,gridOptionsData, managers) {
+	function AddRoleController($scope, $mdDialog, dataToPass, gridOptionsData,employees,projects) {
 		$scope.templateTitle = dataToPass.action;
 		$scope.alertMsg = "";
 		$scope.isDisabled = false;
 		$scope.result = "";
-		$scope.managerDetails = managers;
-		
+		$scope.employeeList = employees;
+		$scope.projectList = projects;
+		$scope.employeeModel;
+		$scope.projectModel;
 		if(dataToPass.action == "Assign"){
-			$scope.projectId = "";
-			$scope.projectName = "";
-			$scope.managerId = "";
-			$scope.managerName = "";
+			$scope.empId = "";
+			$scope.empName = "";
+			$scope.empRole;
+			$scope.empShift;
+			$scope.empEmail = "";
 			$scope.isDisabled = false;
-	}else if(dataToPass.action == "Update"){
-		$scope.projectId = dataToPass.projectId;
-		$scope.projectName = dataToPass.projectName;
-		$scope.managerId = dataToPass.managerId;
-		$scope.managerName = dataToPass.managerName;
-	  //  $scope.managerModel = dataToPass.managerModel;
-	 	$scope.managerModel.managerId=$scope.managerId;
-		$scope.managerModel.employeeName=$scope.managerName;
+		}else if(dataToPass.action == "Update"){
+			$scope.empId = dataToPass.employeeId;
+			$scope.empName = dataToPass.employeeName;
+			$scope.empRole = dataToPass.role;
+			$scope.empShift = dataToPass.shift;
+			$scope.empEmail = dataToPass.emailId;
 			$scope.isDisabled = true;
-	}else if(dataToPass.action == "View"){
-		$scope.projectId = dataToPass.projectId;
-		$scope.projectName = dataToPass.projectName;
-		$scope.managerId = dataToPass.managerId;
-		$scope.managerName = dataToPass.managerName;
-	  //  $scope.managerModel = dataToPass.managerModel;
-		$scope.gridOptions = {
-				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
-				paginationPageSize : 10,
-			    pageNumber: 1,
-				pageSize:10,
-				columnDefs : [ 
-					{field : 'employeeId',displayName: 'Emp ID', enableColumnMenu: true, enableSorting: true, width:100},
-					{field : 'employeeName',displayName: 'Empl Name ', enableColumnMenu: false, enableSorting: false},
-					{field : 'emailId',displayName: 'Email Id ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'managerName',displayName: 'Manager ', enableColumnMenu: false, enableSorting: false},
-					{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:50},
-					{field : 'designation',displayName: 'Designation ', enableColumnMenu: false, enableSorting: false},
-					{field : 'billableStatus',displayName: 'Billability ', enableColumnMenu: false, enableSorting: false},
-				]
-			};
-			//$scope.gridOptions.data = $scope.records;
-			$scope.isDisabled = true;
-			$http({
-		        method : "GET",
-		        url : appConfig.appUri + "/projectTeam/getTeamDetails?employeeId="+$scope.managerId
-		    }).then(function mySuccess(response) {
-		        //$scope.teamdetails=response.data;
-		        //$scope.gridOptions.data.push(response.data);
-		    	$scope.gridOptions.data = response.data;
-		    }, function myError(response) {
-		    	showAlert("Something went wrong while fetching data!!!");
-		    	$scope.gridOptions.data = [];
-		    });
-	}
-		//$scope.roles = ["HR","Manager","Employee"];
-		//$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 PM)"];
-		$scope.getManagers = function(){
-			if ($scope.managerModel !== undefined) {
-				return $scope.managerModel.employeeName;
+		}
+		$scope.roles = ["HR","Manager","Employee"];
+		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 PM)"];
+		$scope.getSelectedRole = function(){
+			if ($scope.empRole !== undefined) {
+				return $scope.empRole;
 			} else {
-				return "Please select a manager";
+				return "Please select a role";
 			}
 		};
-		
-//		$scope.getSelectedShift = function(){
-//			if ($scope.empShift !== undefined) {
-//				return $scope.empShift;
-//			} else {
-//				return "Please select a shift";
-//			}
-//		};
+		$scope.getEmployeeSelected = function(){
+			if ($scope.employeeModel !== undefined) {
+				$scope.employee=$scope.employeeModel;
+				return $scope.employeeModel.employeeName;
+			} else {
+				return "Please select a employee";
+			}
+		};
+		$scope.getProjectSelected = function(){
+			if ($scope.projectModel !== undefined) {
+				$scope.project=$scope.projectModel;
+				return $scope.projectModel.projectName;
+			} else {
+				return "Please select a project";
+			}
+		};
+		$scope.getSelectedShift = function(){
+			if ($scope.empShift !== undefined) {
+				return $scope.empShift;
+			} else {
+				return "Please select a shift";
+			}
+		};
 		
 		$scope.validateEmpId = function(){
 			var searchId = $scope.empId;
@@ -332,23 +339,21 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		 }
 		
 		$scope.validateFields = function(){
-			var project = $scope.projectId;
-			var projectName = $scope.projectName;
-			var managerModel = $scope.managerModel;
 			
-			if(project == ""){
-				$scope.alertMsg = "Project ID is mandatory";
-				document.getElementById('projectId').focus();
-			}else if(projectName == ""){
-				$scope.alertMsg = "Project Name is mandatory";
-				document.getElementById('projectName').focus();
+			var employeeModel = $scope.employeeModel;
+			var projectModel = $scope.projectModel;
+			if(employeeModel == undefined){
+				$scope.alertMsg = "Please select a employee";
+			document.getElementById('selectEmp').focus();
+			}else if(projectModel == undefined){
+				$scope.alertMsg = "Please select a project";
+				document.getElementById('selectProject').focus();
 			}
-			else if(managerModel == undefined){
-				$scope.alertMsg = "Please select a manager";
-			}else{
+			else{
+				
 				$scope.alertMsg = "";
-				var record = {"projectId":$scope.projectId, "projectName": $scope.projectName, "managerId": $scope.managerModel.employeeId,  "managerName": $scope.managerModel.employeeName};
-				addOrUpdateProject(record, $scope.templateTitle);
+				var record = {"employeeId":employeeModel.employeeId, "employeeName":employeeModel.employeeName, "emailId": employeeModel.emailId, "role": employeeModel.role, "shift": employeeModel.shift,"projectId":projectModel.projectId,"projectName":projectModel.projectName,"managerId":myFactory.getEmpId(),"managerName":myFactory.getEmpName()};
+				addOrUpdateRole(record, $scope.templateTitle);
 				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}
 		};
@@ -356,14 +361,14 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.cancel = function() {
 		    $mdDialog.hide('Cancelled');
 		};
-
+		
 		function updateGrid(action, record){
 			if($scope.alertMsg == ""){
 				if($scope.result == "Success"){
 					if(action == "Assign"){
 						gridOptionsData.push(record);
 					}else if(action == "Update"){
-						var existingRecord = getRowEntity($scope.projectId);
+						var existingRecord = getRowEntity($scope.empId);
 						var index = gridOptionsData.indexOf(existingRecord);
 						gridOptionsData[index] = record;
 					}
@@ -375,13 +380,12 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 			}
 		}
 		
-		
-		function addOrUpdateProject(record, action){
+		function addOrUpdateRole(record, action){
 			var urlRequest  = "";
 			if(action == "Assign"){
-				urlRequest = appConfig.appUri+ "project/addProject";
+				urlRequest = appConfig.appUri+ "projectTeam/addEmployeeToTeam";
 			}else if(action == "Update"){
-				urlRequest = appConfig.appUri+ "project/updateProject";
+				urlRequest = appConfig.appUri+ "user/updateEmployeeRole";
 			}
 			var req = {
 				method : 'POST',
@@ -397,11 +401,11 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 				$scope.result = "Error";
 			});
 		}
-	
+		
 		function getRowEntity(empId){
 			for(var i=0;i<gridOptionsData.length;i++){
 				var record = gridOptionsData[i];
-				if(record.projectId == empId){
+				if(record.employeeId == empId){
 					return record;
 				}
 			}

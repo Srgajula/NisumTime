@@ -31,4 +31,6 @@ public interface ProjectService {
 	
 	ProjectTeamMate addProject(ProjectTeamMate project) throws MyTimeException;
 	List<Project> getProjects(String managerId) throws MyTimeException;
+	
+	List<ProjectTeamMate>  getMyTeamDetails(String empId);
 }

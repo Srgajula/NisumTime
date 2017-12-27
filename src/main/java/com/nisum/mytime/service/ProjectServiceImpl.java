@@ -1,5 +1,6 @@
 package com.nisum.mytime.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,5 +126,19 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepo.findByManagerId(managerId);
 
     }
+
+	@Override
+	public List<ProjectTeamMate> getMyTeamDetails(String empId) {
+		System.out.println("empId"+empId);
+		// TODO Auto-generated method stub
+		List<ProjectTeamMate> teamMates=new ArrayList<>();
+	List<ProjectTeamMate> empRecords=	projectTeamMatesRepo.findByEmployeeId(empId);
+	System.out.println("empRecords"+empRecords);
+	for(ProjectTeamMate pt:empRecords) {
+		System.out.println("pt.getProjectId()"+pt.getProjectId());
+			teamMates.addAll(projectTeamMatesRepo.findByProjectId(pt.getProjectId()));
+	}
+		return teamMates;
+	}
 
 }
