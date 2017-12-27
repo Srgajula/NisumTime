@@ -14,9 +14,11 @@ import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
+import com.nisum.mytime.model.ProjectTeamMate;
 import com.nisum.mytime.repository.EmployeeAttendanceRepo;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
 import com.nisum.mytime.repository.ProjectRepo;
+import com.nisum.mytime.repository.ProjectTeamMatesRepo;
 import com.nisum.mytime.utils.PdfReportGenerator;
 
 @Service("projectService")
@@ -30,7 +32,9 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired
 	private ProjectRepo projectRepo;
-
+	@Autowired
+	private ProjectTeamMatesRepo projectTeamMatesRepo;
+	
 	@Autowired
 	private EmployeeDataService employeeDataBaseService;
 
@@ -99,6 +103,23 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public EmployeeRoles getEmployeesRoleData(String employeeId) {
 		return employeeRolesRepo.findByEmployeeId(employeeId);
+	}
+
+	@Override
+	public List<ProjectTeamMate> getTeamDetails(String empId) {
+		return projectTeamMatesRepo.findByManagerId(empId);
+		
+	}
+
+	@Override
+	public ProjectTeamMate addProject(ProjectTeamMate project) throws MyTimeException {
+		return projectTeamMatesRepo.save(project);
+	}
+
+	@Override
+	public List<Project> getProjects(String managerId) throws MyTimeException {
+		 return   projectRepo.findByManagerId(managerId);
+		
 	}
 
 }

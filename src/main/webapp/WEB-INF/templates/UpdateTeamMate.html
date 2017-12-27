@@ -1,0 +1,40 @@
+<md-dialog aria-label="Role Template" style="width:520px;height:440px;">
+<form ng-cloak name="myForm">
+	<md-toolbar>
+	<div class="md-toolbar-tools"
+		style="background: cadetblue;">
+		<h2>{{templateTitle}} Employee </h2>
+		<span flex></span>
+		<md-button class="md-icon-button" ng-click="cancel()"> <i
+			class="fa fa-times fa-2x"
+			style="margin-top: 5px; font-size: 1.5em; float: left"></i> </md-button>
+	</div>
+	</md-toolbar>
+
+	<md-dialog-content>
+	<div class="md-dialog-content">
+		<div class="form-group">
+		     <output>Employee Name : {{employeeModel.employeeName}}</output>
+				<output>Employee Id : {{employeeModel.employeeId}}</output>
+				<output>Email Id : {{employeeModel.emailId}}</output>
+				<output>Role : {{employeeModel.role}}</output>
+			    <md-select ng-model="projectModel" md-selected-text="getProjectSelected()" id="selectProject">
+			    <md-optgroup label="Project"> <md-option ng-value="project"
+				ng-repeat="project in projectList">{{project.projectName}}</md-option> </md-optgroup> </md-select>
+		      <input type="text" class="form-control" id="experience" name="experience"
+				ng-model="experience" placeholder="Experience" /> <br>
+			<input type="text" class="form-control" id="designation" name="designation"
+				ng-model="designation" placeholder="Designation" /><br>
+			<div role="alert">
+				<span class="error" style="color: red;">{{alertMsg}}</span>
+			</div>
+		</div> 
+	</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row"> <md-button
+		class="md-raised" data-ng-click="validateFields()" style="width:120px;background: cadetblue;color:white;">
+	{{templateTitle}} </md-button> <md-button class="md-raised" ng-click="cancel()" style="width:120px;background: cadetblue;color:white;">
+	Cancel </md-button> </md-dialog-actions>
+</form>
+</md-dialog>

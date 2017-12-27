@@ -96,5 +96,5 @@ public class UserServiceImpl implements UserService {
 	public EmployeeRoles getEmployeesRoleData(String employeeId) {
 		return employeeRolesRepo.findByEmployeeId(employeeId);
 	}
-
+	
 }

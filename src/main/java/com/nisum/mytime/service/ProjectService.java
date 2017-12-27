@@ -6,6 +6,7 @@ import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
+import com.nisum.mytime.model.ProjectTeamMate;
 
 public interface ProjectService {
 
@@ -26,5 +27,8 @@ public interface ProjectService {
 	Project updateProject(Project project);
 
 	EmployeeRoles getEmployeesRoleData(String empId);
-
+	List<ProjectTeamMate>  getTeamDetails(String empId);
+	
+	ProjectTeamMate addProject(ProjectTeamMate project) throws MyTimeException;
+	List<Project> getProjects(String managerId) throws MyTimeException;
 }

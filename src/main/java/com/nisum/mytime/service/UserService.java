@@ -25,5 +25,4 @@ public interface UserService {
 	EmployeeRoles updateEmployeeRole(EmployeeRoles employeeRoles);
 
 	EmployeeRoles getEmployeesRoleData(String empId);
-
 }
