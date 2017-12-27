@@ -18,7 +18,7 @@ public class ReportsCleanUpScheduler {
 	@Autowired
 	ResourceLoader resourceLoader;
 	
-	@Scheduled(cron= "0 0/55 23 * * *")
+	@Scheduled(cron= "0 55 23 1/1 * *")
 	public boolean cleanReports(){
 		boolean flag = false;
 		try {

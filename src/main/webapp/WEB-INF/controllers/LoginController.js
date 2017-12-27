@@ -84,6 +84,17 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		$scope.empId = "";
 		$scope.empName = dataToPass.getName();
 		$scope.empEmail = dataToPass.getEmail();
+		$scope.empShift;
+		
+		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
+		
+		$scope.getSelectedShift = function(){
+			if ($scope.empShift !== undefined) {
+				return $scope.empShift;
+			} else {
+				return "Please select a shift";
+			}
+		};
 		
 		$scope.validateEmpId = function(){
 			var searchId = $scope.empId;
@@ -120,18 +131,25 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		$scope.validateFields = function(){
 			var searchId = $scope.empId;
 			var empName = $scope.empName;
+			var empShift = $scope.empShift;
 			if(searchId == ""){
 				$scope.alertMsg = "Employee ID is mandatory";
 				document.getElementById('empId').focus();
-			}else if(!checkEmpIdRange(searchId)){
+			}else if(searchId != "" && !checkEmpIdRange(searchId)){
 				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
+				document.getElementById('empId').focus();
+			}else if(searchId != "" && checkRoleExistence(searchId)){
+				$scope.alertMsg = 'Employee is already registered';
 				document.getElementById('empId').focus();
 			}else if(empName == ""){
 				$scope.alertMsg = "Employee Name is mandatory";
 				document.getElementById('empName').focus();
+			}else if(empShift == undefined){
+				$scope.alertMsg = "Please select a shift";
+				document.getElementById('empShift').focus();
 			}else{
 				$scope.alertMsg = "";
-				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": "Employee"};
+				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": "Employee", "shift": $scope.empShift};
 				addEmployee(record);
 			}
 		};
@@ -170,13 +188,13 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		if(role == "HR"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
-			menuItems.push({"menu" : "Reports","icon" : "fa fa-flag fa-2x","path" : "templates/reports.html"});
-			menuItems.push({"menu" : "Manage Employees","icon" : "fa fa-universal-access fa-2x","path" : "templates/roles.html"});
+			menuItems.push({"menu" : "Reports","icon" : "fa fa-pie-chart fa-2x","path" : "templates/reports.html"});
+			menuItems.push({"menu" : "Manage Employees","icon" : "fa fa-user-plus fa-2x","path" : "templates/roles.html"});
 			menuItems.push({"menu" : "Manage Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/projects.html"});
 		}else if(role == "Manager"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
-			menuItems.push({"menu" : "Manage Reportees","icon" : "fa fa-universal-access fa-2x","path" : "templates/roles.html"});
+			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/roles.html"});
 		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 		}

@@ -3,17 +3,19 @@
 md-progress-circular.md-default-theme path, md-progress-circular path {
 stroke:orange;
 }
+.fa-spin { 
+-webkit-filter: blur(0); 
+}
 </style>
 </head>
-<md-dialog aria-label="Email Template" style="width:420px;height:180px;background:transparent;" id="progressTemplate">
+<md-dialog aria-label="Progress Template" style="width:420px;height:180px;background:transparent;" id="progressTemplate">
 <form ng-cloak name="myForm">
 	<md-dialog-content>
 	<div class="md-dialog-content">
 		<p
 			style="color: #fff; font-size: 1.35em; vertical-align: middle; text-align:center;">
 			{{progressText}}</p>
-		<md-progress-circular md-mode="indeterminate" 
-			style="left:42%;position:relative;"> </md-progress-circular>
+			<i class="fa fa-spinner fa-pulse fa-3x fa-fw" style="left:42%;position:relative;color:orange;"></i>
 	</div>
 	</md-dialog-content>
 </form>
