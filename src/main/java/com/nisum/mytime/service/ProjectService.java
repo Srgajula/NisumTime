@@ -33,4 +33,5 @@ public interface ProjectService {
 	List<Project> getProjects(String managerId) throws MyTimeException;
 	
 	List<ProjectTeamMate>  getMyTeamDetails(String empId);
+	 List<EmployeeRoles> getUnAssignedEmployees(); 
 }

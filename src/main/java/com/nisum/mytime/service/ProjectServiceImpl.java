@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.util.SystemPropertyUtils;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
@@ -140,5 +141,22 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 		return teamMates;
 	}
-
+	@Override
+	public List<EmployeeRoles> getUnAssignedEmployees() {
+		List<EmployeeRoles> allEmployees=employeeRolesRepo.findAll();
+		List<EmployeeRoles> notAssignedEmployees=new ArrayList<>();
+		List<String> teamMates=new ArrayList<>();
+	List<ProjectTeamMate> empRecords=	projectTeamMatesRepo.findAll();
+	for(ProjectTeamMate pt:empRecords) {
+		teamMates.add(pt.getEmployeeId());
+	}
+	for(EmployeeRoles emp:allEmployees) {
+		
+		if(!teamMates.contains(emp.getEmployeeId())) {
+			notAssignedEmployees.add(emp);
+		}
+	}
+	
+		return notAssignedEmployees;
+	}
 }

@@ -161,6 +161,22 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		    	else showAlert('Manager assigning/updation failed!!!');
 		    });
 	};
+	$scope.getUnAssignedEmployees = function(action, userData){
+		userData.action = action;
+		$mdDialog.show({
+		      controller: AddProjectController,
+		      templateUrl: 'templates/projectNotAssignedDetails.html',
+		      parent: angular.element(document.body),
+		      clickOutsideToClose:true,
+		      locals:{dataToPass: userData,gridOptionsData: $scope.gridOptions.data, managers: $scope.managers},
+		    })
+		    .then(function(result) {
+		    	if(result == "Assign") showAlert('Manager assigned successfully');
+		    	else if(result == "Update") showAlert('Manager updated successfully');
+		    	else if(result == "Cancelled") console.log(result);
+		    	else showAlert('Manager assigning/updation failed!!!');
+		    });
+	};
 	$scope.cancel = function() {
 	    $mdDialog.hide();
 	};
@@ -252,6 +268,41 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 			$http({
 		        method : "GET",
 		        url : appConfig.appUri + "/projectTeam/getTeamDetails?employeeId="+$scope.managerId
+		    }).then(function mySuccess(response) {
+		        //$scope.teamdetails=response.data;
+		        //$scope.gridOptions.data.push(response.data);
+		    	$scope.gridOptions.data = response.data;
+		    }, function myError(response) {
+		    	showAlert("Something went wrong while fetching data!!!");
+		    	$scope.gridOptions.data = [];
+		    });
+	}else if(dataToPass.action == "UnAssigned"){
+		//$scope.projectId = dataToPass.projectId;
+		//$scope.projectName = dataToPass.projectName;
+		//$scope.managerId = dataToPass.managerId;
+		//$scope.managerName = dataToPass.managerName;
+	  //  $scope.managerModel = dataToPass.managerModel;
+		$scope.gridOptions = {
+				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
+				paginationPageSize : 10,
+			    pageNumber: 1,
+				pageSize:10,
+				columnDefs : [ 
+					{field : 'employeeId',displayName: 'Emp ID', enableColumnMenu: true, enableSorting: true, width:100},
+					{field : 'employeeName',displayName: 'Empl Name ', enableColumnMenu: false, enableSorting: false},
+					{field : 'emailId',displayName: 'Email Id ', enableColumnMenu: false, enableSorting: false},
+					//{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
+					//{field : 'managerName',displayName: 'Manager ', enableColumnMenu: false, enableSorting: false},
+					//{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:50},
+					//{field : 'designation',displayName: 'Designation ', enableColumnMenu: false, enableSorting: false},
+					//{field : 'billableStatus',displayName: 'Billability ', enableColumnMenu: false, enableSorting: false},
+				]
+			};
+			//$scope.gridOptions.data = $scope.records;
+			$scope.isDisabled = true;
+			$http({
+		        method : "GET",
+		        url : appConfig.appUri + "/projectTeam/getUnAssignedEmployees"
 		    }).then(function mySuccess(response) {
 		        //$scope.teamdetails=response.data;
 		        //$scope.gridOptions.data.push(response.data);

@@ -119,4 +119,18 @@ public class ProjectTeamController {
 		
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	@RequestMapping(value = "/getUnAssignedEmployees", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<EmployeeRoles>> getUnAssignedEmployees() throws MyTimeException {
+		List<EmployeeRoles> employeesRoles = projectService.getUnAssignedEmployees();
+		//projectService.get
+		/*List<EmployeeRoles> managers=new ArrayList<>();
+		for(EmployeeRoles emp:employeesRoles) {
+			if(emp.getRole().equalsIgnoreCase("Manager")) {
+				managers.add(emp)	;		}
+		}*/
+		//List<EmployeeRoles> managers = employeesRoles.stream().filter(e -> e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
+		
+		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	}
+	 
 }

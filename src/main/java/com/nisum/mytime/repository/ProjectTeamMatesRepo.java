@@ -14,4 +14,5 @@ public interface ProjectTeamMatesRepo extends MongoRepository<ProjectTeamMate, S
 	List<ProjectTeamMate> findByManagerId(String projectId);
 	List<ProjectTeamMate> findByEmployeeId(String employeeId);
 	
+	
 }
