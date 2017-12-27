@@ -276,9 +276,10 @@ public class EmployeeDataService {
 
 		try {
 			if (employeeId > 0) {
+
 				BasicDBObject gtQuery = new BasicDBObject();
-				gtQuery.put("_id",
-						new BasicDBObject("$gt", employeeId + "-" + fromDate).append("$lt", employeeId + "-" + toDate));
+				gtQuery.put(MyTimeUtils.ID, new BasicDBObject("$gte", employeeId + MyTimeUtils.HYPHEN + fromDate)
+						.append("$lte", employeeId + MyTimeUtils.HYPHEN + toDate));
 
 				cursor = mongoTemplate.getCollection("EmployeesLoginData").find(gtQuery)
 						.sort(new BasicDBObject(MyTimeUtils.DATE_OF_LOGIN, -1));
@@ -336,8 +337,11 @@ public class EmployeeDataService {
 			for (EmpLoginData empLoginData : loginsData) {
 				count++;
 				if (first) {
-					firstLoginAndLastRecordAdding(empLoginData, dates, firstAndLastLoginDates);
-					internalEmpMap.put(dateOnly, empLoginData);
+					firstLoginAndLastRecordAdding(empLoginData, dates, firstAndLastLoginDates, internalEmpMap);
+					if (count == loginsData.size()) {
+						ifCountEqListSize(empLoginData, dates, firstAndLastLoginDates, internalEmpMap, employeeId,
+								empMap);
+					}
 					first = false;
 				} else {
 					empDatestr = empLoginData.getFirstLogin();
@@ -347,33 +351,37 @@ public class EmployeeDataService {
 						dates.add(timeOnly);
 						firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
 						if (count == loginsData.size()) {
-							addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, internalEmpMap);
-							internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
-							empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
+							ifCountEqListSize(empLoginData, dates, firstAndLastLoginDates, internalEmpMap, employeeId,
+									empMap);
 						}
 					} else {
 						EmpLoginData empLoginData1 = internalEmpMap.get(dateOnly);
-						addingEmpDatesBasedonLogins(empLoginData1, dates, firstAndLastLoginDates, internalEmpMap);
-						internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
-						empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
-						firstLoginAndLastRecordAdding(empLoginData, dates, firstAndLastLoginDates);
-						internalEmpMap.put(dateOnly, empLoginData);
+						ifCountEqListSize(empLoginData1, dates, firstAndLastLoginDates, internalEmpMap, employeeId,
+								empMap);
+						firstLoginAndLastRecordAdding(empLoginData, dates, firstAndLastLoginDates, internalEmpMap);
 						if (count == loginsData.size()) {
-							addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, internalEmpMap);
-							internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
-							empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
+							ifCountEqListSize(empLoginData, dates, firstAndLastLoginDates, internalEmpMap, employeeId,
+									empMap);
 						}
 					}
 				}
 			}
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			MyTimeLogger.getInstance().error(e.getMessage());
 			throw new MyTimeException(e.getMessage());
 		}
 	}
 
+	private void ifCountEqListSize(EmpLoginData empLoginData, List<String> dates, List<String> firstAndLastLoginDates,
+			Map<String, EmpLoginData> internalEmpMap, String employeeId, Map<String, EmpLoginData> empMap)
+			throws MyTimeException {
+		addingEmpDatesBasedonLogins(empLoginData, dates, firstAndLastLoginDates, internalEmpMap);
+		internalEmpMap.get(dateOnly).setId(employeeId + MyTimeUtils.HYPHEN + dateOnly);
+		empMap.put(employeeId + MyTimeUtils.HYPHEN + dateOnly, internalEmpMap.get(dateOnly));
+	}
+
 	private void firstLoginAndLastRecordAdding(EmpLoginData empLoginData, List<String> dates,
-			List<String> firstAndLastLoginDates) throws MyTimeException {
+			List<String> firstAndLastLoginDates, Map<String, EmpLoginData> internalEmpMap) throws MyTimeException {
 		try {
 			empDatestr = empLoginData.getFirstLogin();
 			Date dt;
@@ -391,6 +399,7 @@ public class EmployeeDataService {
 				dates.add(timeOnly);
 				firstAndLastLoginDates.add(MyTimeUtils.df.parse(empDatestr) + StringUtils.EMPTY);
 			}
+			internalEmpMap.put(dateOnly, empLoginData);
 		} catch (ParseException e) {
 			MyTimeLogger.getInstance().error(e.getMessage());
 			throw new MyTimeException(e.getMessage());
