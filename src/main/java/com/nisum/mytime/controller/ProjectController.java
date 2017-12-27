@@ -45,16 +45,16 @@ public class ProjectController {
 		Project project = projectService.addProject(employeeRoles);
 		return new ResponseEntity<>(project, HttpStatus.OK);
 	}
-	
-	@RequestMapping(value = "/updateEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EmployeeRoles> updateEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
-		EmployeeRoles employeeRole = userService.updateEmployeeRole(employeeRoles);
-		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
+
+	@RequestMapping(value = "/updateProject", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Project> updateEmployeeRole(@RequestBody Project project) throws MyTimeException {
+		Project updatedProject = projectService.updateProject(project);
+		return new ResponseEntity<>(updatedProject, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> deleteEmployee(@RequestParam("empId") String empId) throws MyTimeException {
-		userService.deleteEmployee(empId);
+	@RequestMapping(value = "/deleteProject", method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> deleteProject(@RequestParam("projectId") String projectId) throws MyTimeException {
+		projectService.deleteProject(projectId);
 		return new ResponseEntity<>("Success", HttpStatus.OK);
 	}
 
@@ -63,12 +63,12 @@ public class ProjectController {
 		List<Project> projects = projectService.getProjects();
 		return new ResponseEntity<>(projects, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/getEmployeeRoleData", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> getEmployeeRoleData(@RequestParam("empId") String empId)
 			throws MyTimeException {
 		EmployeeRoles employeesRole = userService.getEmployeesRoleData(empId);
 		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
 	}
-
+	
 }

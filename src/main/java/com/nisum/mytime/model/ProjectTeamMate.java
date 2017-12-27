@@ -35,4 +35,5 @@ public class ProjectTeamMate implements Serializable {
 	private String managerName;
 	private String experience;
 	private String designation;
+	private String billableStatus;
 }
