@@ -25,7 +25,7 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 		var reportDate = getFormattedDate($scope.reportDate);
 		$http({
 	        method : "GET",
-	        url : "http://192.168.15.17:8080/my-time/attendance/attendanciesReport/" + reportDate
+	        url : appConfig.appUri + "attendance/attendanciesReport/" + reportDate
 	    }).then(function mySuccess(response) {
 	        $scope.gridOptions.data = response.data;
 	        $scope.totalPresent = response.data[0].totalPresent;
