@@ -42,20 +42,17 @@ public class AttendanceServiceImpl implements AttendanceService {
 	private Connection connection = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
-	private List<AttendenceData> listOfAbsentEmployees = null;
-	private StringBuilder queryMonthDecider = null;
-	private List<String> presentiesList = null;
 	private File finalfile = null;
-	private List<String> listOfPresentEmployees = new ArrayList<>();
 	private Calendar calendar = new GregorianCalendar();
 	private int month = (calendar.get(Calendar.MONTH)) + 1;
 	private int year = calendar.get(Calendar.YEAR);
 	private Date toDay = calendar.getTime();
+	private String queryMonthDecider = null;
 
 	@Override
-	public List<AttendenceData> getAttendanciesReport(String reportDate) throws MyTimeException {
+	public List<AttendenceData> getAttendanciesReport(String reportDate) throws MyTimeException, SQLException {
 		long start_ms = System.currentTimeMillis();
-
+		List<AttendenceData> listOfAbsentEmployees = null;
 		try {
 			File dir = new File(localFileDirectory);
 			for (File file : dir.listFiles()) {
@@ -69,22 +66,30 @@ public class AttendanceServiceImpl implements AttendanceService {
 				calendar.setTime(MyTimeUtils.dfmt.parse(reportDate));
 				int dayOfSelectedDate = calendar.get(Calendar.DAY_OF_MONTH);
 
-				if (dayOfSelectedDate == dayOftoDay) {
-					fecthRecordsFromMDb();
+				if (dayOfSelectedDate == dayOftoDay && month == (calendar.get(Calendar.MONTH)) + 1
+						&& year == calendar.get(Calendar.YEAR)) {
+					listOfAbsentEmployees = fecthRecordsFromMDb();
 				} else if (selectedDate.before(toDay)) {
 					calendar.setTime(selectedDate);
-					fecthRecordsFromMongoDb(reportDate);
+					listOfAbsentEmployees = fecthRecordsFromMongoDb(reportDate);
 				}
 				MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
 			}
 		} catch (Exception e) {
 			MyTimeLogger.getInstance().error(e.getMessage());
 			throw new MyTimeException(e.getMessage());
+		} finally {
+			if (null != connection) {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			}
 		}
 		return listOfAbsentEmployees;
 	}
-	
-	private void createDbStatementWithFile() throws MyTimeException {
+
+	private String createDbStatementWithFile() throws MyTimeException {
+		StringBuilder queryMonthDecider = null;
 		try {
 			queryMonthDecider = new StringBuilder();
 			String dbURL = MyTimeUtils.driverUrl + finalfile.getCanonicalPath();
@@ -93,7 +98,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 			statement = connection.createStatement();
 
 			Calendar calendar1 = Calendar.getInstance();
-			calendar1.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH), 6, 00, 00);
+			calendar1.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+					calendar.get(Calendar.DAY_OF_MONTH), 6, 00, 00);
 			Date dayStartsTime = calendar1.getTime();
 
 			Date maxTimeToLogin = DateUtils.addHours(dayStartsTime, 12);
@@ -113,39 +119,39 @@ public class AttendanceServiceImpl implements AttendanceService {
 			MyTimeLogger.getInstance().error(e.getMessage());
 			throw new MyTimeException(e.getMessage());
 		}
+		return queryMonthDecider.toString();
 	}
 
-	private void fecthRecordsFromMDb() throws MyTimeException, SQLException {
-		presentiesList=new ArrayList<>();
+	private List<AttendenceData> fecthRecordsFromMDb() throws MyTimeException {
+		List<String> presentiesList = null;
+		List<String> listOfPresentEmployees = new ArrayList<>();
+		List<AttendenceData> listOfAbsentEmployees = null;
 		try {
-			createDbStatementWithFile();
-			resultSet = statement.executeQuery(queryMonthDecider.toString());
+			queryMonthDecider = createDbStatementWithFile();
+			resultSet = statement.executeQuery(queryMonthDecider);
 			while (resultSet.next()) {
 				if (resultSet.getString(1).length() >= 5) {
 					listOfPresentEmployees.add(resultSet.getString(1));
 				}
 			}
 			presentiesList = listOfPresentEmployees.stream().distinct().collect(Collectors.toList());
-			fetchAbsenteesListFromDb();
+			listOfAbsentEmployees = fetchAbsenteesListFromDb(presentiesList);
 		} catch (Exception e) {
 			MyTimeLogger.getInstance().error(e.getMessage());
 			throw new MyTimeException(e.getMessage());
-		} finally {
-			if (null != connection) {
-				connection.close();
-				statement.close();
-				resultSet.close();
-			}
 		}
+		return listOfAbsentEmployees;
 	}
 
-	private void fecthRecordsFromMongoDb(String reportDate) throws MyTimeException {
+	private List<AttendenceData> fecthRecordsFromMongoDb(String reportDate) throws MyTimeException {
+		List<String> presentiesList = null;
+		List<String> listOfPresentEmployees = new ArrayList<>();
+		List<AttendenceData> listOfAbsentEmployees = null;
 		DBCursor cursor = null;
-		presentiesList=new ArrayList<>();
-		createDbStatementWithFile();
+		queryMonthDecider = createDbStatementWithFile();
 		BasicDBObject gtQuery = new BasicDBObject();
 		gtQuery.put(MyTimeUtils.DATE_OF_LOGIN, reportDate);
-
+		listOfPresentEmployees.clear();
 		cursor = mongoTemplate.getCollection(MyTimeUtils.EMPLOYEE_COLLECTION).find(gtQuery)
 				.sort(new BasicDBObject(MyTimeUtils.EMPLOYEE_ID, 1));
 		while (cursor.hasNext()) {
@@ -153,35 +159,43 @@ public class AttendanceServiceImpl implements AttendanceService {
 			listOfPresentEmployees.add(dbObject.get(MyTimeUtils.EMPLOYEE_ID).toString());
 		}
 		presentiesList = listOfPresentEmployees.stream().distinct().collect(Collectors.toList());
-		fetchAbsenteesListFromDb();
+		listOfAbsentEmployees = fetchAbsenteesListFromDb(presentiesList);
+		return listOfAbsentEmployees;
 	}
 
-	private void fetchAbsenteesListFromDb() throws MyTimeException {
+	private List<AttendenceData> fetchAbsenteesListFromDb(List<String> presentiesList) throws MyTimeException {
+		List<AttendenceData> listOfAbsentEmployees = new ArrayList<>();
 		try {
-			listOfAbsentEmployees = new ArrayList<>();
-			StringBuilder absentiesQuery = new StringBuilder();
-			absentiesQuery.append(MyTimeUtils.ABESENT_QUERY);
-			absentiesQuery.append(queryMonthDecider.toString());
-			absentiesQuery.append(MyTimeUtils.ABESENT_QUERY1);
-			MyTimeLogger.getInstance().info(absentiesQuery.toString());
+			if (!presentiesList.isEmpty()) {
+				StringBuilder absentiesQuery = new StringBuilder();
+				absentiesQuery.append(MyTimeUtils.ABESENT_QUERY);
+				absentiesQuery.append(queryMonthDecider);
+				absentiesQuery.append(MyTimeUtils.ABESENT_QUERY1);
+				MyTimeLogger.getInstance().info(absentiesQuery.toString());
 
-			resultSet = statement.executeQuery(absentiesQuery.toString());
-			while (resultSet.next()) {
-				if (resultSet.getString(3).length() >= 5) {
-					AttendenceData attendenceData = new AttendenceData();
-					attendenceData.setEmployeeName(resultSet.getString(2));
-					attendenceData.setEmployeeId(resultSet.getString(3));
-					attendenceData.setIfPresent(MyTimeUtils.ABESENT);
-					listOfAbsentEmployees.add(attendenceData);
+				resultSet = statement.executeQuery(absentiesQuery.toString());
+				listOfAbsentEmployees.clear();
+				while (resultSet.next()) {
+					if (resultSet.getString(3).length() >= 5) {
+						AttendenceData attendenceData = new AttendenceData();
+						attendenceData.setEmployeeName(resultSet.getString(2));
+						attendenceData.setEmployeeId(resultSet.getString(3));
+						attendenceData.setIfPresent(MyTimeUtils.ABESENT);
+						listOfAbsentEmployees.add(attendenceData);
+					}
 				}
+				if (!listOfAbsentEmployees.isEmpty()) {
+					listOfAbsentEmployees.get(0).setTotalPresent(presentiesList.size());
+					listOfAbsentEmployees.get(0).setTotalAbsent(listOfAbsentEmployees.size());
+				}
+
 			}
-			listOfAbsentEmployees.get(0).setTotalPresent(presentiesList.size());
-			listOfAbsentEmployees.get(0).setTotalAbsent(listOfAbsentEmployees.size());
 
 		} catch (Exception e) {
 			MyTimeLogger.getInstance().error(e.getMessage());
 			throw new MyTimeException(e.getMessage());
 		}
+		return listOfAbsentEmployees;
 
 	}
 }
