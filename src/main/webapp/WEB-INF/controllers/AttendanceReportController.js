@@ -6,7 +6,7 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 	// Date picker related code
 	var today = new Date();
 	$scope.maxDate = today;
-	$scope.searchDate = today;
+	$scope.reportDate = today;
 	
 	$scope.gridOptions = {
 		paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
@@ -16,18 +16,22 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 		columnDefs : [ 
 				{field : 'employeeId',displayName: 'Employee Id', enableColumnMenu: false, enableSorting: false},
 				{field : 'employeeName',displayName: 'Employee Name', enableColumnMenu: false, enableSorting: false},
-				{field : 'status',displayName: 'Status', enableColumnMenu: false, enableSorting: false}
+				{field : 'ifPresent',displayName: 'Status', enableColumnMenu: false, enableSorting: false}
 			]
 	};
 	$scope.gridOptions.data = [];
 	
 	$scope.getEmployeePresent = function(){
-		var searchDate = getFormattedDate($scope.searchDate);
+		var reportDate = getFormattedDate($scope.reportDate);
 		$http({
 	        method : "GET",
-	        url : appConfig.appUri + "attendance/attendanciesReport?searchDate=" + searchDate
+	        url : "http://192.168.15.17:8080/my-time/attendance/attendanciesReport/" + reportDate
 	    }).then(function mySuccess(response) {
 	        $scope.gridOptions.data = response.data;
+	        $scope.totalPresent = response.data[0].totalPresent;
+	        $scope.totalAbsent = response.data[0].totalAbsent;
+	        $scope.totalEmployees = response.data[0].totalPresent + response.data[0].totalAbsent;
+	        
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
 	    	$scope.gridOptions.data = [];
