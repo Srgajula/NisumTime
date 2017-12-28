@@ -41,6 +41,12 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 	$scope.refreshPage = function(){
 		$scope.searchDate = today;
 		$scope.gridOptions.data = [];
+		$scope.reportDate = today;
+		$scope.totalPresent = "";
+        $scope.totalAbsent = "";
+        $scope.totalEmployees = "";
+        
+		
 	};
 	
 	function getFormattedDate(date){
