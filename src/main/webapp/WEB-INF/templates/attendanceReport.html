@@ -1,0 +1,70 @@
+
+<div class="md-padding" style="width: 100%; padding: 3px;"
+	id="popupContainer" ng-controller="attendanceReportController">
+	<div class="container-fluid mainDivHeaderClass">
+		<div class="row">
+			<div class="col-lg-12">
+				<p align="center" class="col-xs-11"
+					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Attendance Details</p>
+				<p align="right" class="col-xs-1"
+					style="vertical-align: middle; font-weight: bold; font-size: 1.5em; margin-top:8px;cursor:pointer;"><i class="fa fa-refresh" aria-hidden="true" ng-click="refreshPage()"></i></p>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<br />
+	<div class="container" style="text-align: center; padding-left: 75px;">
+		<div class="row col-lg-12">
+			<div class="col-xs-4">
+				<p>
+					<b>Search Date:</b>
+					<md-datepicker ng-model="reportDate" md-placeholder="Enter date"
+						md-max-date="maxDate"
+						onkeydown="return false"></md-datepicker>
+				</p>
+			</div>
+			<div class="col-xs-2" style="cursor: pointer;" align="right">
+				<md-button class="md-raised md-primary"
+					style="width:100px;background: cadetblue;" ng-click="getEmployeePresent()">
+				<i class="fa fa-search fa-2x"
+					style="margin-top: 5px; font-size: 1.5em; float: left"></i> Search</md-button>
+			</div>
+		</div>
+		<div class="row col-lg-12" style="height: 15px;"></div>
+		<div class="row col-lg-12">
+		<div class="col-xs-2">
+				<p>
+					<b>Total Employees:</b> {{totalEmployees}}
+				</p>
+			</div>
+			<div class="col-xs-2">
+				<p>
+					<b>Total Present:</b> {{totalPresent}}
+				</p>
+			</div>
+			<div class="col-xs-4">
+				<p>
+					<b>Total Absent before 10:30am :</b> {{totalAbsent}}
+				</p>
+			</div>
+		</div>
+		<div class="row col-lg-12" style="height: 15px;"></div>
+		<div class="row col-lg-12">
+			<div class="col-xs-3"></div>
+			<div class="col-xs-1">
+				<p></p>
+			</div>
+			<div class="col-xs-2">
+				<p></p>
+			</div>
+			<div class="col-xs-2">
+				<p></p>
+			</div>
+		</div>
+	</div>
+	<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination
+		class="myGrid">
+		<div class="watermark" ng-show="!gridOptions.data.length">No
+			data available</div>
+	</div>
+</div>
