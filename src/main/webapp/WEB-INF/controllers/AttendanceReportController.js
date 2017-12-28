@@ -14,7 +14,7 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 	    pageNumber: 1,
 		pageSize:10,
 		columnDefs : [ 
-				{field : 'employeeId',displayName: 'Employee Id', enableColumnMenu: false, enableSorting: false},
+				{field : 'employeeId',displayName: 'Employee Id', enableColumnMenu: false, enableSorting: true},
 				{field : 'employeeName',displayName: 'Employee Name', enableColumnMenu: false, enableSorting: false},
 				{field : 'ifPresent',displayName: 'Status', enableColumnMenu: false, enableSorting: false}
 			]
