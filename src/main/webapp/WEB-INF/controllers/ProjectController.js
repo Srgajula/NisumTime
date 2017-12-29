@@ -258,7 +258,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 					{field : 'emailId',displayName: 'Email Id ', enableColumnMenu: false, enableSorting: false},
 					//{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
 					//{field : 'managerName',displayName: 'Manager ', enableColumnMenu: false, enableSorting: false},
-					{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:50},
+					{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:80},
 					{field : 'designation',displayName: 'Designation ', enableColumnMenu: false, enableSorting: false},
 					{field : 'billableStatus',displayName: 'Billability ', enableColumnMenu: false, enableSorting: false},
 				]
