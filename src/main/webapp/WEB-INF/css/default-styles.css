@@ -11,9 +11,10 @@
 }
 #main {
 	float: left;
-	width: 80%;
+	width: 80.5%;
 	height: 87.5%;
 	background-color: floralwhite;
+	margin-left:-7px;
 }
 
 #footer {
