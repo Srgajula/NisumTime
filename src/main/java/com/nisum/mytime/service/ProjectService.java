@@ -27,11 +27,18 @@ public interface ProjectService {
 	Project updateProject(Project project);
 
 	EmployeeRoles getEmployeesRoleData(String empId);
-	List<ProjectTeamMate>  getTeamDetails(String empId);
-	
+
+	List<ProjectTeamMate> getTeamDetails(String empId);
+
 	ProjectTeamMate addProject(ProjectTeamMate project) throws MyTimeException;
+
+	ProjectTeamMate updateTeammate(ProjectTeamMate projectTeamMate);
+
+	void deleteTeammate(String empId, String managerId);
+
 	List<Project> getProjects(String managerId) throws MyTimeException;
-	
-	List<ProjectTeamMate>  getMyTeamDetails(String empId);
-	 List<EmployeeRoles> getUnAssignedEmployees(); 
+
+	List<ProjectTeamMate> getMyTeamDetails(String empId);
+
+	List<EmployeeRoles> getUnAssignedEmployees();
 }

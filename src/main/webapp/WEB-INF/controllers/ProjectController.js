@@ -139,10 +139,10 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		      locals:{dataToPass: userData,gridOptionsData: $scope.gridOptions.data, managers: $scope.managers},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('Manager assigned successfully');
-		    	else if(result == "Update") showAlert('Manager updated successfully');
+		    	if(result == "Assign") showAlert('Project created successfully');
+		    	else if(result == "Update") showAlert('Project updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
-		    	else showAlert('Manager assigning/updation failed!!!');
+		    	else showAlert('Project assigning/updation failed!!!');
 		    });
 	};
 	$scope.viewTeamDetails = function(action, userData){
@@ -237,9 +237,8 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.projectName = dataToPass.projectName;
 		$scope.managerId = dataToPass.managerId;
 		$scope.managerName = dataToPass.managerName;
-	  //  $scope.managerModel = dataToPass.managerModel;
-	 	$scope.managerModel.managerId=$scope.managerId;
-		$scope.managerModel.employeeName=$scope.managerName;
+//	 	$scope.managerModel.managerId=$scope.managerId;
+//		$scope.managerModel.employeeName=$scope.managerName;
 			$scope.isDisabled = true;
 	}else if(dataToPass.action == "View"){
 		$scope.projectId = dataToPass.projectId;

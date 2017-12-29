@@ -1,9 +1,8 @@
 <md-dialog aria-label="Role Template" style="width:520px;height:440px;">
 <form ng-cloak name="myForm">
 	<md-toolbar>
-	<div class="md-toolbar-tools"
-		style="background: cadetblue;">
-		<h2>{{templateTitle}} Employee </h2>
+	<div class="md-toolbar-tools" style="background: cadetblue;">
+		<h2>{{templateTitle}} Employee</h2>
 		<span flex></span>
 		<md-button class="md-icon-button" ng-click="cancel()"> <i
 			class="fa fa-times fa-2x"
@@ -14,27 +13,38 @@
 	<md-dialog-content>
 	<div class="md-dialog-content">
 		<div class="form-group">
-		     <output>Employee Name : {{employeeModel.employeeName}}</output>
-				<output>Employee Id : {{employeeModel.employeeId}}</output>
-				<output>Email Id : {{employeeModel.emailId}}</output>
-				<output>Role : {{employeeModel.role}}</output>
-			    <md-select ng-model="projectModel" md-selected-text="getProjectSelected()" id="selectProject">
-			    <md-optgroup label="Project"> <md-option ng-value="project"
-				ng-repeat="project in projectList">{{project.projectName}}</md-option> </md-optgroup> </md-select>
-		      <input type="text" class="form-control" id="experience" name="experience"
-				ng-model="experience" placeholder="Experience" /> <br>
-			<input type="text" class="form-control" id="designation" name="designation"
-				ng-model="designation" placeholder="Designation" /><br>
+			<output id="employeeName" name="employeeName">Employee Name
+				: {{employeeName}}</output>
+			<output>Employee Id : {{employeeId}}</output>
+			<output>Email Id : {{emailId}}</output>
+			<output>Role : {{role}}</output>
+			<md-select ng-model="projectModel"
+				md-selected-text="getProjectSelected()" id="selectProject">
+			<md-optgroup label="Project"> <md-option
+				ng-value="project" ng-repeat="project in projectList">{{project.projectName}}</md-option>
+			</md-optgroup> </md-select>
+			<md-select ng-model="empDesignation" md-selected-text="getSelectedDesignation()" id="empDesignation">
+			<md-optgroup label="designations"> <md-option ng-value="designation"
+				ng-repeat="designation in designations">{{designation}}</md-option> </md-optgroup> </md-select>
+			<md-select ng-model="empBillableStatus" md-selected-text="getSelectedBillableStatus()" id="empBillableStatus">
+			<md-optgroup label="billable statuses"> <md-option ng-value="billableStatus"
+				ng-repeat="billableStatus in billableStatuses">{{billableStatus}}</md-option> </md-optgroup> </md-select>
+			<input type="text" class="form-control" id="experience"
+				name="experience" ng-model="experience" placeholder="Experience" /><br> 
+			<input type="text" class="form-control" id="mobileNumber"
+				name="mobileNumber" ng-model="mobileNumber" placeholder="MobileNumber" /><br>
 			<div role="alert">
 				<span class="error" style="color: red;">{{alertMsg}}</span>
 			</div>
-		</div> 
+		</div>
 	</div>
 	</md-dialog-content>
 
 	<md-dialog-actions layout="row"> <md-button
-		class="md-raised" data-ng-click="validateFields()" style="width:120px;background: cadetblue;color:white;">
-	{{templateTitle}} </md-button> <md-button class="md-raised" ng-click="cancel()" style="width:120px;background: cadetblue;color:white;">
+		class="md-raised" data-ng-click="validateFields(templateTitle)"
+		style="width:120px;background: cadetblue;color:white;">
+	{{templateTitle}} </md-button> <md-button class="md-raised" ng-click="cancel()"
+		style="width:120px;background: cadetblue;color:white;">
 	Cancel </md-button> </md-dialog-actions>
 </form>
 </md-dialog>
