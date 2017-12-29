@@ -54,15 +54,11 @@
 .sidebar-nav {
     position: absolute;
     top: 10px;
-    right:15px;
-    width: 265px;
-    margin: 0;
-    padding: 0;
     list-style: none;
 }
 
 .sidebar-nav li {
-    text-indent: 20px;
+	text-indent: 1px;
     line-height: 40px;
 }
 
@@ -109,7 +105,7 @@
 
     #sidebar-wrapper {
         width: 20%;
-        height:84.5%;
+        height:87.5%;
     }
 
     #wrapper.toggled #sidebar-wrapper {
@@ -138,7 +134,7 @@
 }
 
 
-@media(max-width:414px) {
+@media(max-width:768px) {
 
 #wrapper.toggled #page-content-wrapper {
     position: absolute;
@@ -197,14 +193,16 @@
         margin-right: 0;
     }
 
-.sidebar-nav {
-    position: absolute;
-    top: 0;
-    /* right: 0px; */
-    left: 6px;
-    width: 265px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
+	.sidebar-nav {
+	    position: absolute;
+	    top: 10px;
+	    left: -16px;
+	    width: 265px;
+	    /* margin: 0; */
+	    /* padding: 0px; */
+	    list-style: none;
+	}
+	.sidebar-nav li {
+		text-indent: 20px;
+	}
 }

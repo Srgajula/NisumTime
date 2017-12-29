@@ -23,7 +23,7 @@
 					<md-optgroup label="reportees"> <md-option ng-value="reportee"
 					ng-repeat="reportee in reportees">{{reportee.employeeName}}</md-option> </md-optgroup> </md-select>
 			</div>
-			<div class="col-xs-4" style="margin-left: -21px;">
+			<div class="col-xs-4">
 				<p>
 					<b>From Date:</b>
 					<md-datepicker ng-model="fromDate" md-placeholder="Enter date"
@@ -44,7 +44,7 @@
 			</div>
 			<div class="col-xs-2" style="cursor: pointer;" align="left">
 				<panel> <md-button class="md-raised md-primary"
-					style="width:100px;background: cadetblue;"
+					style="width:100px;background: cadetblue;margin-left:-15px;"
 					ng-click="getEmployeeData();"> <i
 					class="fa fa-search fa-2x"
 					style="margin-top: 5px; font-size: 1.5em; float: left"></i> Search</md-button>
