@@ -14,6 +14,8 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			"managerName":"",
 			"experience":"",
 			"designation":"",
+			"billableStatus":"",
+			"mobileNumber":"",
 			"action":""
 	};
 	$scope.employees = [];
@@ -48,9 +50,12 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		$scope.parentData.managerName = row.entity.managerName;
 		$scope.parentData.experience = row.entity.experience;
 		$scope.parentData.designation = row.entity.designation;
+		$scope.parentData.billableStatus = row.entity.billableStatus;
+		$scope.parentData.mobileNumber = row.entity.mobileNumber;
 		
-		if(action == "Update")
+		if(action == "Update"){
 			$scope.updateEmployee(action, $scope.parentData);
+		}
 		else if(action == "Delete")
 			$scope.deleteRole(row);
 	}
@@ -158,33 +163,33 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	$scope.assignRole = function(action, userData){
 		userData.action = action;
 		$mdDialog.show({
-		      controller: AddRoleController,
+		      controller: AddProjectTeamController,
 		      templateUrl: 'templates/newTeamMate.html',
 		      parent: angular.element(document.body),
 		      clickOutsideToClose:true,
 		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees, projects: $scope.projects},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('Role assigned successfully');
-		    	else if(result == "Update") showAlert('Role updated successfully');
+		    	if(result == "Assign") showAlert('New Teammate assigned successfully');
+		    	else if(result == "Update") showAlert('Teammate updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
-		    	else showAlert('Role assigning/updation failed!!!');
+		    	else showAlert('Teammate assigning/updation failed!!!');
 		    });
 	};
 	$scope.updateEmployee = function(action, userData){
 		userData.action = action;
 		$mdDialog.show({
-		      controller: AddRoleController,
+		      controller: AddProjectTeamController,
 		      templateUrl: 'templates/UpdateTeamMate.html',
 		      parent: angular.element(document.body),
 		      clickOutsideToClose:true,
 		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees, projects: $scope.projects},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('Role assigned successfully');
-		    	else if(result == "Update") showAlert('Role updated successfully');
+		    	if(result == "Assign") showAlert('New Teammate assigned successfully');
+		    	else if(result == "Update") showAlert('Teammate updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
-		    	else showAlert('Role assigning/updation failed!!!');
+		    	else showAlert('Teammate assigning/updation failed!!!');
 		    });
 	};
 	$scope.cancel = function() {
@@ -193,21 +198,21 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	
 	$scope.deleteRole = function(row){
 	    var confirm = $mdDialog.confirm()
-	          .textContent('Are you sure want to delete the role?')
+	          .textContent('Are you sure you want to delete the teammate?')
 	          .ok('Ok')
 	          .cancel('Cancel');
 	    $mdDialog.show(confirm).then(function() {
-			deleteUserRole(row.entity.employeeId);
+			deleteUserRole(row.entity.employeeId, row.entity.managerId);
 			$timeout(function(){updateGridAfterDelete(row)},500);
 	    }, function() {
 	    	console.log("Cancelled dialog");
 	    });
 	};
 	
-	function deleteUserRole(empId){
+	function deleteUserRole(empId, managerId){
 		var req = {
 				method : 'DELETE',
-				url : appConfig.appUri+ "user/deleteEmployee?empId="+empId
+				url : appConfig.appUri+ "projectTeam/deleteTeammate?empId="+empId+"&managerId="+managerId
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result = response.data;
@@ -221,14 +226,13 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		if($scope.result == "Success" || $scope.result == ""){
 			var index = $scope.gridOptions.data.indexOf(row.entity);
 			$scope.gridOptions.data.splice(index, 1);
-			showAlert('Role deleted successfully');
+			showAlert('Teammate deleted successfully');
 		}else if($scope.result == "Error"){
 			showAlert('Something went wrong while deleting the role.')
 		}
-    	
 	}
 	
-	function AddRoleController($scope, $mdDialog, dataToPass, gridOptionsData,employees,projects) {
+	function AddProjectTeamController($scope, $mdDialog, dataToPass, gridOptionsData,employees,projects) {
 		$scope.templateTitle = dataToPass.action;
 		$scope.alertMsg = "";
 		$scope.isDisabled = false;
@@ -245,20 +249,27 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			$scope.empEmail = "";
 			$scope.isDisabled = false;
 		}else if(dataToPass.action == "Update"){
-			$scope.empId = dataToPass.employeeId;
-			$scope.empName = dataToPass.employeeName;
-			$scope.empRole = dataToPass.role;
-			$scope.empShift = dataToPass.shift;
-			$scope.empEmail = dataToPass.emailId;
+			$scope.employeeId = dataToPass.employeeId;
+			$scope.employeeName = dataToPass.employeeName;
+			$scope.role = dataToPass.role;
+			$scope.emailId = dataToPass.emailId;
 			$scope.isDisabled = true;
 		}
-		$scope.roles = ["HR","Manager","Employee"];
+		$scope.designations = ["Director","Sr. Software Engineer","Software Engineer"];
+		$scope.billableStatuses = ["Billable","Shadow","Bench"];
 		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 PM)"];
-		$scope.getSelectedRole = function(){
-			if ($scope.empRole !== undefined) {
-				return $scope.empRole;
+		$scope.getSelectedDesignation = function(){
+			if ($scope.empDesignation !== undefined) {
+				return $scope.empDesignation;
 			} else {
-				return "Please select a role";
+				return "Please select a designation";
+			}
+		};
+		$scope.getSelectedBillableStatus = function(){
+			if ($scope.empBillableStatus !== undefined) {
+				return $scope.empBillableStatus;
+			} else {
+				return "Please select a billable status";
 			}
 		};
 		$scope.getEmployeeSelected = function(){
@@ -337,24 +348,30 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			 return false;
 		 }
 		
-		$scope.validateFields = function(){
-			
-			var employeeModel = $scope.employeeModel;
-			var projectModel = $scope.projectModel;
-			if(employeeModel == undefined){
-				$scope.alertMsg = "Please select a employee";
-			document.getElementById('selectEmp').focus();
-			}else if(projectModel == undefined){
-				$scope.alertMsg = "Please select a project";
-				document.getElementById('selectProject').focus();
-			}
-			else{
-				
+		$scope.validateFields = function(action){
+			if(action == "Assign"){
+				var employeeModel = $scope.employeeModel;
+				var projectModel = $scope.projectModel;
+				if(employeeModel == undefined){
+					$scope.alertMsg = "Please select a employee";
+				document.getElementById('selectEmp').focus();
+				}else if(projectModel == undefined){
+					$scope.alertMsg = "Please select a project";
+					document.getElementById('selectProject').focus();
+				} else {
+					$scope.alertMsg = "";
+					var record = {"employeeId":employeeModel.employeeId, "employeeName":employeeModel.employeeName, "emailId": employeeModel.emailId, "role": employeeModel.role, "shift": employeeModel.shift,"projectId":projectModel.projectId,"projectName":projectModel.projectName,"managerId":myFactory.getEmpId(),"managerName":myFactory.getEmpName()};
+					addOrUpdateRole(record, $scope.templateTitle);
+					$timeout(function(){updateGrid($scope.templateTitle, record)},500);
+				}
+			}else{
 				$scope.alertMsg = "";
-				var record = {"employeeId":employeeModel.employeeId, "employeeName":employeeModel.employeeName, "emailId": employeeModel.emailId, "role": employeeModel.role, "shift": employeeModel.shift,"projectId":projectModel.projectId,"projectName":projectModel.projectName,"managerId":myFactory.getEmpId(),"managerName":myFactory.getEmpName()};
+				var record = {"employeeId":$scope.employeeId, "employeeName":$scope.employeeName, "emailId": $scope.emailId, "role": $scope.role, "shift": $scope.shift,"projectId":$scope.projectModel.projectId,"projectName":$scope.projectModel.projectName,"managerId":myFactory.getEmpId(),"managerName":myFactory.getEmpName(),"designation":$scope.empDesignation,"billableStatus":$scope.empBillableStatus,"experience":$scope.experience,"mobileNumber":$scope.mobileNumber};
 				addOrUpdateRole(record, $scope.templateTitle);
 				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}
+			
+			
 		};
 		
 		$scope.cancel = function() {
@@ -384,7 +401,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			if(action == "Assign"){
 				urlRequest = appConfig.appUri+ "projectTeam/addEmployeeToTeam";
 			}else if(action == "Update"){
-				urlRequest = appConfig.appUri+ "user/updateEmployeeRole";
+				urlRequest = appConfig.appUri+ "projectTeam/updateTeammate";
 			}
 			var req = {
 				method : 'POST',
