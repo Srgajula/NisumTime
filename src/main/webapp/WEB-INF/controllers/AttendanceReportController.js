@@ -1,4 +1,4 @@
-myApp.controller("attendanceReportController", function($scope, $http, myFactory, $mdDialog, appConfig) {
+myApp.controller("attendanceReportController", function($scope, $http, myFactory, $mdDialog, appConfig,$timeout) {
 	$scope.records = [];
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
@@ -21,25 +21,41 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 	};
 	$scope.gridOptions.data = [];
 	
-	$scope.getEmployeePresent = function(){
+	$scope.getEmployeePresent = function(type){
+		if(type == "onload"){
+			showProgressDialog("Fetching data please wait...");
+		}
+		else if(type == "onclick" && $scope.reportDate < today){
+			showProgressDialog("Fetching data please wait...");
+		}else{
+			console.log("");
+		}
 		var reportDate = getFormattedDate($scope.reportDate);
 		$http({
 	        method : "GET",
 	        url : appConfig.appUri + "attendance/attendanciesReport/" + reportDate
 	    }).then(function mySuccess(response) {
-	        $scope.gridOptions.data = response.data;
-	        $scope.totalPresent = response.data[0].totalPresent;
-	        $scope.totalAbsent = response.data[0].totalAbsent;
-	        $scope.totalEmployees = response.data[0].totalPresent + response.data[0].totalAbsent;
-	        
+	    	$mdDialog.hide();
+	    	if(response.data.length == 0){
+	    		$timeout(function(){showAlert('No data available');},600);
+	    		$scope.refreshPage();
+	    	}else{
+	    		$scope.gridOptions.data = response.data;
+		        $scope.totalPresent = response.data[0].totalPresent;
+		        $scope.totalAbsent = response.data[0].totalAbsent;
+		        $scope.totalEmployees = response.data[0].totalPresent + response.data[0].totalAbsent;
+	    	}
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
-	    	$scope.gridOptions.data = [];
+	    	$scope.refreshPage();
 	    });
-	}
+	};
+	
+	$scope.setSearchDate = function(dateValue){
+		$scope.reportDate = dateValue;
+	};
 	
 	$scope.refreshPage = function(){
-		$scope.searchDate = today;
 		$scope.gridOptions.data = [];
 		$scope.reportDate = today;
 		$scope.totalPresent = "";
@@ -62,5 +78,19 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 				angular.element(document.querySelector('#popupContainer')))
 				.clickOutsideToClose(true).textContent(message).ariaLabel(
 						'Alert Dialog').ok('Ok'));
+	}
+	
+	function showProgressDialog(msg){
+		$mdDialog.show({
+	      templateUrl: 'templates/progressDialog.html',
+	      controller: ProgressController,
+	      parent: angular.element(document.body),
+	      clickOutsideToClose:false,
+	      locals: {dataToPass:msg}
+	    });
+	}
+	
+	function ProgressController($scope, dataToPass) {
+		$scope.progressText = dataToPass;
 	}
 });
