@@ -1,5 +1,6 @@
 package com.nisum.mytime.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public EmployeeRoles assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
+		employeeRoles.setCreatedOn(new Date());
 		return employeeRolesRepo.save(employeeRoles);
 	}
 
@@ -86,6 +88,7 @@ public class UserServiceImpl implements UserService {
 		update.set("emailId", employeeRoles.getEmailId());
 		update.set("role", employeeRoles.getRole());
 		update.set("shift", employeeRoles.getShift());
+		update.set("lastModifiedOn", new Date());
 		FindAndModifyOptions options = new FindAndModifyOptions();
 		options.returnNew(true);
 		options.upsert(true);
