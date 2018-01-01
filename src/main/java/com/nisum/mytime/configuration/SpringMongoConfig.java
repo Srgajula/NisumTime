@@ -25,7 +25,7 @@ public class SpringMongoConfig {
 		try {
 			mappingConverter.setCustomConversions(beanFactory.getBean(CustomConversions.class));
 		} catch (NoSuchBeanDefinitionException ignore) {
-			MyTimeLogger.getInstance().log(ignore.getMessage());
+			MyTimeLogger.getInstance().error("Exception occured due to: ", ignore);
 		}
 		mappingConverter.setTypeMapper(new DefaultMongoTypeMapper(null));
 

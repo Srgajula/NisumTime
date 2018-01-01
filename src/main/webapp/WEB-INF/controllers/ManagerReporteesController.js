@@ -38,6 +38,7 @@ myApp.controller("reporteesController", function($scope, $http, myFactory, $mdDi
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
+		$scope.isVisible = false;
 	};
 	
 	$scope.getReporteesDetails = function(){
@@ -83,6 +84,8 @@ myApp.controller("reporteesController", function($scope, $http, myFactory, $mdDi
 	    		setFieldsEmpty();
 	    	}else{
 	    		$scope.gridOptions.data = response.data;
+	    		$scope.isVisible = true;
+    			$scope.avgLoginHrs = response.data[0].totalAvgTime +" Hrs";
 	    	}
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
@@ -134,6 +137,7 @@ myApp.controller("reporteesController", function($scope, $http, myFactory, $mdDi
 		$scope.fromDate = priorDt;
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
+		$scope.isVisible = false;
 	}
 	
 	function treatAsUTC(date) {

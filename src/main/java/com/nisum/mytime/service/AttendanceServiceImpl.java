@@ -76,7 +76,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 				MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
 			}
 		} catch (Exception e) {
-			MyTimeLogger.getInstance().error(e.getMessage());
+			MyTimeLogger.getInstance().error("Exception occured due to : ", e);
 			throw new MyTimeException(e.getMessage());
 		} finally {
 			if (null != connection) {
@@ -116,7 +116,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 			MyTimeLogger.getInstance().info(queryMonthDecider.toString());
 
 		} catch (Exception e) {
-			MyTimeLogger.getInstance().error(e.getMessage());
+			MyTimeLogger.getInstance().error("Exception  occured due to: ", e);
 			throw new MyTimeException(e.getMessage());
 		}
 		return queryMonthDecider.toString();
@@ -137,7 +137,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 			presentiesList = listOfPresentEmployees.stream().distinct().collect(Collectors.toList());
 			listOfAbsentEmployees = fetchAbsenteesListFromDb(presentiesList);
 		} catch (Exception e) {
-			MyTimeLogger.getInstance().error(e.getMessage());
+			MyTimeLogger.getInstance().error("Exception occured due to: ", e);
 			throw new MyTimeException(e.getMessage());
 		}
 		return listOfAbsentEmployees;
@@ -192,7 +192,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 			}
 
 		} catch (Exception e) {
-			MyTimeLogger.getInstance().error(e.getMessage());
+			MyTimeLogger.getInstance().error("Exception occured due to: ", e);
 			throw new MyTimeException(e.getMessage());
 		}
 		return listOfAbsentEmployees;

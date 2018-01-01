@@ -51,9 +51,10 @@ public class PdfReportGenerator {
 
 	private String createPDF(String pdfFilename, List<EmpLoginData> empLoginDatas, long employeeId)
 			throws MyTimeException {
-		Document doc = new Document();
+		Document doc = null;
 		PdfWriter docWriter = null;
 		try {
+			doc = new Document();
 			File file = resourceLoader.getResource("/WEB-INF/reports/" + pdfFilename).getFile();
 			docWriter = PdfWriter.getInstance(doc, new FileOutputStream(file.getPath()));
 			setPdfDocumentProperties(doc);
@@ -61,7 +62,7 @@ public class PdfReportGenerator {
 			preparePdfDocument(doc, empLoginDatas, employeeId);
 		} catch (Exception dex) {
 			MyTimeLogger.getInstance()
-					.error("DocumentException while generating {} " + pdfFilename + "\n" + dex.getMessage());
+					.error("DocumentException while generating {} " + pdfFilename + "" , dex);
 			throw new MyTimeException(dex.getMessage());
 		} finally {
 			if (doc != null) {
@@ -151,7 +152,7 @@ public class PdfReportGenerator {
 		PdfPCell cell = new PdfPCell(new Phrase(text.trim(), font));
 		cell.setHorizontalAlignment(align);
 		cell.setColspan(colspan);
-		if (text.trim().equalsIgnoreCase("")) {
+		if ("".equalsIgnoreCase(text.trim())) {
 			cell.setMinimumHeight(10f);
 		}
 		table.addCell(cell);

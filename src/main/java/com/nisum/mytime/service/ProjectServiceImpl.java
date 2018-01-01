@@ -142,13 +142,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public List<ProjectTeamMate> getMyTeamDetails(String empId) {
-		System.out.println("empId" + empId);
-		// TODO Auto-generated method stub
 		List<ProjectTeamMate> teamMates = new ArrayList<>();
 		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findByEmployeeId(empId);
-		System.out.println("empRecords" + empRecords);
 		for (ProjectTeamMate pt : empRecords) {
-			System.out.println("pt.getProjectId()" + pt.getProjectId());
 			teamMates.addAll(projectTeamMatesRepo.findByProjectId(pt.getProjectId()));
 		}
 		return teamMates;
