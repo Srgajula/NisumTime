@@ -16,6 +16,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			"designation":"",
 			"billableStatus":"",
 			"mobileNumber":"",
+			"experience":"",
 			"action":""
 	};
 	$scope.employees = [];
@@ -31,8 +32,8 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true, width:120},
 			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
 			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
-			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false, width:100}, 
-			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false}, 
+			{field : 'mobileNumber',displayName: 'Contact', enableColumnMenu: false, enableSorting: false, width:100}, 
+			{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false, enableSorting: false}, 
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
 		]
 	};
@@ -52,7 +53,6 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		$scope.parentData.designation = row.entity.designation;
 		$scope.parentData.billableStatus = row.entity.billableStatus;
 		$scope.parentData.mobileNumber = row.entity.mobileNumber;
-		
 		if(action == "Update"){
 			$scope.updateEmployee(action, $scope.parentData);
 		}
@@ -253,7 +253,20 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			$scope.employeeName = dataToPass.employeeName;
 			$scope.role = dataToPass.role;
 			$scope.emailId = dataToPass.emailId;
+			$scope.shift = dataToPass.shift;
+			$scope.projectId = dataToPass.projectId;
+			$scope.projectName = dataToPass.projectName;
+			$scope.managerId = dataToPass.managerId;
+			$scope.managerName = dataToPass.managerName;
+			$scope.empDesignation = dataToPass.designation;
+			$scope.empBillableStatus = dataToPass.billableStatus;
+			$scope.mobileNumber = dataToPass.mobileNumber;
+			$scope.experience = dataToPass.experience;
 			$scope.isDisabled = true;
+		    $scope.projectModel = {
+					 'projectName': dataToPass.projectName,
+					 'projectId': dataToPass.projectId
+					  };
 		}
 		$scope.designations = ["Director","Sr. Software Engineer","Software Engineer"];
 		$scope.billableStatuses = ["Billable","Shadow","Bench"];

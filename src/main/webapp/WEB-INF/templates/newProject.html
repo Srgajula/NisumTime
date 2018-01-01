@@ -18,7 +18,7 @@
 				ng-model="projectId" placeholder="Project Id" ng-blur="" ng-disabled="isDisabled"/> <br>
 			<input type="text" class="form-control" id="projectName" name="projectName"
 				ng-model="projectName" placeholder="Project Name" /><br>
-				<md-select ng-model="managerModel" md-selected-text="getManagers()" >
+				<md-select ng-model="managerModel" md-selected-text="getManagers()"  >
 			<md-optgroup label="managers"> <md-option ng-value="manager"
 				ng-repeat="manager in managerDetails">{{manager.employeeName}}</md-option> </md-optgroup> </md-select>
 				<div role="alert">
