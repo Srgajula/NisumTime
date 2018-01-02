@@ -20,10 +20,10 @@
 				ng-model="empName" placeholder="Employee Name" /><br>
 			<input type="text" class="form-control" id="empEmail" name="empEmail"
 				ng-model="empEmail" placeholder="Email ID" ng-blur="validateEmailId()" ng-disabled="isDisabled"/>
-			<md-select ng-model="empRole" md-selected-text="getSelectedRole()" id="empRole">
+			<md-select ng-model="empRole" md-selected-text="getSelectedRole()" id="empRole" >
 			<md-optgroup label="roles"> <md-option ng-value="role"
 				ng-repeat="role in roles">{{role}}</md-option> </md-optgroup> </md-select>
-			<md-select ng-model="empShift" md-selected-text="getSelectedShift()" id="empShift" ng-disabled="isDisabled">
+			<md-select ng-model="empShift" md-selected-text="getSelectedShift()" id="empShift" ng-disabled="isDisabled" style="display:none">
 			<md-optgroup label="shifts"> <md-option ng-value="shift"
 				ng-repeat="shift in shifts">{{shift}}</md-option> </md-optgroup> </md-select>
 			<div role="alert">

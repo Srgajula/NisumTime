@@ -23,7 +23,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
 			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
 			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false, width:100}, 
-			{field : 'shift',displayName: 'Shift', enableColumnMenu: false, enableSorting: false}, 
+			//{field : 'shift',displayName: 'Shift', enableColumnMenu: false, enableSorting: false}, 
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
 		]
 	};
