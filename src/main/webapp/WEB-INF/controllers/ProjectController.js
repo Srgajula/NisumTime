@@ -296,7 +296,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 			$scope.isDisabled = true;
 			$http({
 		        method : "GET",
-		        url : appConfig.appUri + "/projectTeam/getTeamDetails?employeeId="+$scope.managerId
+		        url : appConfig.appUri + "/projectTeam/getProjectDetails?projectId="+$scope.projectId
 		    }).then(function mySuccess(response) {
 		        //$scope.teamdetails=response.data;
 		        //$scope.gridOptions.data.push(response.data);

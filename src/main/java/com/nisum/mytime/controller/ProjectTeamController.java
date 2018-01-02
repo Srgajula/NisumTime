@@ -134,4 +134,11 @@ public class ProjectTeamController {
 		List<ProjectTeamMate> employeesRoles = projectService.getAllProjectDetails();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	@RequestMapping(value = "/getProjectDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProjectTeamMate>> getProjectDetails(@RequestParam("projectId") String projectId)
+			throws MyTimeException {
+		List<ProjectTeamMate> employeesRoles = projectService.getProjectDetails(projectId);
+		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	}
+	
 }

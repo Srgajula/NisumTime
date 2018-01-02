@@ -41,4 +41,5 @@ public interface ProjectService {
 	List<EmployeeRoles> getUnAssignedEmployees();
 	public List<ProjectTeamMate> getShiftDetails(String shift);
 	public List<ProjectTeamMate> getAllProjectDetails();
+	public List<ProjectTeamMate> getProjectDetails(String projectId);
 }

@@ -189,4 +189,9 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 		return allprojectMates;	
 	}
+	@Override
+	public List<ProjectTeamMate> getProjectDetails(String projectId) {
+		return projectTeamMatesRepo.findByProjectId(projectId);
+
+	}
 }
