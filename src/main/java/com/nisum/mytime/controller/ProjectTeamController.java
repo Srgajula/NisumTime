@@ -134,4 +134,10 @@ public class ProjectTeamController {
 		List<ProjectTeamMate> employeesRoles = projectService.getShiftDetails(shift);
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	@RequestMapping(value = "/getProjectAllocations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProjectTeamMate>> getProjectAllocations()
+			throws MyTimeException {
+		List<ProjectTeamMate> employeesRoles = projectService.getAllProjectDetails();
+		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	}
 }

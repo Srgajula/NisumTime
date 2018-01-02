@@ -1,4 +1,4 @@
-myApp.controller("projectController",function($scope, myFactory, $mdDialog, $http, appConfig, $timeout){
+myApp.controller("projectController",function($scope, myFactory,exportUiGridService, $mdDialog, $http, appConfig, $timeout){
 	$scope.records = [];
 	$scope.empSearchId = "";
 	$scope.parentData = {
@@ -180,6 +180,22 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		    	else showAlert('Manager assigning/updation failed!!!');
 		    });
 	};
+	$scope.getAllocatedEmployees = function(action, userData){
+		userData.action = action;
+		$mdDialog.show({
+		      controller: AddProjectController,
+		      templateUrl: 'templates/projectAssignedDetails.html',
+		      parent: angular.element(document.body),
+		      clickOutsideToClose:true,
+		      locals:{dataToPass: userData,gridOptionsData: $scope.gridOptions.data, managers: $scope.managers},
+		    })
+		    .then(function(result) {
+		    	if(result == "Assign") showAlert('Manager assigned successfully');
+		    	else if(result == "Update") showAlert('Manager updated successfully');
+		    	else if(result == "Cancelled") console.log(result);
+		    	else showAlert('Manager assigning/updation failed!!!');
+		    });
+	};
 	$scope.cancel = function() {
 	    $mdDialog.hide();
 	};
@@ -316,6 +332,81 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 			$http({
 		        method : "GET",
 		        url : appConfig.appUri + "/projectTeam/getUnAssignedEmployees"
+		    }).then(function mySuccess(response) {
+		        //$scope.teamdetails=response.data;
+		        //$scope.gridOptions.data.push(response.data);
+		    	$scope.gridOptions.data = response.data;
+		    }, function myError(response) {
+		    	showAlert("Something went wrong while fetching data!!!");
+		    	$scope.gridOptions.data = [];
+		    });
+	}else if(dataToPass.action == "allocated"){
+		//$scope.projectId = dataToPass.projectId;
+		//$scope.projectName = dataToPass.projectName;
+		//$scope.managerId = dataToPass.managerId;
+		//$scope.managerName = dataToPass.managerName;
+	  //  $scope.managerModel = dataToPass.managerModel;
+		$scope.gridOptions = {
+				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
+				paginationPageSize : 10,
+			    pageNumber: 1,
+				pageSize:10,
+				columnDefs : [ 
+					{field : 'employeeId',displayName: 'Emp ID', enableColumnMenu: true, enableSorting: true, width:100},
+					{field : 'employeeName',displayName: 'Empl Name ', enableColumnMenu: false, enableSorting: false},
+					{field : 'emailId',displayName: 'Email Id ', enableColumnMenu: false, enableSorting: false},
+					{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
+					{field : 'managerName',displayName: 'Manager ', enableColumnMenu: false, enableSorting: false},
+					{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:50},
+					{field : 'designation',displayName: 'Designation ', enableColumnMenu: false, enableSorting: false},
+					{field : 'billableStatus',displayName: 'Billability ', enableColumnMenu: false, enableSorting: false},
+				],
+				enableGridMenu: true,
+			    enableSelectAll: true,
+			    exporterMenuExcel:false,
+			    exporterMenuCsv:false,
+			    exporterCsvFilename: 'Allocated.csv',
+			    exporterExcelFilename:'AllocatedResources',
+			    exporterPdfDefaultStyle: {fontSize: 9},
+			    exporterPdfTableStyle: {margin: [30, 30, 30, 30]},
+			    exporterPdfTableHeaderStyle: {fontSize: 10, bold: true, italics: true, color: 'red'},
+			    exporterPdfHeader: { text: "Allocated Resources", style: 'headerStyle' },
+			    exporterPdfFooter: function ( currentPage, pageCount ) {
+			      return { text: currentPage.toString() + ' of ' + pageCount.toString(), style: 'footerStyle' };
+			    },
+			    exporterPdfCustomFormatter: function ( docDefinition ) {
+			      docDefinition.styles.headerStyle = { fontSize: 22, bold: true };
+			      docDefinition.styles.footerStyle = { fontSize: 10, bold: true };
+			      return docDefinition;
+			    },
+			    exporterPdfOrientation: 'portrait',
+			    exporterPdfPageSize: 'LETTER',
+			    exporterPdfMaxGridWidth: 500,
+			    exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+			    onRegisterApi: function(gridApi){
+			      $scope.gridApi = gridApi;
+			    },
+			            gridMenuCustomItems: [{
+			                    title: 'Export all data as EXCEL',
+			                    action: function ($event) {
+			                        exportUiGridService.exportToExcel('sheet 1', $scope.gridApi, 'all', 'all');
+			                    },
+			                    order: 110
+			                },
+			                {
+			                    title: 'Export visible data as EXCEL',
+			                    action: function ($event) {
+			                        exportUiGridService.exportToExcel('sheet 1', $scope.gridApi, 'visible', 'visible');
+			                    },
+			                    order: 111
+			                }
+			            ]
+			};
+			//$scope.gridOptions.data = $scope.records;
+			$scope.isDisabled = true;
+			$http({
+		        method : "GET",
+		        url : appConfig.appUri + "/projectTeam/getProjectAllocations"
 		    }).then(function mySuccess(response) {
 		        //$scope.teamdetails=response.data;
 		        //$scope.gridOptions.data.push(response.data);

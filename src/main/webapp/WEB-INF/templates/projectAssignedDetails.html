@@ -1,0 +1,43 @@
+
+<md-dialog aria-label="Free pool employee details" style="width:950px;height:465px;">
+
+<form ng-cloak name="myForm">
+	<md-toolbar>
+	<div class="md-toolbar-tools"
+		style="background: cadetblue;">
+		<h2>Project Allocated Resources </h2>
+		<span flex></span>
+		<md-button class="md-icon-button" ng-click="cancel()"> <i
+			class="fa fa-times fa-2x"
+			style="margin-top: 5px; font-size: 1.5em; float: left"></i> </md-button>
+	</div>
+	</md-toolbar>
+
+	<md-dialog-content>
+	<div class="md-dialog-content">
+		<div class="form-group">
+		 	<div class="row col-lg-12" style="margin-left: 0px;">
+		 	<div class="row col-lg-12">
+			<div class="col-xs-8">
+				<p>
+					<b>The following resources are  allocated to  projects.</b>
+				</p>
+			</div>
+			
+			
+		</div>
+		 	
+		<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination ui-grid-selection ui-grid-exporter
+			style="width:99%;height:250px;margin-left:10px;">
+			<div class="watermark" ng-show="!gridOptions.data.length">No
+				data available</div>
+		</div>
+	</div>
+		</div> 
+	</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row">  <md-button class="md-raised" ng-click="cancel()" style="width:120px;background: cadetblue;color:white;">
+	Close </md-button> </md-dialog-actions>
+</form>
+</md-dialog>

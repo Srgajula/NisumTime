@@ -187,7 +187,11 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		    })
 		    .then(function(result) {
 		    	if(result == "Assign") showAlert('New Teammate assigned successfully');
-		    	else if(result == "Update") showAlert('Teammate updated successfully');
+		    	else if(result == "Update") {
+		    		$scope.refreshPage();
+		    		showAlert('Teammate updated successfully');
+		    	
+		    	}
 		    	else if(result == "Cancelled") console.log(result);
 		    	else showAlert('Teammate assigning/updation failed!!!');
 		    });
