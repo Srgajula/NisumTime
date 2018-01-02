@@ -200,6 +200,24 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "My Team","icon" : "fa fa-futbol-o fa-2x","path" : "templates/myTeam.html"});
+		}else if(role == "HR Manager"){
+			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
+			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
+			menuItems.push({"menu" : "Reports","icon" : "fa fa-pie-chart fa-2x","path" : "templates/reports.html"});
+			menuItems.push({"menu" : "Manage Employees","icon" : "fa fa-user-plus fa-2x","path" : "templates/roles.html"});
+			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/projectDetails.html"});
+			menuItems.push({"menu" : "Manage Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/projects.html"});
+			menuItems.push({"menu" : "Attendance Report","icon" : "fa fa-bar-chart fa-2x","path" : "templates/attendanceReport.html"});
+			menuItems.push({"menu" : "Shift Details","icon" : "fa fa-delicious  fa-2x","path" : "templates/shiftdetails.html"});
+			
+		}else if(role == "Director"){
+			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
+			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
+			menuItems.push({"menu" : "Reports","icon" : "fa fa-pie-chart fa-2x","path" : "templates/reports.html"});
+			menuItems.push({"menu" : "Manage Employees","icon" : "fa fa-user-plus fa-2x","path" : "templates/roles.html"});
+			menuItems.push({"menu" : "Manage Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/projects.html"});
+			menuItems.push({"menu" : "Attendance Report","icon" : "fa fa-bar-chart fa-2x","path" : "templates/attendanceReport.html"});
+			menuItems.push({"menu" : "Shift Details","icon" : "fa fa-delicious  fa-2x","path" : "templates/shiftdetails.html"});
 		}
 		myFactory.setMenuItems(menuItems);
 		myFactory.setTemplateUrl("templates/employee.html");

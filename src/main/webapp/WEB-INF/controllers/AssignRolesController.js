@@ -194,7 +194,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			$scope.empEmail = dataToPass.emailId;
 			$scope.isDisabled = true;
 		}
-		$scope.roles = ["HR","Manager","Employee"];
+		$scope.roles = ["HR","Manager","Employee","HR Manager","Director"];
 		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
 		$scope.getSelectedRole = function(){
 			if ($scope.empRole !== undefined) {
