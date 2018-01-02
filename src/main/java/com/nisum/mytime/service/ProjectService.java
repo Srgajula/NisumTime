@@ -10,8 +10,6 @@ import com.nisum.mytime.model.ProjectTeamMate;
 
 public interface ProjectService {
 
-	Boolean fetchEmployeesData() throws MyTimeException;
-
 	List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate) throws MyTimeException;
 
 	List<Project> getProjects() throws MyTimeException;

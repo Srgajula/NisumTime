@@ -83,51 +83,70 @@ public class EmployeeDataService {
 
 	@Autowired
 	private EmployeeAttendanceRepo employeeLoginsRepo;
+	
+	private File finalfile = null;
 
-	String todayDate = MyTimeUtils.dfmt.format(new Date());
-
-	public List<EmpLoginData> fetchEmployeesData() throws MyTimeException {
-		String queryMonthDecider = null;
+	public Boolean fetchEmployeesData(String perticularDate) throws MyTimeException {
+		Boolean result = false;
+		StringBuilder queryMonthDecider = new StringBuilder();
 		long start_ms = System.currentTimeMillis();
 		List<EmpLoginData> loginsData = new ArrayList<>();
 		Map<String, List<EmpLoginData>> map = new HashMap<>();
 		boolean frstQuery = true;
 		Map<String, EmpLoginData> emp = new HashMap<>();
 		try {
-			int count = 3;
-			File file = fetchRemoteFilesAndCopyToLocal();
-			if (null != file && file.getName().equals(mdbFile)) {
+			File dir = new File(localFileDirectory);
+			for (File file : dir.listFiles()) {
+				if (file.getCanonicalPath().contains(mdbFile)) {
+					finalfile = new File(file.getCanonicalPath());
+				}
+			}
+			if (null != finalfile) {
 				Calendar calendar = new GregorianCalendar();
+				Date date = MyTimeUtils.dfmt.parse(perticularDate);
+				calendar.setTime(date);
 				int month = (calendar.get(Calendar.MONTH)) + 1;
 				int year = calendar.get(Calendar.YEAR);
 
-				String dbURL = MyTimeUtils.driverUrl + file.getCanonicalPath();
+				String dbURL = MyTimeUtils.driverUrl + finalfile.getCanonicalPath();
 				MyTimeLogger.getInstance().info(dbURL);
 				connection = DbConnection.getDBConnection(dbURL);
 				statement = connection.createStatement();
 
-				while (month >= count) {
-					queryMonthDecider = count + MyTimeUtils.UNDER_SCORE + year;
-					resultSet = statement.executeQuery(MyTimeUtils.QUERY + queryMonthDecider.trim());
-					while (resultSet.next()) {
-						frstQuery = true;
-						if (resultSet.getString(4).length() >= 5) {
-							EmpLoginData loginData = new EmpLoginData();
-							loginData.setEmployeeId(resultSet.getString(4));
-							loginData.setFirstLogin(resultSet.getString(5));
-							loginData.setDirection(resultSet.getString(6));
-							PreparedStatement statement1 = connection.prepareStatement(MyTimeUtils.EMP_NAME_QUERY);
-							statement1.setLong(1, Long.valueOf(loginData.getEmployeeId()));
-							ResultSet resultSet1 = statement1.executeQuery();
-							while (resultSet1.next() && frstQuery) {
-								loginData.setEmployeeName(resultSet1.getString(2));
-								frstQuery = false;
-							}
-							loginData.setId(resultSet.getString(4));
-							loginsData.add(loginData);
+				calendar.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH), 6, 00, 00);
+				Date searchdDate = calendar.getTime();
+
+				Date endOfsearchDate = DateUtils.addHours(searchdDate, 24);
+
+				queryMonthDecider.append(MyTimeUtils.QUERY);
+				queryMonthDecider.append((calendar.get(Calendar.MONTH)) + 1);
+				queryMonthDecider.append(MyTimeUtils.UNDER_SCORE);
+				queryMonthDecider.append(calendar.get(Calendar.YEAR));
+				queryMonthDecider.append(MyTimeUtils.WHERE_COND);
+				queryMonthDecider.append(MyTimeUtils.df.format(searchdDate) + MyTimeUtils.SINGLE_QUOTE);
+				queryMonthDecider.append(MyTimeUtils.AND_COND);
+				queryMonthDecider.append(MyTimeUtils.df.format(endOfsearchDate) + MyTimeUtils.SINGLE_QUOTE);
+
+				MyTimeLogger.getInstance().info(queryMonthDecider.toString());
+
+				resultSet = statement.executeQuery(queryMonthDecider.toString());
+				while (resultSet.next()) {
+					frstQuery = true;
+					if (resultSet.getString(4).length() >= 5) {
+						EmpLoginData loginData = new EmpLoginData();
+						loginData.setEmployeeId(resultSet.getString(4));
+						loginData.setFirstLogin(resultSet.getString(5));
+						loginData.setDirection(resultSet.getString(6));
+						PreparedStatement statement1 = connection.prepareStatement(MyTimeUtils.EMP_NAME_QUERY);
+						statement1.setLong(1, Long.valueOf(loginData.getEmployeeId()));
+						ResultSet resultSet1 = statement1.executeQuery();
+						while (resultSet1.next() && frstQuery) {
+							loginData.setEmployeeName(resultSet1.getString(2));
+							frstQuery = false;
 						}
+						loginData.setId(resultSet.getString(4));
+						loginsData.add(loginData);
 					}
-					count++;
 				}
 				Iterator<EmpLoginData> iter = loginsData.iterator();
 				while (iter.hasNext()) {
@@ -137,6 +156,8 @@ public class EmployeeDataService {
 				for (Entry<String, List<EmpLoginData>> empMap : map.entrySet()) {
 					calculatingEachEmployeeLoginsByDate(empMap.getValue(), emp);
 				}
+				employeeLoginsRepo.save(emp.values());
+				result = Boolean.TRUE;
 				MyTimeLogger.getInstance().info("Time Taken for " + (System.currentTimeMillis() - start_ms));
 			}
 		} catch (Exception sqlex) {
@@ -153,7 +174,7 @@ public class EmployeeDataService {
 				MyTimeLogger.getInstance().error(e.getMessage());
 			}
 		}
-		return new ArrayList<>(emp.values());
+		return result;
 	}
 
 	public Boolean fetchEmployeesDataOnDayBasis() throws MyTimeException, SQLException {
@@ -177,15 +198,21 @@ public class EmployeeDataService {
 				statement = connection.createStatement();
 
 				Calendar calendar1 = Calendar.getInstance();
-				calendar1.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH) - 1, 6, 00, 00);
+				int decidedDay = (calendar.get(Calendar.DAY_OF_WEEK));
+				int addingHoursBasedOnDay = 72;
+				if (decidedDay != 3) {
+					decidedDay = 1;
+					addingHoursBasedOnDay = 48;
+				}
+				calendar1.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH) - decidedDay, 6, 00, 00);
 				Date currentDayDate = calendar1.getTime();
 
-				Date nextDayDate = DateUtils.addHours(currentDayDate, 48);
+				Date nextDayDate = DateUtils.addHours(currentDayDate, addingHoursBasedOnDay);
 
 				queryMonthDecider.append(MyTimeUtils.QUERY);
-				queryMonthDecider.append(month);
+				queryMonthDecider.append((calendar1.get(Calendar.MONTH)) + 1);
 				queryMonthDecider.append(MyTimeUtils.UNDER_SCORE);
-				queryMonthDecider.append(year);
+				queryMonthDecider.append(calendar1.get(Calendar.YEAR));
 				queryMonthDecider.append(MyTimeUtils.WHERE_COND);
 				queryMonthDecider.append(MyTimeUtils.df.format(currentDayDate) + MyTimeUtils.SINGLE_QUOTE);
 				queryMonthDecider.append(MyTimeUtils.AND_COND);

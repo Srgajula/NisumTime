@@ -50,4 +50,11 @@ public class AttendanceController {
 		return new ResponseEntity<>(lisOfAttendenceData, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "employeesDataSave/{searchDate}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> employeesDataSave(@PathVariable("searchDate") String searchDate)
+			throws MyTimeException {
+		Boolean result = userService.fetchEmployeesData(searchDate);
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+
 }

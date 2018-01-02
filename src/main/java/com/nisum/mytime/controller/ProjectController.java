@@ -34,12 +34,6 @@ public class ProjectController {
 		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/employeesDataSave", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Boolean> employeesDataSave() throws MyTimeException {
-		Boolean result = userService.fetchEmployeesData();
-		return new ResponseEntity<>(result, HttpStatus.OK);
-	}
-
 	@RequestMapping(value = "/addProject", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Project> addProject(@RequestBody Project employeeRoles) throws MyTimeException {
 		Project project = projectService.addProject(employeeRoles);

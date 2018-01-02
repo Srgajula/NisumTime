@@ -8,7 +8,7 @@ import com.nisum.mytime.model.EmployeeRoles;
 
 public interface UserService {
 
-	Boolean fetchEmployeesData() throws MyTimeException;
+	Boolean fetchEmployeesData(String perticularDate) throws MyTimeException;
 
 	List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate) throws MyTimeException;
 

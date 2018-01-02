@@ -14,15 +14,11 @@ import org.springframework.stereotype.Service;
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
-import com.nisum.mytime.repository.EmployeeAttendanceRepo;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
 import com.nisum.mytime.utils.PdfReportGenerator;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
-
-	@Autowired
-	private EmployeeAttendanceRepo employeeLoginsRepo;
 
 	@Autowired
 	private EmployeeRolesRepo employeeRolesRepo;
@@ -36,14 +32,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-
 	@Override
-	public Boolean fetchEmployeesData() throws MyTimeException {
-		Boolean result = false;
-		List<EmpLoginData> listOfEmpLoginData = employeeDataBaseService.fetchEmployeesData();
-		employeeLoginsRepo.save(listOfEmpLoginData);
-		result = true;
-		return result;
+	public Boolean fetchEmployeesData(String perticularDate) throws MyTimeException {
+		return employeeDataBaseService.fetchEmployeesData(perticularDate);
 	}
 
 	@Override
@@ -99,5 +90,5 @@ public class UserServiceImpl implements UserService {
 	public EmployeeRoles getEmployeesRoleData(String employeeId) {
 		return employeeRolesRepo.findByEmployeeId(employeeId);
 	}
-	
+
 }

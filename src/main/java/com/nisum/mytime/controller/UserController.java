@@ -31,12 +31,6 @@ public class UserController {
 		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/employeesDataSave", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Boolean> employeesDataSave() throws MyTimeException {
-		Boolean result = userService.fetchEmployeesData();
-		return new ResponseEntity<>(result, HttpStatus.OK);
-	}
-
 	@RequestMapping(value = "/assignEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
 		EmployeeRoles employeeRole = userService.assigingEmployeeRole(employeeRoles);
