@@ -24,7 +24,7 @@ public class MyTimeCronSchedularJob implements Job {
 				MyTimeLogger.getInstance().info("Shedular Executed Successfully Records Saved in DB");
 			}
 		} catch (MyTimeException | SQLException e) {
-			MyTimeLogger.getInstance().error("Shedular failed to Executed ::: " + e.getMessage());
+			MyTimeLogger.getInstance().error("Shedular failed to Executed ::: " , e);
 		}
 	}
 }

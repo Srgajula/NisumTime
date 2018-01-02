@@ -16,10 +16,11 @@ public class DateCompare implements Comparator<EmpLoginData> {
 		try {
 			first = MyTimeUtils.df.parse(o1.getFirstLogin());
 			second = MyTimeUtils.df.parse(o2.getFirstLogin());
+			int result = (first.after(second) ? 1 : 0);
+			return (first.before(second) ? -1 : result);
 		} catch (ParseException e) {
 			MyTimeLogger.getInstance().info(e.getMessage());
 		}
-
-		return first.before(second) ? -1 : first.after(second) ? 1 : 0;
+		return -1;
 	}
 }

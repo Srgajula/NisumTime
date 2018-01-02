@@ -10,22 +10,16 @@ public class MyTimeLogger {
 	private static MyTimeLogger loggingInstance = null;
 
 	/** The logger. */
-	private static Logger logger = null;
+	private Logger logger = null;
 
 	private MyTimeLogger() {
 		logger = LogManager.getLogger("com.nisum.mytime.utils.MyTimeLogger");
 	}
 
-	public static MyTimeLogger getInstance() {
+	public synchronized static MyTimeLogger getInstance() {
 		if (loggingInstance == null) {
-			synchronized (MyTimeLogger.class) {
-				if (loggingInstance == null) {
-					loggingInstance = new MyTimeLogger();
-					return loggingInstance;
-				} else {
-					return loggingInstance;
-				}
-			}
+			loggingInstance = new MyTimeLogger();
+			return loggingInstance;
 		} else {
 			return loggingInstance;
 		}
@@ -36,7 +30,7 @@ public class MyTimeLogger {
 		try {
 			className = Thread.currentThread().getStackTrace()[3].getClassName();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception occured due to: ", e);
 		}
 		return className;
 	}
@@ -46,27 +40,27 @@ public class MyTimeLogger {
 		try {
 			methodName = Thread.currentThread().getStackTrace()[3].getMethodName();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception occured due to: ", e);
 		}
 		return methodName;
 	}
 
 	public void entry() {
 		String message = "Entry";
-		String logMsg = "TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
+		String logMsg = "TID :"  + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
 				+ " - " + message;
 		logger.log(Level.INFO, logMsg);
 	}
 
 	public void info(String message) {
-		String logMsg = "TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
+		String logMsg = "TID: " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
 				+ " - " + message;
 		logger.log(Level.INFO, logMsg);
 
 	}
 
 	public void warn(String message) {
-		String logMsg = "TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
+		String logMsg = " TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
 				+ " - " + message;
 		logger.log(Level.WARN, logMsg);
 	}
@@ -78,19 +72,19 @@ public class MyTimeLogger {
 	}
 
 	public void debug(String message) {
-		String logMsg = "TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
+		String logMsg = " TID: " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
 				+ " - " + message;
 		logger.log(Level.DEBUG, logMsg);
 	}
 
 	public void debug(String message, Throwable t) {
-		String logMsg = "TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
+		String logMsg = " TID:" + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
 				+ " - " + message;
 		logger.log(Level.DEBUG, logMsg, t);
 	}
 
 	public void error(String message) {
-		String logMsg = "TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
+		String logMsg = "TID :  " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
 				+ " - " + message;
 		logger.log(Level.ERROR, logMsg);
 	}
@@ -101,7 +95,7 @@ public class MyTimeLogger {
 	}
 
 	public void fatal(String message) {
-		String logMsg = "TID : " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
+		String logMsg = "TID: " + Thread.currentThread().getId() + " : " + getClassName() + " : " + getMethodName()
 				+ " - " + message;
 		logger.log(Level.FATAL, logMsg);
 	}

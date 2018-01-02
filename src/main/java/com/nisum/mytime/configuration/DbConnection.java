@@ -4,7 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DbConnection {
+	
+	private static Logger log = LoggerFactory.getLogger(DbConnection.class);
 
 	private static Connection connection = null;
 
@@ -13,8 +18,7 @@ public class DbConnection {
 			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 			connection = DriverManager.getConnection(dbURL);
 		} catch (ClassNotFoundException cnfex) {
-			System.out.println("Problem in loading or " + "registering MS Access JDBC driver");
-			cnfex.printStackTrace();
+			log.error("Problem in loading or " + "registering MS Access JDBC driver", cnfex);
 		}
 		return connection;
 	}
