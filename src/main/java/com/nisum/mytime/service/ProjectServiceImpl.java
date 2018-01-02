@@ -188,4 +188,18 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 		return shiftEmpDetails;
 	}
+	
+	@Override
+	public List<ProjectTeamMate> getAllProjectDetails() {
+		List<Project> projects = projectRepo.findAll();
+		List<ProjectTeamMate> allprojectMates =new ArrayList<>();  
+		for (Project pt : projects) {
+			if(pt.getStatus().equalsIgnoreCase("Active")) {
+			List<ProjectTeamMate> employeeDetails=	projectTeamMatesRepo.findByProjectId(pt.getProjectId());
+			allprojectMates.addAll(employeeDetails);
+		}
+		
+	}
+		return allprojectMates;	
+	}
 }
