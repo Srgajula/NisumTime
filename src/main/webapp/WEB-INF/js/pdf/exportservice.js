@@ -1,108 +1,5 @@
-var myApp = angular.module(
-		"myTimeApp",
-		[ "ngRoute", "ngCookies", "ui.grid", "ui.grid.pagination",
-				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter' ]).config(
-		function($mdDateLocaleProvider) {
-			$mdDateLocaleProvider.formatDate = function(date) {
-				var day = date.getDate();
-				var month = date.getMonth() + 1;
-				var year = date.getFullYear();
-				return year + '-' + (month < 10 ? "0" + month : month) + '-'
-						+ (day < 10 ? "0" + day : day);
-			};
-		});
 
-//TODO: Replace this appUri with the domain name created
-myApp.constant('appConfig', { 
-			appName: "MyTime", 
-			appUri: "http://192.168.15.17:8080/my-time/", 
-			version:"1.0", 
-			empStartId:16001, 
-			empEndId:16999
-		});
-
-myApp.factory('myFactory', function() {
-	var empId = "";
-	var empName = "";
-	var empEmailId = "";
-	var empRole = "";
-	var menuItems = [];
-	var templateUrl = "";
-	var profileUrl = "";
-	
-	function setEmpId(id) {
-		empId = id;
-	}
-	function getEmpId() {
-		return empId;
-	}
-
-	function setEmpName(name) {
-		empName = name;
-	}
-	function getEmpName() {
-		return empName;
-	}
-
-	function setEmpEmailId(email) {
-		empEmailId = email;
-	}
-	function getEmpEmailId() {
-		return empEmailId;
-	}
-
-	function setEmpRole(role) {
-		empRole = role;
-	}
-
-	function getEmpRole() {
-		return empRole;
-	}
-
-	function setMenuItems(items) {
-		menuItems = items;
-	}
-
-	function getMenuItems() {
-		return menuItems;
-	}
-
-	function setTemplateUrl(url) {
-		templateUrl = url;
-	}
-
-	function getTemplateUrl() {
-		return templateUrl;
-	}
-	
-	function setProfileUrl(picurl) {
-		profileUrl = picurl;
-	}
-
-	function getProfileUrl() {
-		return profileUrl;
-	}
-
-	return {
-		setEmpId : setEmpId,
-		getEmpId : getEmpId,
-		setEmpName : setEmpName,
-		getEmpName : getEmpName,
-		setEmpEmailId : setEmpEmailId,
-		getEmpEmailId : getEmpEmailId,
-		setEmpRole : setEmpRole,
-		getEmpRole : getEmpRole,
-		setMenuItems : setMenuItems,
-		getMenuItems : getMenuItems,
-		setTemplateUrl : setTemplateUrl,
-		getTemplateUrl : getTemplateUrl,
-		setProfileUrl : setProfileUrl,
-		getProfileUrl : getProfileUrl
-	}
-
-});
-
-myApp.factory('exportUiGridService', exportUiGridService);
+app.factory('exportUiGridService', exportUiGridService);
 
     exportUiGridService.inject = ['uiGridExporterService'];
     function exportUiGridService(uiGridExporterService) {
@@ -121,7 +18,7 @@ myApp.factory('exportUiGridService', exportUiGridService);
         function exportToExcel(sheetName, gridApi, rowTypes, colTypes) {
             var columns = gridApi.grid.options.showHeader ? uiGridExporterService.getColumnHeaders(gridApi.grid, colTypes) : [];
             var data = uiGridExporterService.getData(gridApi.grid, rowTypes, colTypes);
-            var fileName = gridApi.grid.options.exporterExcelFilename ? gridApi.grid.options.exporterExcelFilename : 'mytime';
+            var fileName = gridApi.grid.options.exporterExcelFilename ? gridApi.grid.options.exporterExcelFilename : 'dokuman';
             fileName += '.xlsx';
             var wb = new Workbook(),
                 ws = sheetFromArrayUiGrid(data, columns);

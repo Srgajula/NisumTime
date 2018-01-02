@@ -23,7 +23,7 @@
 			<md-select ng-model="empRole" md-selected-text="getSelectedRole()" id="empRole">
 			<md-optgroup label="roles"> <md-option ng-value="role"
 				ng-repeat="role in roles">{{role}}</md-option> </md-optgroup> </md-select>
-			<md-select ng-model="empShift" md-selected-text="getSelectedShift()" id="empShift">
+			<md-select ng-model="empShift" md-selected-text="getSelectedShift()" id="empShift" ng-disabled="isDisabled">
 			<md-optgroup label="shifts"> <md-option ng-value="shift"
 				ng-repeat="shift in shifts">{{shift}}</md-option> </md-optgroup> </md-select>
 			<div role="alert">

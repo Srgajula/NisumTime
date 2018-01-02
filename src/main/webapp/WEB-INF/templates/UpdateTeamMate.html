@@ -1,4 +1,4 @@
-<md-dialog aria-label="Role Template" style="width:400px;height:700px;">
+<md-dialog aria-label="Role Template" style="width:400px;height:800px;">
 <form ng-cloak name="myForm">
 	<md-toolbar>
 	<div class="md-toolbar-tools" style="background: cadetblue;">
@@ -23,6 +23,9 @@
 			<md-optgroup label="Project"> <md-option
 				ng-value="project" ng-repeat="project in projectList">{{project.projectName}}</md-option>
 			</md-optgroup> </md-select>
+			<md-select ng-model="shift" md-selected-text="getSelectedShift()" id="empShift">
+			<md-optgroup label="shifts"> <md-option ng-value="shift"
+				ng-repeat="shift in shifts">{{shift}}</md-option> </md-optgroup> </md-select>
 			<md-select ng-model="empDesignation" md-selected-text="getSelectedDesignation()" id="empDesignation">
 			<md-optgroup label="designations"> <md-option ng-value="designation"
 				ng-repeat="designation in designations">{{designation}}</md-option> </md-optgroup> </md-select>

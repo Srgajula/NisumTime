@@ -85,15 +85,6 @@ public class ProjectTeamController {
 	public ResponseEntity<List<ProjectTeamMate>> getTeamDetails(@RequestParam("employeeId") String employeeId)
 			throws MyTimeException {
 		List<ProjectTeamMate> employeesRoles = projectService.getTeamDetails(employeeId);
-		// projectService.get
-		/*
-		 * List<EmployeeRoles> managers=new ArrayList<>(); for(EmployeeRoles
-		 * emp:employeesRoles) { if(emp.getRole().equalsIgnoreCase("Manager")) {
-		 * managers.add(emp) ; } }
-		 */
-		// List<EmployeeRoles> managers = employeesRoles.stream().filter(e ->
-		// e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
-
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
 
@@ -129,31 +120,18 @@ public class ProjectTeamController {
 	public ResponseEntity<List<ProjectTeamMate>> getMyTeamDetails(@RequestParam("employeeId") String employeeId)
 			throws MyTimeException {
 		List<ProjectTeamMate> employeesRoles = projectService.getMyTeamDetails(employeeId);
-		// projectService.get
-		/*
-		 * List<EmployeeRoles> managers=new ArrayList<>(); for(EmployeeRoles
-		 * emp:employeesRoles) { if(emp.getRole().equalsIgnoreCase("Manager")) {
-		 * managers.add(emp) ; } }
-		 */
-		// List<EmployeeRoles> managers = employeesRoles.stream().filter(e ->
-		// e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
-
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getUnAssignedEmployees", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeRoles>> getUnAssignedEmployees() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = projectService.getUnAssignedEmployees();
-		// projectService.get
-		/*
-		 * List<EmployeeRoles> managers=new ArrayList<>(); for(EmployeeRoles
-		 * emp:employeesRoles) { if(emp.getRole().equalsIgnoreCase("Manager")) {
-		 * managers.add(emp) ; } }
-		 */
-		// List<EmployeeRoles> managers = employeesRoles.stream().filter(e ->
-		// e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
-
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
-
+	@RequestMapping(value = "/getShiftDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProjectTeamMate>> getShiftDetails(@RequestParam("shift") String shift)
+			throws MyTimeException {
+		List<ProjectTeamMate> employeesRoles = projectService.getShiftDetails(shift);
+		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	}
 }

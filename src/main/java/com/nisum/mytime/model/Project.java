@@ -30,6 +30,7 @@ public class Project implements Serializable {
 	private String projectName;
 	private String managerId;
 	private String managerName;
+	private String status;
 	private List<String> employeeIds;
 
 }

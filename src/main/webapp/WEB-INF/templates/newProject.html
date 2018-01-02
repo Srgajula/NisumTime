@@ -21,6 +21,9 @@
 				<md-select ng-model="managerModel" md-selected-text="getManagers()"  >
 			<md-optgroup label="managers"> <md-option ng-value="manager"
 				ng-repeat="manager in managerDetails">{{manager.employeeName}}</md-option> </md-optgroup> </md-select>
+				<md-select ng-model="projectStatus" md-selected-text="getProjectStatus()" id="projectStatus">
+			<md-optgroup label="projectStatus"> <md-option ng-value="prjctSts"
+				ng-repeat="prjctSts in prjctStses">{{prjctSts}}</md-option> </md-optgroup> </md-select>
 				<div role="alert">
 				<span class="error" style="color: red;">{{alertMsg}}</span>
 			</div>

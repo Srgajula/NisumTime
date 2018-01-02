@@ -6,6 +6,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 			"projectName": "",
 			"managerId":"",
 			"managerName": "",
+			"status": "",
 			"action":""
 	};
 	
@@ -25,6 +26,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 			{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
 			{field : 'managerId',displayName: 'Manager ID ', enableColumnMenu: false, enableSorting: false},
 			{field : 'managerName',displayName: 'Manager Name ', enableColumnMenu: false, enableSorting: false},
+			{field : 'status',displayName: 'Status ', enableColumnMenu: false, enableSorting: false},
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:130} 
 		]
 	};
@@ -35,6 +37,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.parentData.projectName = row.entity.projectName;
 		$scope.parentData.managerId = row.entity.managerId;
 		$scope.parentData.managerName = row.entity.managerName;
+		$scope.parentData.status = row.entity.status;
 		if(action == "Update")
 			$scope.addProject(action, $scope.parentData);
 		else if(action == "Delete")
@@ -225,7 +228,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.isDisabled = false;
 		$scope.result = "";
 		$scope.managerDetails = managers;
-		
+		$scope.prjctStses=["Active","On Hold","Proposed","Completed"];
 		if(dataToPass.action == "Assign"){
 			$scope.projectId = "";
 			$scope.projectName = "";
@@ -238,6 +241,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.projectName = dataToPass.projectName;
 		$scope.managerId = dataToPass.managerId;
 		$scope.managerName = dataToPass.managerName;
+		$scope.projectStatus = dataToPass.status;
 		$scope.managerModel = {
 			 'employeeName': dataToPass.managerName,
 			 'employeeId': dataToPass.managerId
@@ -254,6 +258,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 		$scope.projectName = dataToPass.projectName;
 		$scope.managerId = dataToPass.managerId;
 		$scope.managerName = dataToPass.managerName;
+		$scope.projectStatus = dataToPass.status;
 	  //  $scope.managerModel = dataToPass.managerModel;
 		$scope.gridOptions = {
 				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
@@ -329,7 +334,13 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 				return "Please select a manager";
 			}
 		};
-		
+		$scope.getProjectStatus = function(){
+			if ($scope.projectStatus !== undefined) {
+				return $scope.projectStatus;
+			} else {
+				return "Please select project status";
+			}
+		};
 //		$scope.getSelectedShift = function(){
 //			if ($scope.empShift !== undefined) {
 //				return $scope.empShift;
@@ -406,7 +417,7 @@ myApp.controller("projectController",function($scope, myFactory, $mdDialog, $htt
 				$scope.alertMsg = "Please select a manager";
 			}else{
 				$scope.alertMsg = "";
-				var record = {"projectId":$scope.projectId, "projectName": $scope.projectName, "managerId": $scope.managerModel.employeeId,  "managerName": $scope.managerModel.employeeName};
+				var record = {"projectId":$scope.projectId, "projectName": $scope.projectName, "managerId": $scope.managerModel.employeeId,  "managerName": $scope.managerModel.employeeName, "status": $scope.projectStatus};
 				addOrUpdateProject(record, $scope.templateTitle);
 				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}

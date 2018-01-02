@@ -1,4 +1,4 @@
-myApp.controller("attendanceReportController", function($scope, $http, myFactory, $mdDialog, appConfig,$timeout) {
+myApp.controller("attendanceReportController", function($scope, $http, myFactory,exportUiGridService, $mdDialog, appConfig,$timeout) {
 	$scope.records = [];
 	$scope.empId = myFactory.getEmpId();
 	$scope.empName = myFactory.getEmpName();
@@ -17,7 +17,47 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 				{field : 'employeeId',displayName: 'Employee Id', enableColumnMenu: false, enableSorting: true},
 				{field : 'employeeName',displayName: 'Employee Name', enableColumnMenu: false, enableSorting: false},
 				{field : 'ifPresent',displayName: 'Status', enableColumnMenu: false, enableSorting: false}
-			]
+			],
+			enableGridMenu: true,
+		    enableSelectAll: true,
+		    exporterMenuExcel:false,
+		    exporterMenuCsv:false,
+		    exporterCsvFilename: 'AbsentDetails.csv',
+		    exporterExcelFilename:'AbsentDetails',
+		    exporterPdfDefaultStyle: {fontSize: 9},
+		    exporterPdfTableStyle: {margin: [30, 30, 30, 30]},
+		    exporterPdfTableHeaderStyle: {fontSize: 10, bold: true, italics: true, color: 'red'},
+		    exporterPdfHeader: { text: "Absent Details", style: 'headerStyle' },
+		    exporterPdfFooter: function ( currentPage, pageCount ) {
+		      return { text: currentPage.toString() + ' of ' + pageCount.toString(), style: 'footerStyle' };
+		    },
+		    exporterPdfCustomFormatter: function ( docDefinition ) {
+		      docDefinition.styles.headerStyle = { fontSize: 22, bold: true };
+		      docDefinition.styles.footerStyle = { fontSize: 10, bold: true };
+		      return docDefinition;
+		    },
+		    exporterPdfOrientation: 'portrait',
+		    exporterPdfPageSize: 'LETTER',
+		    exporterPdfMaxGridWidth: 500,
+		    exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+		    onRegisterApi: function(gridApi){
+		      $scope.gridApi = gridApi;
+		    },
+		            gridMenuCustomItems: [{
+		                    title: 'Export all data as EXCEL',
+		                    action: function ($event) {
+		                        exportUiGridService.exportToExcel('sheet 1', $scope.gridApi, 'all', 'all');
+		                    },
+		                    order: 110
+		                },
+		                {
+		                    title: 'Export visible data as EXCEL',
+		                    action: function ($event) {
+		                        exportUiGridService.exportToExcel('sheet 1', $scope.gridApi, 'visible', 'visible');
+		                    },
+		                    order: 111
+		                }
+		            ]
 	};
 	$scope.gridOptions.data = [];
 	

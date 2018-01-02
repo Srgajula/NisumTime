@@ -93,6 +93,7 @@ public class ProjectServiceImpl implements ProjectService {
 		Update update = new Update();
 		update.set("managerId", project.getManagerId());
 		update.set("managerName", project.getManagerName());
+		update.set("status", project.getStatus());
 		FindAndModifyOptions options = new FindAndModifyOptions();
 		options.returnNew(true);
 		options.upsert(true);
@@ -142,13 +143,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public List<ProjectTeamMate> getMyTeamDetails(String empId) {
-		System.out.println("empId" + empId);
-		// TODO Auto-generated method stub
 		List<ProjectTeamMate> teamMates = new ArrayList<>();
 		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findByEmployeeId(empId);
-		System.out.println("empRecords" + empRecords);
 		for (ProjectTeamMate pt : empRecords) {
-			System.out.println("pt.getProjectId()" + pt.getProjectId());
 			teamMates.addAll(projectTeamMatesRepo.findByProjectId(pt.getProjectId()));
 		}
 		return teamMates;
@@ -171,5 +168,24 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 
 		return notAssignedEmployees;
+	}
+	@Override
+	public List<ProjectTeamMate> getShiftDetails(String shift) {
+		List<Project> projects = projectRepo.findAll();
+		List<ProjectTeamMate> shiftEmpDetails =new ArrayList<>();  //projectTeamMatesRepo.findAll();
+		for (Project pt : projects) {
+			if(pt.getStatus().equalsIgnoreCase("Active")) {
+			List<ProjectTeamMate> employeeDetails=	projectTeamMatesRepo.findByProjectId(pt.getProjectId());
+		for (ProjectTeamMate emp : employeeDetails) {
+
+			if (emp.getShift()!=null&&emp.getShift().equalsIgnoreCase(shift)) {
+				shiftEmpDetails.add(emp);
+			}else if(emp.getShift()==null&&shift.equalsIgnoreCase("Shift 1(09:00 AM - 06:00 PM)")) {
+				shiftEmpDetails.add(emp);
+			}
+		}
+		}
+		}
+		return shiftEmpDetails;
 	}
 }

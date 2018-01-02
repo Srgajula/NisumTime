@@ -1,4 +1,4 @@
-myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog, $http, appConfig, $timeout){
+myApp.controller("shiftDetailsController",function($scope, myFactory,exportUiGridService, $mdDialog, $http, appConfig, $timeout){
 	$scope.records = [];
 	$scope.empSearchId = "";
 	
@@ -33,7 +33,47 @@ myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog
 			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false},
 			{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false}
 		//	{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
-		]
+		],
+	enableGridMenu: true,
+    enableSelectAll: true,
+    exporterMenuExcel:false,
+    exporterMenuCsv:false,
+    exporterCsvFilename: 'ShiftDetails.csv',
+    exporterExcelFilename:'ShiftDetails',
+    exporterPdfDefaultStyle: {fontSize: 9},
+    exporterPdfTableStyle: {margin: [30, 30, 30, 30]},
+    exporterPdfTableHeaderStyle: {fontSize: 10, bold: true, italics: true, color: 'red'},
+    exporterPdfHeader: { text: "Shift Details", style: 'headerStyle' },
+    exporterPdfFooter: function ( currentPage, pageCount ) {
+      return { text: currentPage.toString() + ' of ' + pageCount.toString(), style: 'footerStyle' };
+    },
+    exporterPdfCustomFormatter: function ( docDefinition ) {
+      docDefinition.styles.headerStyle = { fontSize: 22, bold: true };
+      docDefinition.styles.footerStyle = { fontSize: 10, bold: true };
+      return docDefinition;
+    },
+    exporterPdfOrientation: 'portrait',
+    exporterPdfPageSize: 'LETTER',
+    exporterPdfMaxGridWidth: 500,
+    exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+    onRegisterApi: function(gridApi){
+      $scope.gridApi = gridApi;
+    },
+            gridMenuCustomItems: [{
+                    title: 'Export all data as EXCEL',
+                    action: function ($event) {
+                        exportUiGridService.exportToExcel('sheet 1', $scope.gridApi, 'all', 'all');
+                    },
+                    order: 110
+                },
+                {
+                    title: 'Export visible data as EXCEL',
+                    action: function ($event) {
+                        exportUiGridService.exportToExcel('sheet 1', $scope.gridApi, 'visible', 'visible');
+                    },
+                    order: 111
+                }
+            ]
 	};
 	$scope.gridOptions.data = $scope.records;
 	
@@ -61,13 +101,30 @@ myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog
 		$scope.getUserRoles();
 		$scope.getEmployeesToTeam();
 	}
-	
-	$scope.getMyTeamDetails = function(){
+	$scope.getSelectedShift = function(){
+		//alert('In getSelectedShift'+$scope.shiftValue);
+		if ($scope.shiftValue !== undefined) {
+			return $scope.shiftValue;
+		} else {
+			return "Please select a shift";
+		}
+	};
+	$scope.getShiftDetails = function(){
+		
+		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
+		
+		var shiftV = $scope.shiftValue;
+		if(shiftV == undefined ||shiftV==""){
+			shiftV="Shift 2(03:30 PM - 12:30 PM)";
+		}
+		$scope.shiftValue=shiftV;
+		$scope.selectedshiftValue=shiftV;
 		$http({
 	        method : "GET",
-	        url : appConfig.appUri + "/projectTeam/getMyTeamDetails?employeeId="+myFactory.getEmpId()
+	        url : appConfig.appUri + "/projectTeam/getShiftDetails?shift="+shiftV
 	    }).then(function mySuccess(response) {
 	        $scope.gridOptions.data = response.data;
+	        $scope.shiftCount=response.data.length;
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
 	    	$scope.gridOptions.data = [];
@@ -279,8 +336,9 @@ myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog
 			}
 		};
 		$scope.getSelectedShift = function(){
-			if ($scope.empShift !== undefined) {
-				return $scope.empShift;
+			alert('In getSelectedShift'+$scope.shiftValue);
+			if ($scope.shiftValue !== undefined) {
+				return $scope.shiftValue;
 			} else {
 				return "Please select a shift";
 			}

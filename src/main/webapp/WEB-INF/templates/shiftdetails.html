@@ -1,0 +1,62 @@
+<div class="md-padding" style="width: 100%; padding: 3px 0px 0px 0px;"
+	id="popupContainer" ng-controller="shiftDetailsController"
+	ng-init="getShiftDetails()">
+	<div class="container-fluid mainDivHeaderClass">
+		<div class="row">
+			<div class="col-lg-12">
+				<p align="center" class="col-xs-11"
+					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Shift Details </p>
+				<p align="right" class="col-xs-1"
+					style="vertical-align: middle; font-weight: bold; font-size: 1.5em; margin-top: 8px; cursor: pointer;">
+					<!-- <i class="fa fa-refresh" aria-hidden="true"
+						ng-click="refreshPage()"></i> -->
+				</p>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="row col-lg-12" style="height: 15px;"></div>
+	<div class="container" style="text-align: center; padding-left: 75px;">
+	
+	<div class="row col-lg-12">
+	<div class="col-xs-2" style="vertical-align: middle;">
+				<p>
+					<b>Select Shift:</b>
+					</p>
+			</div>
+			<div class="col-xs-4">
+				<p>
+					
+					<md-select ng-model="shiftValue" md-selected-text="getSelectedShift()" id="shiftValue">
+			<md-optgroup label="shifts"> <md-option ng-value="shiftValue"
+				ng-repeat="shiftValue in shifts">{{shiftValue}}</md-option> </md-optgroup> </md-select>
+				</p>
+			</div>
+			<div class="col-xs-2" style="cursor: pointer;" align="right">
+				<md-button class="md-raised md-primary"
+					style="width:100px;background: cadetblue;" ng-click="getShiftDetails()">
+				<i class="fa fa-search fa-2x"
+					style="margin-top: 5px; font-size: 1.5em; float: left"></i> Search</md-button>
+			</div>
+		</div>
+	
+	<div class="row col-lg-12" style="height: 15px;"></div>
+	<div class="row col-lg-12">
+		<div class="col-xs-8">
+				<p >
+					The following <b>{{shiftCount}}</b> employees  work in the shift:<b> {{selectedshiftValue}}</b> 
+				</p>
+			</div>
+			
+		</div>
+		</div>
+	<div class="row col-lg-12" style="height: 15px;"></div>
+	<div class="row col-lg-12" style="margin-left: 0px;">
+
+		<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination ui-grid-selection ui-grid-exporter
+			class="myGrid">
+			<div class="watermark" ng-show="!gridOptions.data.length">No
+				data available</div>
+		</div>
+	</div>
+</div>

@@ -270,7 +270,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		}
 		$scope.designations = ["Director","Sr. Software Engineer","Software Engineer"];
 		$scope.billableStatuses = ["Billable","Shadow","Bench"];
-		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 PM)"];
+		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
 		$scope.getSelectedDesignation = function(){
 			if ($scope.empDesignation !== undefined) {
 				return $scope.empDesignation;
@@ -302,8 +302,8 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			}
 		};
 		$scope.getSelectedShift = function(){
-			if ($scope.empShift !== undefined) {
-				return $scope.empShift;
+			if ($scope.shift !== undefined) {
+				return $scope.shift;
 			} else {
 				return "Please select a shift";
 			}
