@@ -32,8 +32,9 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true, width:120},
 			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
 			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
-			{field : 'mobileNumber',displayName: 'Contact', enableColumnMenu: false, enableSorting: false, width:100}, 
+			{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100}, 
 			{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false, enableSorting: false}, 
+			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false},
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
 		]
 	};

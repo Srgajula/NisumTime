@@ -108,11 +108,13 @@ public class ProjectServiceImpl implements ProjectService {
 
 		ProjectTeamMate existingTeammate = projectTeamMatesRepo
 				.findByEmployeeIdAndManagerId(projectTeamMate.getEmployeeId(), projectTeamMate.getManagerId());
+		existingTeammate.setProjectId(projectTeamMate.getProjectId());
+		existingTeammate.setProjectName(projectTeamMate.getProjectName());
 		existingTeammate.setExperience(projectTeamMate.getExperience());
 		existingTeammate.setDesignation(projectTeamMate.getDesignation());
 		existingTeammate.setBillableStatus(projectTeamMate.getBillableStatus());
 		existingTeammate.setMobileNumber(projectTeamMate.getMobileNumber());
-
+		existingTeammate.setShift(projectTeamMate.getShift());
 		return projectTeamMatesRepo.save(existingTeammate);
 	}
 
