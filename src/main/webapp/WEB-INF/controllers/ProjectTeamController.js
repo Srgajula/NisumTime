@@ -32,8 +32,9 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true, width:120},
 			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
 			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
-			{field : 'mobileNumber',displayName: 'Contact', enableColumnMenu: false, enableSorting: false, width:100}, 
+			{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100}, 
 			{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false, enableSorting: false}, 
+			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false},
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
 		]
 	};
@@ -272,9 +273,9 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 					 'projectId': dataToPass.projectId
 					  };
 		}
-		$scope.designations = ["Director","Sr. Software Engineer","Software Engineer"];
+		$scope.designations =myFactory.getDesignations(); 
 		$scope.billableStatuses = ["Billable","Shadow","Bench"];
-		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
+		$scope.shifts =myFactory.getShifts();// ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
 		$scope.getSelectedDesignation = function(){
 			if ($scope.empDesignation !== undefined) {
 				return $scope.empDesignation;

@@ -1,4 +1,4 @@
-myApp.controller("projectController",function($scope, myFactory,exportUiGridService, $mdDialog, $http, appConfig, $timeout){
+myApp.controller("viewProjectController",function($scope, myFactory,exportUiGridService, $mdDialog, $http, appConfig, $timeout){
 	$scope.records = [];
 	$scope.empSearchId = "";
 	$scope.parentData = {
@@ -12,9 +12,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 	
 	$scope.managers = [];
 	
-	var getCellTemplate = '<p class="col-lg-12"><i class="fa fa-book fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'View\')"></i>'+
-	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Update\')"></i>'+
-	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-minus-circle fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Delete\')"></i></p>';
+	var getCellTemplate = '<p class="col-lg-12"><i class="fa fa-book fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'View\')"></i></p>';
 
 	$scope.gridOptions = {
 		paginationPageSizes : [ 10, 20, 30, 40, 50, 100],

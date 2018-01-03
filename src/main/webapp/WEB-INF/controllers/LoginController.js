@@ -11,6 +11,8 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		console.log('Image URL: ' + profile.getImageUrl());
 		getUserRole(profile);
 		getAllUserRoles();
+		getAllShifts();
+		getAllDesignations();
 	}
 	
 	function onFailure(error){
@@ -55,7 +57,26 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	    	$scope.rolesData = [];
 	    });
 	};
-	
+	function getAllShifts(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getAllShifts"
+	    }).then(function mySuccess(response) {
+	     	myFactory.setShifts(response.data);
+	    }, function myError(response) {
+	    	$scope.shifts = [];
+	    });
+	};
+	function getAllDesignations(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getAllDesignations"
+	    }).then(function mySuccess(response) {
+	   	myFactory.setDesignations(response.data);
+	    }, function myError(response) {
+	    	$scope.shifts = [];
+	    });
+	};
 	function showRegisterEmployeeScreen(profile){
 		$mdDialog.show({
 	      controller: NewEmployeeController,
@@ -86,7 +107,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		$scope.empEmail = dataToPass.getEmail();
 		$scope.empShift;
 		
-		$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
+		$scope.shifts = myFactory.getShifts(); //["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
 		
 		$scope.getSelectedShift = function(){
 			if ($scope.empShift !== undefined) {
@@ -197,10 +218,11 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/reportees.html"});
 			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/projectDetails.html"});
+			menuItems.push({"menu" : "View Projects","icon" : "fa fa-compass fa-2x","path" : "templates/viewProjects.html"});
 		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "My Team","icon" : "fa fa-futbol-o fa-2x","path" : "templates/myTeam.html"});
-		}else if(role == "HR Manager"){
+		}else if(role == "HR Manager" || role == "Director"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
 			menuItems.push({"menu" : "Reports","icon" : "fa fa-pie-chart fa-2x","path" : "templates/reports.html"});
@@ -209,16 +231,12 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			menuItems.push({"menu" : "Manage Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/projects.html"});
 			menuItems.push({"menu" : "Attendance Report","icon" : "fa fa-bar-chart fa-2x","path" : "templates/attendanceReport.html"});
 			menuItems.push({"menu" : "Shift Details","icon" : "fa fa-superpowers fa-2x","path" : "templates/shiftdetails.html"});
-			
-		}else if(role == "Director"){
+		}else if(role == "Lead"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
-			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
-			menuItems.push({"menu" : "Reports","icon" : "fa fa-pie-chart fa-2x","path" : "templates/reports.html"});
-			menuItems.push({"menu" : "Manage Employees","icon" : "fa fa-user-plus fa-2x","path" : "templates/roles.html"});
-			menuItems.push({"menu" : "Manage Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/projects.html"});
-			menuItems.push({"menu" : "Attendance Report","icon" : "fa fa-bar-chart fa-2x","path" : "templates/attendanceReport.html"});
-			menuItems.push({"menu" : "Shift Details","icon" : "fa fa-superpowers fa-2x","path" : "templates/shiftdetails.html"});
+			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/reportees.html"});
+			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/projectDetails.html"});
 		}
+		
 		myFactory.setMenuItems(menuItems);
 		myFactory.setTemplateUrl("templates/employee.html");
 		myFactory.setProfileUrl(profilePicUrl);

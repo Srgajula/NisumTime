@@ -1,6 +1,8 @@
 package com.nisum.mytime.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,15 +65,12 @@ public class ProjectTeamController {
 
 	@RequestMapping(value = "/getEmployeesToTeam", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeRoles>> getManagers() throws MyTimeException {
-		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
-		/*
-		 * List<EmployeeRoles> managers=new ArrayList<>(); for(EmployeeRoles
-		 * emp:employeesRoles) { if(emp.getRole().equalsIgnoreCase("Manager")) {
-		 * managers.add(emp) ; } }
-		 */
-		// List<EmployeeRoles> managers = employeesRoles.stream().filter(e ->
-		// e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
-
+		List<EmployeeRoles> employeesRoles = new ArrayList<>();
+		if(userService.getEmployeeRoles()!=null) {
+			employeesRoles=userService.getEmployeeRoles().stream().sorted((o1, o2)->o1.getEmployeeName().
+                compareTo(o2.getEmployeeName())).
+                collect(Collectors.toList());
+		}
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
 
@@ -134,4 +133,11 @@ public class ProjectTeamController {
 		List<ProjectTeamMate> employeesRoles = projectService.getAllProjectDetails();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	@RequestMapping(value = "/getProjectDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProjectTeamMate>> getProjectDetails(@RequestParam("projectId") String projectId)
+			throws MyTimeException {
+		List<ProjectTeamMate> employeesRoles = projectService.getProjectDetails(projectId);
+		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+	}
+	
 }

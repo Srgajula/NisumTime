@@ -1,5 +1,6 @@
 package com.nisum.mytime.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmployeeRoles;
+import com.nisum.mytime.model.Shift;
 import com.nisum.mytime.service.UserService;
 
 @RestController
@@ -64,8 +67,24 @@ public class UserController {
 	@RequestMapping(value = "/getManagers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeRoles>> getManagers() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
-		List<EmployeeRoles> managers = employeesRoles.stream().filter(e -> e.getRole().equalsIgnoreCase("Manager")).collect(Collectors.toList());
+		List<EmployeeRoles> managers = employeesRoles.stream().filter(e -> (e.getRole().equalsIgnoreCase("Manager")||e.getRole().equalsIgnoreCase("HR Manager")||e.getRole().equalsIgnoreCase("Lead"))).collect(Collectors.toList());
 		return new ResponseEntity<>(managers, HttpStatus.OK);
+	}
+	@RequestMapping(value = "/getAllShifts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<String>> getAllShifts() throws MyTimeException {
+		List<String> shifts = new ArrayList<>();
+				
+		shifts = userService.getAllShifts().stream().filter(e -> e.getActiveStatus().equalsIgnoreCase("Y")).map(Shift::getShiftName) .collect(Collectors.toList());
+				
+		return new ResponseEntity<>(shifts, HttpStatus.OK);
+	}
+	@RequestMapping(value = "/getAllDesignations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<String>> getAllDesignations() throws MyTimeException {
+		List<String> designations = new ArrayList<>();
+				
+		designations = userService.getAllDesignations().stream().filter(e -> e.getActiveStatus().equalsIgnoreCase("Y")).map(Designation::getDesignationName) .collect(Collectors.toList());
+				
+		return new ResponseEntity<>(designations, HttpStatus.OK);
 	}
 	
 }

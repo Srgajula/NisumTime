@@ -29,7 +29,8 @@ myApp.factory('myFactory', function() {
 	var menuItems = [];
 	var templateUrl = "";
 	var profileUrl = "";
-	
+	var designations="";
+	var shifts="";
 	function setEmpId(id) {
 		empId = id;
 	}
@@ -66,7 +67,20 @@ myApp.factory('myFactory', function() {
 	function getMenuItems() {
 		return menuItems;
 	}
+	function setDesignations(designations1) {
+		designations = designations1;
+	}
 
+	function getDesignations() {
+		return designations;
+	}
+	function setShifts(shifts1) {
+		shifts = shifts1;
+	}
+
+	function getShifts() {
+		return shifts;
+	}
 	function setTemplateUrl(url) {
 		templateUrl = url;
 	}
@@ -94,6 +108,10 @@ myApp.factory('myFactory', function() {
 		getEmpRole : getEmpRole,
 		setMenuItems : setMenuItems,
 		getMenuItems : getMenuItems,
+		setDesignations : setDesignations,
+		getDesignations : getDesignations,
+		setShifts : setShifts,
+		getShifts : getShifts,
 		setTemplateUrl : setTemplateUrl,
 		getTemplateUrl : getTemplateUrl,
 		setProfileUrl : setProfileUrl,

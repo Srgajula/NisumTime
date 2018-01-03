@@ -12,9 +12,13 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
+import com.nisum.mytime.model.Shift;
+import com.nisum.mytime.repository.DesignationRepo;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
+import com.nisum.mytime.repository.ShiftRepo;
 import com.nisum.mytime.utils.PdfReportGenerator;
 
 @Service("userService")
@@ -22,6 +26,12 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private EmployeeRolesRepo employeeRolesRepo;
+	
+	@Autowired
+	private ShiftRepo shiftRepo;
+	
+	@Autowired
+	private DesignationRepo designationRepo;
 
 	@Autowired
 	private EmployeeDataService employeeDataBaseService;
@@ -89,6 +99,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public EmployeeRoles getEmployeesRoleData(String employeeId) {
 		return employeeRolesRepo.findByEmployeeId(employeeId);
+	}
+
+	@Override
+	public List<Shift> getAllShifts() throws MyTimeException {
+		return shiftRepo.findAll();
+	}
+
+	@Override
+	public List<Designation> getAllDesignations() throws MyTimeException {
+		return designationRepo.findAll();
 	}
 
 }
