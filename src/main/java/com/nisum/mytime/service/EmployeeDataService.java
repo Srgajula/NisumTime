@@ -83,7 +83,7 @@ public class EmployeeDataService {
 
 	@Autowired
 	private EmployeeAttendanceRepo employeeLoginsRepo;
-
+	
 	private File finalfile = null;
 
 	public Boolean fetchEmployeesData(String perticularDate) throws MyTimeException {
@@ -299,7 +299,6 @@ public class EmployeeDataService {
 		long start_ms = System.currentTimeMillis();
 		Query query = null;
 		int countHours = 0;
-		int zeroHoursCount = 0;
 		List<EmpLoginData> listOfEmpLoginData = new ArrayList<>();
 
 		try {
@@ -322,17 +321,14 @@ public class EmployeeDataService {
 					empLoginData.setLastLogout(dbObject.get(MyTimeUtils.LAST_LOGOUT).toString());
 					empLoginData.setTotalLoginTime(dbObject.get(MyTimeUtils.TOTAL_LOGIN_TIME).toString());
 					Date d = MyTimeUtils.tdf.parse(empLoginData.getTotalLoginTime());
-					if (0 == d.getTime()) {
-						zeroHoursCount++;
-					}
 					countHours += d.getTime();
 					listOfEmpLoginData.add(empLoginData);
-
 				}
 				if (!listOfEmpLoginData.isEmpty()) {
-					listOfEmpLoginData.get(0).setTotalAvgTime(
-							MyTimeUtils.tdf.format(countHours / listOfEmpLoginData.size() - zeroHoursCount));
+					listOfEmpLoginData.get(0)
+							.setTotalAvgTime(MyTimeUtils.tdf.format(countHours / listOfEmpLoginData.size()));
 				}
+
 				MyTimeLogger.getInstance().info(" Time Taken fecth Employee data based on Dates ::: "
 						+ (System.currentTimeMillis() - start_ms));
 
