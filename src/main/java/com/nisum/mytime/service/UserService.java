@@ -29,5 +29,6 @@ public interface UserService {
 	EmployeeRoles getEmployeesRoleData(String empId);
 	
 	List<Shift> getAllShifts() throws MyTimeException;
+	
 	List<Designation> getAllDesignations() throws MyTimeException;
 }

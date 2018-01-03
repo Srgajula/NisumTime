@@ -73,17 +73,13 @@ public class UserController {
 	@RequestMapping(value = "/getAllShifts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> getAllShifts() throws MyTimeException {
 		List<String> shifts = new ArrayList<>();
-				
 		shifts = userService.getAllShifts().stream().filter(e -> e.getActiveStatus().equalsIgnoreCase("Y")).map(Shift::getShiftName) .collect(Collectors.toList());
-				
 		return new ResponseEntity<>(shifts, HttpStatus.OK);
 	}
 	@RequestMapping(value = "/getAllDesignations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> getAllDesignations() throws MyTimeException {
 		List<String> designations = new ArrayList<>();
-				
 		designations = userService.getAllDesignations().stream().filter(e -> e.getActiveStatus().equalsIgnoreCase("Y")).map(Designation::getDesignationName) .collect(Collectors.toList());
-				
 		return new ResponseEntity<>(designations, HttpStatus.OK);
 	}
 	
