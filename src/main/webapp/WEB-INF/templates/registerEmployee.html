@@ -1,4 +1,4 @@
-<md-dialog aria-label="Registration Template" style="width:440px;height:380px;">
+<md-dialog aria-label="Registration Template" style="width:440px;height:500px;">
 <form ng-cloak name="myForm">
 	<md-toolbar style="height:40px">
 	<div class="md-toolbar-tools"
@@ -19,9 +19,11 @@
 			<input type="text" class="form-control" id="empName" name="empName"
 				ng-model="empName" placeholder="Employee Name" /><br>
 			<input type="text" class="form-control" id="empEmail" name="empEmail"
-				ng-model="empEmail" placeholder="Email ID" ng-disabled="true"/>
+				ng-model="empEmail" placeholder="Email ID" ng-disabled="true"/><br>
+				<input type="text" class="form-control" id="mobileNumber" name="mobileNumber"
+				ng-model="mobileNumber" placeholder="Mobile No" />
 			<md-select ng-model="empShift" md-selected-text="getSelectedShift()" id="empShift">
-			<md-optgroup label="shifts"> <md-option ng-value="shift"
+			<md-optgroup label="skills"> <md-option ng-value="shift"
 				ng-repeat="shift in shifts">{{shift}}</md-option> </md-optgroup> </md-select>
 			<div role="alert">
 				<span class="error" style="color: red;">{{alertMsg}}</span>

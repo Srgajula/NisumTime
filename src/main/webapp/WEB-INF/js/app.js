@@ -15,7 +15,7 @@ var myApp = angular.module(
 //TODO: Replace this appUri with the domain name created
 myApp.constant('appConfig', { 
 			appName: "MyTime", 
-			appUri: "http://192.168.15.17:8080/myTime/", 
+			appUri: "http://localhost:8080/myTime/", 
 			version:"1.0", 
 			empStartId:16001, 
 			empEndId:16999
@@ -30,6 +30,7 @@ myApp.factory('myFactory', function() {
 	var templateUrl = "";
 	var profileUrl = "";
 	var designations="";
+	var technologies="";
 	var shifts="";
 	function setEmpId(id) {
 		empId = id;
@@ -74,6 +75,14 @@ myApp.factory('myFactory', function() {
 	function getDesignations() {
 		return designations;
 	}
+	
+
+	function setTechnologies(technologies1) {
+		technologies = technologies1;
+	}
+	function getTechnologies() {
+		return technologies;
+	}
 	function setShifts(shifts1) {
 		shifts = shifts1;
 	}
@@ -110,6 +119,8 @@ myApp.factory('myFactory', function() {
 		getMenuItems : getMenuItems,
 		setDesignations : setDesignations,
 		getDesignations : getDesignations,
+		setTechnologies : setTechnologies,
+		getTechnologies : getTechnologies,
 		setShifts : setShifts,
 		getShifts : getShifts,
 		setTemplateUrl : setTemplateUrl,

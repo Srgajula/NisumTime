@@ -13,6 +13,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		getAllUserRoles();
 		getAllShifts();
 		getAllDesignations();
+		getAllTechnologies();
 	}
 	
 	function onFailure(error){
@@ -64,7 +65,6 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	    }).then(function mySuccess(response) {
 	     	myFactory.setShifts(response.data);
 	    }, function myError(response) {
-	    	$scope.shifts = [];
 	    });
 	};
 	function getAllDesignations(){
@@ -74,7 +74,16 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	    }).then(function mySuccess(response) {
 	   	myFactory.setDesignations(response.data);
 	    }, function myError(response) {
-	    	$scope.shifts = [];
+	    });
+	};
+	function getAllTechnologies(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getSkills"
+	    }).then(function mySuccess(response) {
+	   	myFactory.setTechnologies(response.data);
+	    }, function myError(response) {
+	   
 	    });
 	};
 	function showRegisterEmployeeScreen(profile){
@@ -106,14 +115,13 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		$scope.empName = dataToPass.getName();
 		$scope.empEmail = dataToPass.getEmail();
 		$scope.empShift;
-		
-		$scope.shifts = myFactory.getShifts(); //["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
+		$scope.shifts = myFactory.getTechnologies(); //["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
 		
 		$scope.getSelectedShift = function(){
 			if ($scope.empShift !== undefined) {
 				return $scope.empShift;
 			} else {
-				return "Please select a shift";
+				return "Please select  primary skill";
 			}
 		};
 		
@@ -153,6 +161,8 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			var searchId = $scope.empId;
 			var empName = $scope.empName;
 			var empShift = $scope.empShift;
+			var mobileNumber = $scope.mobileNumber;
+			
 			if(searchId == ""){
 				$scope.alertMsg = "Employee ID is mandatory";
 				document.getElementById('empId').focus();
@@ -165,12 +175,15 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			}else if(empName == ""){
 				$scope.alertMsg = "Employee Name is mandatory";
 				document.getElementById('empName').focus();
+			}else if(mobileNumber == undefined || mobileNumber == ""){
+				$scope.alertMsg = "Mobile Number is mandatory";
+				document.getElementById('mobileNumber').focus();
 			}else if(empShift == undefined){
-				$scope.alertMsg = "Please select a shift";
+				$scope.alertMsg = "Please select a primary skill";
 				document.getElementById('empShift').focus();
 			}else{
 				$scope.alertMsg = "";
-				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": "Employee", "shift": $scope.empShift};
+				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": "Employee", "shift": "Shift 1(09:00 AM - 06:00 PM)","mobileNumber":$scope.mobileNumber,"baseTechnology": $scope.empShift};
 				addEmployee(record);
 			}
 		};
@@ -214,14 +227,17 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			menuItems.push({"menu" : "Manage Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/projects.html"});
 			menuItems.push({"menu" : "Attendance Report","icon" : "fa fa-bar-chart fa-2x","path" : "templates/attendanceReport.html"});
 			menuItems.push({"menu" : "Shift Details","icon" : "fa fa-superpowers fa-2x","path" : "templates/shiftdetails.html"});
+			menuItems.push({"menu" : "My Profile","icon" : "fa fa-user-circle-o fa-2x","path" : "templates/profile.html"});
 		}else if(role == "Manager"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/reportees.html"});
 			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/projectDetails.html"});
 			menuItems.push({"menu" : "View Projects","icon" : "fa fa-compass fa-2x","path" : "templates/viewProjects.html"});
+			menuItems.push({"menu" : "My Profile","icon" : "fa fa-user-circle-o fa-2x","path" : "templates/profile.html"});
 		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "My Team","icon" : "fa fa-futbol-o fa-2x","path" : "templates/myTeam.html"});
+			menuItems.push({"menu" : "My Profile","icon" : "fa fa-user-circle-o fa-2x","path" : "templates/profile.html"});
 		}else if(role == "HR Manager" || role == "Director"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Employee Details","icon" : "fa fa-users fa-2x","path" : "templates/employees.html"});
@@ -231,10 +247,12 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			menuItems.push({"menu" : "Manage Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/projects.html"});
 			menuItems.push({"menu" : "Attendance Report","icon" : "fa fa-bar-chart fa-2x","path" : "templates/attendanceReport.html"});
 			menuItems.push({"menu" : "Shift Details","icon" : "fa fa-superpowers fa-2x","path" : "templates/shiftdetails.html"});
+			menuItems.push({"menu" : "My Profile","icon" : "fa fa-user-circle-o fa-2x","path" : "templates/profile.html"});
 		}else if(role == "Lead"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/reportees.html"});
 			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/projectDetails.html"});
+			menuItems.push({"menu" : "My Profile","icon" : "fa fa-user-circle-o fa-2x","path" : "templates/profile.html"});
 		}
 		
 		myFactory.setMenuItems(menuItems);

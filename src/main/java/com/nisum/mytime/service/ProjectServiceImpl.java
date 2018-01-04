@@ -115,7 +115,15 @@ public class ProjectServiceImpl implements ProjectService {
 		existingTeammate.setBillableStatus(projectTeamMate.getBillableStatus());
 		existingTeammate.setMobileNumber(projectTeamMate.getMobileNumber());
 		existingTeammate.setShift(projectTeamMate.getShift());
-		return projectTeamMatesRepo.save(existingTeammate);
+		ProjectTeamMate teamMate= projectTeamMatesRepo.save(existingTeammate);
+		try {
+		EmployeeRoles employeeDB= employeeRolesRepo.findByEmployeeId(teamMate.getEmployeeId());
+		employeeDB.setShift(teamMate.getShift());
+		employeeDB.setMobileNumber(teamMate.getMobileNumber());
+		employeeRolesRepo.save(employeeDB);
+		}
+		catch(Exception e) {}
+		return teamMate;
 	}
 
 	@Override

@@ -15,10 +15,14 @@ import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
+import com.nisum.mytime.model.ProjectTeamMate;
 import com.nisum.mytime.model.Shift;
+import com.nisum.mytime.model.Skill;
 import com.nisum.mytime.repository.DesignationRepo;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
+import com.nisum.mytime.repository.ProjectTeamMatesRepo;
 import com.nisum.mytime.repository.ShiftRepo;
+import com.nisum.mytime.repository.TechnologyRepo;
 import com.nisum.mytime.utils.PdfReportGenerator;
 
 @Service("userService")
@@ -26,12 +30,15 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private EmployeeRolesRepo employeeRolesRepo;
-	
+	@Autowired
+	private ProjectTeamMatesRepo projectTeamMatesRepo;
 	@Autowired
 	private ShiftRepo shiftRepo;
 	
 	@Autowired
 	private DesignationRepo designationRepo;
+	@Autowired
+	private TechnologyRepo technologyRepo;
 
 	@Autowired
 	private EmployeeDataService employeeDataBaseService;
@@ -66,7 +73,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public EmployeeRoles assigingEmployeeRole(EmployeeRoles employeeRoles) throws MyTimeException {
 		employeeRoles.setCreatedOn(new Date());
-		return employeeRolesRepo.save(employeeRoles);
+			return employeeRolesRepo.save(employeeRoles);
 	}
 
 	@Override
@@ -111,4 +118,33 @@ public class UserServiceImpl implements UserService {
 		return designationRepo.findAll();
 	}
 
+	@Override
+	public List<Skill> getTechnologies() throws MyTimeException {
+	return technologyRepo.findAll();
+	}
+	@Override
+	public EmployeeRoles updateProfile(EmployeeRoles employeeRoles) throws MyTimeException {
+		boolean mobileNumberChnaged=false;
+		employeeRoles.setLastModifiedOn(new Date());
+		EmployeeRoles existingEmployee=employeeRolesRepo.findByEmployeeId(employeeRoles.getEmployeeId());
+		String newMobileNumber=employeeRoles.getMobileNumber();
+		if(newMobileNumber!=null&&!newMobileNumber.equalsIgnoreCase("")) {
+			if(existingEmployee!=null&&existingEmployee.getMobileNumber()!=null&&!existingEmployee.getMobileNumber().equalsIgnoreCase(newMobileNumber)){
+				mobileNumberChnaged=true;
+			}
+		}
+		EmployeeRoles employeeRolesDB= employeeRolesRepo.save(employeeRoles);
+		if(mobileNumberChnaged) {
+			try {
+		List<ProjectTeamMate>  employeeProfiles=	projectTeamMatesRepo.findByEmployeeId(employeeRoles.getEmployeeId());
+		if(employeeProfiles!=null&&!employeeProfiles.isEmpty()) {
+			for(ProjectTeamMate profile:employeeProfiles){
+				profile.setMobileNumber(employeeRolesDB.getMobileNumber());
+				projectTeamMatesRepo.save(profile);
+			}
+		}}catch(Exception e) {}
+		}
+		return employeeRolesDB;
+	
+	}
 }

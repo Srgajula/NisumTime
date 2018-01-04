@@ -7,6 +7,7 @@ import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Shift;
+import com.nisum.mytime.model.Skill;
 
 public interface UserService {
 
@@ -29,5 +30,10 @@ public interface UserService {
 	EmployeeRoles getEmployeesRoleData(String empId);
 	
 	List<Shift> getAllShifts() throws MyTimeException;
+	
 	List<Designation> getAllDesignations() throws MyTimeException;
+	
+	List<Skill> getTechnologies() throws MyTimeException;
+	
+	public EmployeeRoles updateProfile(EmployeeRoles employeeRoles) throws MyTimeException;
 }

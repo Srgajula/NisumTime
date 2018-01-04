@@ -18,6 +18,7 @@ import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Shift;
+import com.nisum.mytime.model.Skill;
 import com.nisum.mytime.service.UserService;
 
 @RestController
@@ -86,5 +87,26 @@ public class UserController {
 				
 		return new ResponseEntity<>(designations, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/getSkills", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<String>> getTechnologies() throws MyTimeException {
+		List<String> technologies = new ArrayList<>();
+		technologies = userService.getTechnologies().stream().filter(e -> e.getActiveStatus().equalsIgnoreCase("Y")).map(Skill::getSkillName) .collect(Collectors.toList());
+		System.out.println("technologies"+technologies);
+		return new ResponseEntity<>(technologies, HttpStatus.OK);
+
+			}
+	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<EmployeeRoles> updateProfile(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+		EmployeeRoles employeeDB=userService.getEmployeesRoleData(employeeRoles.getEmployeeId());
+		employeeDB.setMobileNumber(employeeRoles.getMobileNumber());
+		employeeDB.setAlternateMobileNumber(employeeRoles.getAlternateMobileNumber());
+		employeeDB.setPersonalEmailId(employeeRoles.getPersonalEmailId());
+		employeeDB.setBaseTechnology(employeeRoles.getBaseTechnology());
+		employeeDB.setTechnologyKnown(employeeRoles.getTechnologyKnown());
+		EmployeeRoles employeeRole = userService.updateProfile(employeeDB);
+		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
+	}
+
 	
 }

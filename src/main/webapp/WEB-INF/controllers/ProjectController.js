@@ -252,7 +252,6 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 			$scope.managerName = "";
 			$scope.isDisabled = false;
 	}else if(dataToPass.action == "Update"){
-		//alert("dataToPass"+dataToPass)
 		$scope.projectId = dataToPass.projectId;
 		$scope.projectName = dataToPass.projectName;
 		$scope.managerId = dataToPass.managerId;
@@ -263,11 +262,6 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 			 'employeeId': dataToPass.managerId
 			  };
 		$scope.managerDetails = managers;
-//	 	$scope.managerModel.managerId=$scope.managerId;
-//		$scope.managerModel.employeeName=$scope.managerName;
-		//alert('$scope.managers'+$scope.managerDetails)
-		//alert('$scope.managerModel'+$scope.managerModel)
-		//$scope.managerModel.employeeName=dataToPass.managerName;
 			$scope.isDisabled = true;
 	}else if(dataToPass.action == "View"){
 		$scope.projectId = dataToPass.projectId;
@@ -275,8 +269,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		$scope.managerId = dataToPass.managerId;
 		$scope.managerName = dataToPass.managerName;
 		$scope.projectStatus = dataToPass.status;
-	  //  $scope.managerModel = dataToPass.managerModel;
-		$scope.gridOptions = {
+	    $scope.gridOptions = {
 				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 				paginationPageSize : 10,
 			    pageNumber: 1,

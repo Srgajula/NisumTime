@@ -289,8 +289,8 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 				$scope.alertMsg = "Please select a role";
 				document.getElementById('empRole').focus();
 			}else if(empShift == undefined){
-				$scope.alertMsg = "Please select a shift";
-				document.getElementById('empShift').focus();
+				//$scope.alertMsg = "Please select a shift";
+				//document.getElementById('empShift').focus();
 			}else{
 				$scope.alertMsg = "";
 				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": $scope.empRole, "shift": $scope.empShift};
