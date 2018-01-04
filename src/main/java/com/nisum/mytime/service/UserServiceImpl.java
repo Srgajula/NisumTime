@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 	public Boolean fetchEmployeesData(String perticularDate) throws MyTimeException {
 		return employeeDataBaseService.fetchEmployeesData(perticularDate);
 	}
-
+	
 	@Override
 	public List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate)
 			throws MyTimeException {

@@ -10,4 +10,6 @@ public interface AttendanceService {
 
 	List<AttendenceData> getAttendanciesReport(String reportDate) throws MyTimeException, SQLException;
 
+	Boolean copyRemoteMdbFileToLocal() throws MyTimeException;
+
 }

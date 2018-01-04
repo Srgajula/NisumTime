@@ -56,5 +56,13 @@ public class AttendanceController {
 		Boolean result = userService.fetchEmployeesData(searchDate);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "copyRemoteMdbFileToLocal", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> copyRemoteMdbFileToLocal()
+			throws MyTimeException {
+		Boolean result = attendanceService.copyRemoteMdbFileToLocal();
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+
 
 }

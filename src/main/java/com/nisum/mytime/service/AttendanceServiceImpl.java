@@ -1,6 +1,8 @@
 package com.nisum.mytime.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,6 +30,8 @@ import com.nisum.mytime.model.AttendenceData;
 import com.nisum.mytime.utils.MyTimeLogger;
 import com.nisum.mytime.utils.MyTimeUtils;
 
+import jcifs.smb.SmbFile;
+
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
 
@@ -35,6 +40,12 @@ public class AttendanceServiceImpl implements AttendanceService {
 
 	@Value("${mytime.localFile.directory}")
 	private String localFileDirectory;
+
+	@Value("${mytime.remote.directory}")
+	private String remoteFilesDirectory;
+
+	@Value("${mytime.remote.connection}")
+	private String remotePath;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -105,9 +116,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 			Date maxTimeToLogin = DateUtils.addHours(dayStartsTime, 12);
 
 			queryMonthDecider.append(MyTimeUtils.USERID_QUERY);
-			queryMonthDecider.append(month);
+			queryMonthDecider.append(calendar.get(Calendar.MONTH) + 1);
 			queryMonthDecider.append(MyTimeUtils.UNDER_SCORE);
-			queryMonthDecider.append(year);
+			queryMonthDecider.append(calendar.get(Calendar.YEAR));
 			queryMonthDecider.append(MyTimeUtils.WHERE_COND);
 			queryMonthDecider.append(MyTimeUtils.df.format(dayStartsTime) + MyTimeUtils.SINGLE_QUOTE);
 			queryMonthDecider.append(MyTimeUtils.AND_COND);
@@ -198,4 +209,27 @@ public class AttendanceServiceImpl implements AttendanceService {
 		return listOfAbsentEmployees;
 
 	}
+
+	public Boolean copyRemoteMdbFileToLocal() throws MyTimeException {
+		File Finalfile = null;
+		boolean result = false;
+		try {
+			SmbFile[] smbFiles = new SmbFile(remotePath).listFiles();
+			for (SmbFile file : smbFiles) {
+				if (file.getCanonicalPath().contains(mdbFile)) {
+					Finalfile = new File(localFileDirectory + file.getName());
+					try (InputStream in = file.getInputStream();
+							FileOutputStream out = new FileOutputStream(Finalfile)) {
+						IOUtils.copy(in, out);
+						result = true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			MyTimeLogger.getInstance().error(e.getMessage());
+			throw new MyTimeException(e.getMessage());
+		}
+		return result;
+	}
+
 }

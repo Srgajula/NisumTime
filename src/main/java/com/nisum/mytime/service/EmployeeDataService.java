@@ -323,7 +323,6 @@ public class EmployeeDataService {
 					Date d = MyTimeUtils.tdf.parse(empLoginData.getTotalLoginTime());
 					countHours += d.getTime();
 					listOfEmpLoginData.add(empLoginData);
-
 				}
 				if (!listOfEmpLoginData.isEmpty()) {
 					listOfEmpLoginData.get(0)

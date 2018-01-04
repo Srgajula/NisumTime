@@ -1,7 +1,6 @@
 package com.nisum.mytime.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -20,7 +19,6 @@ import lombok.ToString;
 @ToString
 @Document(collection = "Designations")
 public class Designation implements Serializable {
-
 
 	private static final long serialVersionUID = 1L;
 

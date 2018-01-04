@@ -1,7 +1,6 @@
 package com.nisum.mytime.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -21,7 +20,6 @@ import lombok.ToString;
 @Document(collection = "Shifts")
 public class Shift implements Serializable {
 
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -30,5 +28,4 @@ public class Shift implements Serializable {
 	private String shiftName;
 	private String activeStatus;
 	
-
 }

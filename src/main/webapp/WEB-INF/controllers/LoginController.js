@@ -228,14 +228,21 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			menuItems.push({"menu" : "Attendance Report","icon" : "fa fa-bar-chart fa-2x","path" : "templates/attendanceReport.html"});
 			menuItems.push({"menu" : "Shift Details","icon" : "fa fa-superpowers fa-2x","path" : "templates/shiftdetails.html"});
 			menuItems.push({"menu" : "ReSync Data","icon" : "fa fa-recycle fa-2x","path" : "templates/resyncData.html"});
+<<<<<<< HEAD
 		    menuItems.push({"menu" : "My Profile","icon" : "fa fa-user-circle-o fa-2x","path" : "templates/profile.html"});
 			
+=======
+>>>>>>> branch 'master' of https://github.com/srgajula-nisum-com/NisumTime
 		}else if(role == "Manager"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/reportees.html"});
 			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/projectDetails.html"});
+<<<<<<< HEAD
 			menuItems.push({"menu" : "View Projects","icon" : "fa fa-compass fa-2x","path" : "templates/viewProjects.html"});
 			menuItems.push({"menu" : "My Profile","icon" : "fa fa-user-circle-o fa-2x","path" : "templates/profile.html"});
+=======
+			menuItems.push({"menu" : "View Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/viewProjects.html"});
+>>>>>>> branch 'master' of https://github.com/srgajula-nisum-com/NisumTime
 		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "My Team","icon" : "fa fa-futbol-o fa-2x","path" : "templates/myTeam.html"});
