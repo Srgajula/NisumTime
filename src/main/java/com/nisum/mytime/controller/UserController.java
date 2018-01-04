@@ -1,5 +1,6 @@
 package com.nisum.mytime.controller;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,7 @@ public class UserController {
 		List<EmployeeRoles> managers = employeesRoles
 				.stream().filter(e -> ("Manager".equalsIgnoreCase(e.getRole())
 						|| "HR Manager".equalsIgnoreCase(e.getRole()) || "Lead".equalsIgnoreCase(e.getRole())))
-				.sorted().collect(Collectors.toList());
+				.sorted(Comparator.comparing(EmployeeRoles::getEmployeeName)).collect(Collectors.toList());
 		return new ResponseEntity<>(managers, HttpStatus.OK);
 	}
 
