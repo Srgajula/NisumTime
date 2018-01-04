@@ -35,13 +35,15 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/assignEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EmployeeRoles> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+	public ResponseEntity<EmployeeRoles> assigingEmployeeRole(@RequestBody EmployeeRoles employeeRoles)
+			throws MyTimeException {
 		EmployeeRoles employeeRole = userService.assigingEmployeeRole(employeeRoles);
 		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/updateEmployeeRole", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EmployeeRoles> updateEmployeeRole(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
+	public ResponseEntity<EmployeeRoles> updateEmployeeRole(@RequestBody EmployeeRoles employeeRoles)
+			throws MyTimeException {
 		EmployeeRoles employeeRole = userService.updateEmployeeRole(employeeRoles);
 		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
@@ -57,39 +59,52 @@ public class UserController {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/getEmployeeRoleData", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> getEmployeeRoleData(@RequestParam("empId") String empId)
 			throws MyTimeException {
 		EmployeeRoles employeesRole = userService.getEmployeesRoleData(empId);
 		return new ResponseEntity<>(employeesRole, HttpStatus.OK);
 	}
+
 	@RequestMapping(value = "/getManagers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeRoles>> getManagers() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
-		List<EmployeeRoles> managers = employeesRoles.stream().filter(e -> ("Manager".equalsIgnoreCase(e.getRole())|| "HR Manager".equalsIgnoreCase(e.getRole())||"Lead".equalsIgnoreCase(e.getRole()))).collect(Collectors.toList());
+		List<EmployeeRoles> managers = employeesRoles
+				.stream().filter(e -> ("Manager".equalsIgnoreCase(e.getRole())
+						|| "HR Manager".equalsIgnoreCase(e.getRole()) || "Lead".equalsIgnoreCase(e.getRole())))
+				.sorted().collect(Collectors.toList());
 		return new ResponseEntity<>(managers, HttpStatus.OK);
 	}
+
 	@RequestMapping(value = "/getAllShifts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> getAllShifts() throws MyTimeException {
-		List<String> shifts = userService.getAllShifts().stream().filter(e -> "Y".equalsIgnoreCase(e.getActiveStatus())).map(Shift::getShiftName) .collect(Collectors.toList());
+		List<String> shifts = userService.getAllShifts().stream().filter(e -> "Y".equalsIgnoreCase(e.getActiveStatus()))
+				.map(Shift::getShiftName).sorted().collect(Collectors.toList());
 		return new ResponseEntity<>(shifts, HttpStatus.OK);
 	}
+
 	@RequestMapping(value = "/getAllDesignations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> getAllDesignations() throws MyTimeException {
-		List<String> designations = userService.getAllDesignations().stream().filter(e -> "Y".equalsIgnoreCase(e.getActiveStatus())).map(Designation::getDesignationName) .collect(Collectors.toList());
+		List<String> designations = userService.getAllDesignations().stream()
+				.filter(e -> "Y".equalsIgnoreCase(e.getActiveStatus())).map(Designation::getDesignationName).sorted()
+				.collect(Collectors.toList());
 		return new ResponseEntity<>(designations, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/getSkills", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> getTechnologies() throws MyTimeException {
-		List<String> technologies = userService.getTechnologies().stream().filter(e -> "Y".equalsIgnoreCase(e.getActiveStatus())).map(Skill::getSkillName) .collect(Collectors.toList());
+		List<String> technologies = userService.getTechnologies().stream()
+				.filter(e -> "Y".equalsIgnoreCase(e.getActiveStatus())).map(Skill::getSkillName).sorted()
+				.collect(Collectors.toList());
 		return new ResponseEntity<>(technologies, HttpStatus.OK);
 
-			}
+	}
+
 	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<EmployeeRoles> updateProfile(@RequestBody EmployeeRoles employeeRoles) throws MyTimeException {
-		EmployeeRoles employeeDB=userService.getEmployeesRoleData(employeeRoles.getEmployeeId());
+	public ResponseEntity<EmployeeRoles> updateProfile(@RequestBody EmployeeRoles employeeRoles)
+			throws MyTimeException {
+		EmployeeRoles employeeDB = userService.getEmployeesRoleData(employeeRoles.getEmployeeId());
 		employeeDB.setMobileNumber(employeeRoles.getMobileNumber());
 		employeeDB.setAlternateMobileNumber(employeeRoles.getAlternateMobileNumber());
 		employeeDB.setPersonalEmailId(employeeRoles.getPersonalEmailId());
@@ -99,5 +114,4 @@ public class UserController {
 		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
 
-	
 }

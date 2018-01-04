@@ -189,7 +189,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			$scope.empEmail = dataToPass.emailId;
 			$scope.isDisabled = true;
 		}
-		$scope.roles = ["HR","Manager","Employee","HR Manager","Director","Lead"];
+		$scope.roles = ["Director","Employee","HR","HR Manager","Lead","Manager"];
 		$scope.getSelectedRole = function(){
 			if ($scope.empRole !== undefined) {
 				return $scope.empRole;
