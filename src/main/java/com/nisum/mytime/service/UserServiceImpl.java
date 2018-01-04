@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
 		EmployeeRoles existingEmployee=employeeRolesRepo.findByEmployeeId(employeeRoles.getEmployeeId());
 		String newMobileNumber=employeeRoles.getMobileNumber();
 		if(newMobileNumber!=null&&!newMobileNumber.equalsIgnoreCase("")) {
-			if(existingEmployee!=null&&existingEmployee.getMobileNumber()!=null&&!existingEmployee.getMobileNumber().equalsIgnoreCase(newMobileNumber)){
+			if((existingEmployee!=null&&existingEmployee.getMobileNumber()!=null&&!existingEmployee.getMobileNumber().equalsIgnoreCase(newMobileNumber) )|| (existingEmployee.getMobileNumber()==null )){
 				mobileNumberChnaged=true;
 			}
 		}
