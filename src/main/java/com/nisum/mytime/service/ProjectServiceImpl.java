@@ -84,7 +84,16 @@ public class ProjectServiceImpl implements ProjectService {
 		FindAndModifyOptions options = new FindAndModifyOptions();
 		options.returnNew(true);
 		options.upsert(true);
-		return mongoTemplate.findAndModify(query, update, options, Project.class);
+		Project projectDB= mongoTemplate.findAndModify(query, update, options, Project.class);
+		List<ProjectTeamMate> employeeDetails=	projectTeamMatesRepo.findByProjectId(project.getProjectId());
+		if(employeeDetails!=null&&projectDB!=null) {
+		for (ProjectTeamMate emp : employeeDetails) {
+			emp.setManagerId(projectDB.getManagerId());
+			emp.setManagerName(projectDB.getManagerName());
+			projectTeamMatesRepo.save(emp);
+		}
+		}
+		return projectDB;
 	}
 
 	@Override
