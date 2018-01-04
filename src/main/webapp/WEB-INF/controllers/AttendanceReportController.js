@@ -83,7 +83,6 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 	    		$scope.gridOptions.data = response.data;
 		        $scope.totalPresent = response.data[0].totalPresent;
 		        $scope.totalAbsent = response.data[0].totalAbsent;
-		        $scope.totalEmployees = response.data[0].totalPresent + response.data[0].totalAbsent;
 	    	}
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");

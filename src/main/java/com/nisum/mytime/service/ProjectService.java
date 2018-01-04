@@ -39,7 +39,10 @@ public interface ProjectService {
 	List<ProjectTeamMate> getMyTeamDetails(String empId);
 
 	List<EmployeeRoles> getUnAssignedEmployees();
-	public List<ProjectTeamMate> getShiftDetails(String shift);
-	public List<ProjectTeamMate> getAllProjectDetails();
-	public List<ProjectTeamMate> getProjectDetails(String projectId);
+	
+	List<ProjectTeamMate> getShiftDetails(String shift);
+	
+	List<ProjectTeamMate> getAllProjectDetails();
+	
+	List<ProjectTeamMate> getProjectDetails(String projectId);
 }

@@ -27,6 +27,7 @@ public class ProjectTeamController {
 
 	@Autowired
 	private UserService userService;
+	
 	@Autowired
 	private ProjectService projectService;
 
@@ -121,18 +122,21 @@ public class ProjectTeamController {
 		List<EmployeeRoles> employeesRoles = projectService.getUnAssignedEmployees();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	
 	@RequestMapping(value = "/getShiftDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ProjectTeamMate>> getShiftDetails(@RequestParam("shift") String shift)
 			throws MyTimeException {
 		List<ProjectTeamMate> employeesRoles = projectService.getShiftDetails(shift);
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	
 	@RequestMapping(value = "/getProjectAllocations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ProjectTeamMate>> getProjectAllocations()
 			throws MyTimeException {
 		List<ProjectTeamMate> employeesRoles = projectService.getAllProjectDetails();
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
+	
 	@RequestMapping(value = "/getProjectDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ProjectTeamMate>> getProjectDetails(@RequestParam("projectId") String projectId)
 			throws MyTimeException {
