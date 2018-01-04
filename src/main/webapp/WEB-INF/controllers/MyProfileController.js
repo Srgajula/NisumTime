@@ -20,6 +20,7 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 			$scope.getProfileData();
 	};
 	$scope.updateProfile = function(){
+		$('#home').addClass('md-scroll-mask');
 		$mdDialog.show({
 		      controller: UpdateProfileController,
 		      templateUrl: 'templates/updateProfile.html',
@@ -28,9 +29,8 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 		      locals:{dataToPass: $scope.profile},
 		    })
 		    .then(function(result) {
-		   
-		   if(result == "Success") showAlert('Profile updated successfully');
-		   	else if(result == "Error") showAlert('Profile updation failed!!!');
+		    	if(result == "Success") showAlert('Profile updated successfully');
+		    	else if(result == "Error") showAlert('Profile updation failed!!!');
 		    	$scope.refreshPage();
 		    });
 	};
