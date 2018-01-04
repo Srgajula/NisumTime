@@ -244,7 +244,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		$scope.isDisabled = false;
 		$scope.result = "";
 		$scope.managerDetails = managers;
-		$scope.prjctStses=["Active","On Hold","Proposed","Completed"];
+		$scope.prjctStses=["Active","Completed","On Hold","Proposed"];
 		if(dataToPass.action == "Assign"){
 			$scope.projectId = "";
 			$scope.projectName = "";
