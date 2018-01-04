@@ -18,34 +18,16 @@
 	<div class="row col-lg-12" style="height: 15px;"></div>
 	<div class="row col-lg-12">
 		<div class="col-lg-1" style="float: left;padding-left:20px;">
-			<!-- <div class="input-group" style="box-shadow: 1px 1px 1px 1px rgba(0,0,0,.26);">
-				<input type="text" ng-model="empSearchId" id="empSearchId"
-					ng-blur="validateEmpId()" class="form-control"
-					placeholder="Employee ID" style="width:120px;border-radius:0px;">
-					<span class="input-group-btn">
-					<button class="btn btn-secondary" type="button"
-						ng-click="getEmployeeRole()" style="border: 1px solid #ccc;border-radius:0px;">
-						<i class="fa fa-search fa-2x" style="font-size: 1.3em;"
-							aria-hidden="true"></i>
-					</button>
-				</span> 
-			</div> -->
 		</div>
 		<div class="col-lg-1"
 			style="cursor: pointer; float: right; right: 75px;">
-			<!-- <md-button class="md-raised md-primary"
-				style="width:142px;background: cadetblue;"
-				ng-click="assignRole('Assign', parentData)"> <i
-				class="fa fa-plus-circle fa-2x"
-				style="margin-top: 5px; font-size: 1.5em; float: left"></i> Assign
-			Employee</md-button> -->
 		</div>
 	</div>
 	<div class="row col-lg-12" style="height: 15px;"></div>
-	<div class="row col-lg-12" style="margin-left: 0px;">
+	<div class="row col-lg-12" style="padding-top: 4%;margin-left:0px;">
 
 		<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination
-			class="myGrid">
+			class="myGrid" style="width:99%;height:370px;margin-left:0px;">
 			<div class="watermark" ng-show="!gridOptions.data.length">No
 				data available</div>
 		</div>

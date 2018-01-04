@@ -6,7 +6,6 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			"employeeName": "",
 			"emailId":"",
 			"role": "",
-			"shift": "",
 			"action":""
 	};
 	
@@ -23,7 +22,6 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
 			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
 			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false, width:100}, 
-			//{field : 'shift',displayName: 'Shift', enableColumnMenu: false, enableSorting: false}, 
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
 		]
 	};
@@ -34,7 +32,6 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		$scope.parentData.employeeName = row.entity.employeeName;
 		$scope.parentData.emailId = row.entity.emailId;
 		$scope.parentData.role = row.entity.role;
-		$scope.parentData.shift = row.entity.shift;
 		if(action == "Update")
 			$scope.assignRole(action, $scope.parentData);
 		else if(action == "Delete")
@@ -183,32 +180,21 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			$scope.empId = "";
 			$scope.empName = "";
 			$scope.empRole;
-			$scope.empShift;
 			$scope.empEmail = "";
 			$scope.isDisabled = false;
 		}else if(dataToPass.action == "Update"){
 			$scope.empId = dataToPass.employeeId;
 			$scope.empName = dataToPass.employeeName;
 			$scope.empRole = dataToPass.role;
-			$scope.empShift = dataToPass.shift;
 			$scope.empEmail = dataToPass.emailId;
 			$scope.isDisabled = true;
 		}
 		$scope.roles = ["HR","Manager","Employee","HR Manager","Director","Lead"];
-		$scope.shifts = myFactory.getShifts();//["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
 		$scope.getSelectedRole = function(){
 			if ($scope.empRole !== undefined) {
 				return $scope.empRole;
 			} else {
 				return "Please select a role";
-			}
-		};
-		
-		$scope.getSelectedShift = function(){
-			if ($scope.empShift !== undefined) {
-				return $scope.empShift;
-			} else {
-				return "Please select a shift";
 			}
 		};
 		
@@ -268,7 +254,6 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			var searchId = $scope.empId;
 			var empName = $scope.empName;
 			var empRole = $scope.empRole;
-			var empShift = $scope.empShift;
 			var empEmail = $scope.empEmail;
 			if(searchId == ""){
 				$scope.alertMsg = "Employee ID is mandatory";
@@ -288,12 +273,9 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			}else if(empRole == undefined){
 				$scope.alertMsg = "Please select a role";
 				document.getElementById('empRole').focus();
-			}else if(empShift == undefined){
-				//$scope.alertMsg = "Please select a shift";
-				//document.getElementById('empShift').focus();
 			}else{
 				$scope.alertMsg = "";
-				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": $scope.empRole, "shift": $scope.empShift};
+				var record = {"employeeId":$scope.empId, "employeeName": $scope.empName, "emailId": $scope.empEmail, "role": $scope.empRole};
 				addOrUpdateRole(record, $scope.templateTitle);
 				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}

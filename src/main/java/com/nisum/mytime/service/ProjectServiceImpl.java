@@ -78,6 +78,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public Project updateProject(Project project) {
 		Query query = new Query(Criteria.where("projectId").is(project.getProjectId()));
 		Update update = new Update();
+		update.set("projectName", project.getProjectName());
 		update.set("managerId", project.getManagerId());
 		update.set("managerName", project.getManagerName());
 		update.set("status", project.getStatus());

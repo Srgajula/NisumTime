@@ -233,7 +233,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});
 			menuItems.push({"menu" : "Reportee Details","icon" : "fa fa-users fa-2x","path" : "templates/reportees.html"});
 			menuItems.push({"menu" : "Manage Team","icon" : "fa fa-sitemap fa-2x","path" : "templates/projectDetails.html"});
-			menuItems.push({"menu" : "View Projects","icon" : "fa fa-compass fa-2x","path" : "templates/viewProjects.html"});
+			menuItems.push({"menu" : "View Projects","icon" : "fa fa-tasks fa-2x","path" : "templates/viewProjects.html"});
 			menuItems.push({"menu" : "My Profile","icon" : "fa fa-address-card-o fa-2x","path" : "templates/profile.html"});
 		}else if(role == "Employee"){
 			menuItems.push({"menu" : "My Details","icon" : "fa fa-indent fa-2x","path" : "templates/employee.html"});

@@ -13,7 +13,6 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 	        $scope.profile = response.data;
 	      }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
-	   // 	$scope.profile = ;
 	    });
 	}
 	
@@ -33,14 +32,13 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 		   if(result == "Success") showAlert('Profile updated successfully');
 		   	else if(result == "Error") showAlert('Profile updation failed!!!');
 		    	$scope.refreshPage();
-		   // 	else showAlert('Profile updation failed!!!');
 		    });
 	};
 	
 	function UpdateProfileController($scope, $mdDialog, dataToPass) {
 		$scope.profile = dataToPass;
 		$scope.technologies=myFactory.getTechnologies();
-		$scope.baseTechnology=dataToPass.baseTechnology;
+		$scope.baseTechnology=(dataToPass.baseTechnology == null ? undefined: dataToPass.baseTechnology);
 		$scope.mobileNumber=dataToPass.mobileNumber;
 		$scope.alternateMobileNumber=dataToPass.alternateMobileNumber;
 		$scope.personalEmailId=dataToPass.personalEmailId;
@@ -48,6 +46,7 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 		$scope.cancel = function() {
 		    $mdDialog.hide();
 		};
+		
 		$scope.getSelectedTech = function(){
 			if ($scope.baseTechnology !== undefined) {
 				return $scope.baseTechnology;
@@ -56,12 +55,7 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 			}
 		};
 		$scope.validateFields = function(){
-			var mobileNumber = $scope.mobileNumber;
-			var alternateMobileNumber = $scope.alternateMobileNumber;
-			var personalEmailId = $scope.personalEmailId;
-			var baseTechnology = $scope.baseTechnology;
-			var technologyKnown = $scope.technologyKnown;
-			
+				var mobileNumber = $scope.mobileNumber;
 				$scope.alertMsg = "";
 				var record = {"employeeId":myFactory.getEmpId(), "mobileNumber": mobileNumber, "alternateMobileNumber": $scope.alternateMobileNumber, "personalEmailId": $scope.personalEmailId, "baseTechnology": $scope.baseTechnology, "technologyKnown": $scope.technologyKnown};
 
@@ -77,15 +71,10 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 					data : record
 				}
 				$http(req).then(function mySuccess(response) {
-					//$scope.refreshPage();
 					$mdDialog.hide('Success');
 					$scope.dataToPass=response.data;
-					//$scope.profile=response.data
-					//$scope.result = "Success";
-					
 				}, function myError(response){
 					$mdDialog.hide('Error');
-					//$scope.result = "Error";
 				});
 			
 				

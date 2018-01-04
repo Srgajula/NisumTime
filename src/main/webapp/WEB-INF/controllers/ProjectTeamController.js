@@ -16,7 +16,6 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			"designation":"",
 			"billableStatus":"",
 			"mobileNumber":"",
-			"experience":"",
 			"action":""
 	};
 	$scope.employees = [];
@@ -90,69 +89,6 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	    });
 	};
 	
-	$scope.getProjects = function(){
-		$http({
-	        method : "GET",
-	        url : appConfig.appUri + "/projectTeam/getProjects?employeeId="+myFactory.getEmpId()
-	    }).then(function mySuccess(response) {
-	        $scope.projects = response.data;
-	    }, function myError(response) {
-	    	showAlert("Something went wrong while fetching data!!!");
-	    	$scope.gridOptions.data = [];
-	    });
-	};
-	
-	
-	$scope.validateEmpId = function(){
-		var searchId = $scope.empSearchId;
-		if(searchId !="" && isNaN(searchId)){
-			showAlert('Please enter only digits');
-			$scope.empSearchId = "";
-			document.getElementById('empSearchId').focus();
-		}else if(searchId != "" && (searchId.length < 5 || searchId.length > 5)){
-			showAlert('Employee ID should be 5 digits');
-			$scope.empSearchId = "";
-			document.getElementById('empSearchId').focus();
-		}else if(searchId != "" && !checkEmpIdRange(searchId)){
-			showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
-			$scope.empSearchId = "";
-			document.getElementById('empSearchId').focus();
-		}
-	};
-	
-	function checkEmpIdRange(searchId){
-		return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
-	}
-	
-	$scope.getEmployeeRole = function(type){
-		var searchId = $scope.empSearchId;
-		if(searchId =="" && searchId.length == 0){
-			showAlert('Employee ID is mandatory');
-			$scope.empSearchId = "";
-			document.getElementById('empSearchId').focus();
-		}else if(searchId != "" && !checkEmpIdRange(searchId)){
-			showAlert('Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId);
-			$scope.empSearchId = "";
-			document.getElementById('empSearchId').focus();
-		}else{
-			$scope.gridOptions.data = [];
-			getEmployeeRoleData(searchId);
-		}
-	};
-	
-	function getEmployeeRoleData(empId){
-		$http({
-	        method : "GET",
-	        url : appConfig.appUri + "user/getEmployeeRoleData?empId=" + empId
-	    }).then(function mySuccess(response) {
-	    	if(response.data != "" && response.data.length !=0){
-	    		$scope.gridOptions.data.push(response.data);
-	    	}
-	    }, function myError(response) {
-	    	showAlert("Something went wrong while fetching data!!!");
-	    	$scope.refreshPage();
-	    });
-	}
 	
 	function showAlert(message) {
 		$mdDialog.show($mdDialog.alert().parent(
@@ -168,7 +104,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		      templateUrl: 'templates/newTeamMate.html',
 		      parent: angular.element(document.body),
 		      clickOutsideToClose:true,
-		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees, projects: $scope.projects},
+		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees},
 		    })
 		    .then(function(result) {
 		    	if(result == "Assign") showAlert('New Teammate assigned successfully');
@@ -177,6 +113,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		    	else showAlert('Teammate assigning/updation failed!!!');
 		    });
 	};
+	
 	$scope.updateEmployee = function(action, userData){
 		userData.action = action;
 		$mdDialog.show({
@@ -184,7 +121,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		      templateUrl: 'templates/UpdateTeamMate.html',
 		      parent: angular.element(document.body),
 		      clickOutsideToClose:true,
-		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees, projects: $scope.projects},
+		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees},
 		    })
 		    .then(function(result) {
 		    	if(result == "Assign") showAlert('New Teammate assigned successfully');
@@ -237,15 +174,27 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		}
 	}
 	
-	function AddProjectTeamController($scope, $mdDialog, dataToPass, gridOptionsData,employees,projects) {
+	function AddProjectTeamController($scope, $mdDialog, dataToPass, gridOptionsData,employees) {
 		$scope.templateTitle = dataToPass.action;
 		$scope.alertMsg = "";
 		$scope.isDisabled = false;
 		$scope.result = "";
 		$scope.employeeList = employees;
-		$scope.projectList = projects;
+		$scope.projectList = [];
 		$scope.employeeModel;
 		$scope.projectModel;
+		
+		$scope.getProjects = function(){
+			$http({
+		        method : "GET",
+		        url : appConfig.appUri + "/projectTeam/getProjects?employeeId="+myFactory.getEmpId()
+		    }).then(function mySuccess(response) {
+		        $scope.projectList = response.data;
+		    }, function myError(response) {
+		    	$scope.projectList = [];
+		    });
+		};
+		
 		if(dataToPass.action == "Assign"){
 			$scope.empId = "";
 			$scope.empName = "";
@@ -273,9 +222,9 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 					 'projectId': dataToPass.projectId
 					  };
 		}
-		$scope.designations =myFactory.getDesignations(); 
+		$scope.designations = myFactory.getDesignations(); 
 		$scope.billableStatuses = ["Billable","Shadow","Bench"];
-		$scope.shifts =myFactory.getShifts();// ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 AM)"];
+		$scope.shifts =myFactory.getShifts();
 		$scope.getSelectedDesignation = function(){
 			if ($scope.empDesignation !== undefined) {
 				return $scope.empDesignation;
@@ -314,57 +263,6 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			}
 		};
 		
-		$scope.validateEmpId = function(){
-			var searchId = $scope.empId;
-			if(searchId != "" && isNaN(searchId)){
-				$scope.alertMsg = "Please enter only digits";
-				document.getElementById('empId').focus();
-			}else if(searchId != "" && ((searchId.length >0 && searchId.length <5) || searchId.length>5)){
-				$scope.alertMsg = "Employee ID should be 5 digits";
-				document.getElementById('empId').focus();
-			}else if(searchId != "" && !checkRoleEmpIdRange(searchId)){
-				$scope.alertMsg = 'Employee ID should be in between '+appConfig.empStartId+' - '+appConfig.empEndId;
-				document.getElementById('empId').focus();
-			}else if(searchId != "" && checkRoleExistence(searchId)){
-				$scope.alertMsg = 'Employee ID is already assigned a role';
-				document.getElementById('empId').focus();
-			}else{
-				$scope.alertMsg = "";
-			}
-		};
-		
-		function checkRoleEmpIdRange(searchId){
-			return parseInt(searchId) >= appConfig.empStartId && parseInt(searchId) <= appConfig.empEndId;
-		}
-		
-		function checkRoleExistence(searchId){
-			for(var i in gridOptionsData){
-				if(gridOptionsData[i].employeeId == searchId){
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		$scope.validateEmailId = function(){
-			var emailId = $scope.empEmail;
-			if(emailId != "" && !validateEmail(emailId)){
-				$scope.alertMsg = "Please enter a valid nisum email id";
-				document.getElementById('empEmail').focus();
-			}else{
-				$scope.alertMsg = "";
-			}
-		}
-		
-		function validateEmail(emailId){
-			 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-			 if(re.test(emailId)){
-		        if(emailId.indexOf("@nisum.com", emailId.length - "@nisum.com".length) !== -1){
-		        	return true;
-		        }
-			 }
-			 return false;
-		 }
 		
 		$scope.validateFields = function(action){
 			if(action == "Assign"){
@@ -378,7 +276,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 					document.getElementById('selectProject').focus();
 				} else {
 					$scope.alertMsg = "";
-					var record = {"employeeId":employeeModel.employeeId, "employeeName":employeeModel.employeeName, "emailId": employeeModel.emailId, "role": employeeModel.role, "shift": employeeModel.shift,"projectId":projectModel.projectId,"projectName":projectModel.projectName,"managerId":myFactory.getEmpId(),"managerName":myFactory.getEmpName()};
+					var record = {"employeeId":employeeModel.employeeId, "employeeName":employeeModel.employeeName, "emailId": employeeModel.emailId, "role": employeeModel.role, "shift": employeeModel.shift,"projectId":projectModel.projectId,"projectName":projectModel.projectName,"managerId":myFactory.getEmpId(),"managerName":myFactory.getEmpName(),"mobileNumber":employeeModel.mobileNumber};
 					addOrUpdateRole(record, $scope.templateTitle);
 					$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 				}
