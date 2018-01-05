@@ -408,17 +408,16 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 				return "Please select project status";
 			}
 		};
-<<<<<<< HEAD
-		$scope.getAccountText = function(){
+
+	
+
+	$scope.getAccountText = function(){
 			if ($scope.account !== undefined) {
 				return $scope.account;
 			} else {
 				return "Please select account";
 			}
 		};
-
-=======
->>>>>>> branch 'master' of https://github.com/srgajula-nisum-com/NisumTime
 		
 		$scope.validateEmpId = function(){
 			var searchId = $scope.empId;
