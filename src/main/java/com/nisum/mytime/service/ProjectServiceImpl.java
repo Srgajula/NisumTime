@@ -72,6 +72,9 @@ public class ProjectServiceImpl implements ProjectService {
 	public void deleteProject(String projectId) {
 		Project project = projectRepo.findByProjectId(projectId);
 		projectRepo.delete(project);
+		Query query = new Query(Criteria.where("projectId").is(projectId));
+		List<ProjectTeamMate> list = mongoTemplate.find(query, ProjectTeamMate.class);
+		projectTeamMatesRepo.delete(list);
 	}
 
 	@Override
@@ -147,8 +150,8 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public List<Project> getProjects(String managerId) throws MyTimeException {
-		return projectRepo.findByManagerId(managerId);
-
+		Query query = new Query(Criteria.where("managerId").is(managerId).and("status").ne("Completed"));
+		return mongoTemplate.find(query, Project.class);
 	}
 
 	@Override

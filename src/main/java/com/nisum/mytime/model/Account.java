@@ -1,7 +1,6 @@
 package com.nisum.mytime.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
