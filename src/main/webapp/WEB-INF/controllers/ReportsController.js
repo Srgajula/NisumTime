@@ -134,6 +134,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	}
 	
 	function showProgressDialog(){
+		$('#home').addClass('md-scroll-mask');
 		$mdDialog.show({
 	      templateUrl: 'templates/progressDialog.html',
 	      controller: ProgressController,
@@ -189,6 +190,7 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	}
 	
 	$scope.sendEmail = function(ev){
+		$('#home').addClass('md-scroll-mask');
 		parentData.toEmail = [];
 		parentData.ccEmail = [];
 		$mdDialog.show({

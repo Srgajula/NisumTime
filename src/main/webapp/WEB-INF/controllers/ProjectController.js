@@ -136,6 +136,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 	}
 	
 	$scope.addProject = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -152,6 +153,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		    });
 	};
 	$scope.viewTeamDetails = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -168,6 +170,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		    });
 	};
 	$scope.getUnAssignedEmployees = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -184,6 +187,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		    });
 	};
 	$scope.getAllocatedEmployees = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -204,7 +208,9 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 	};
 	
 	$scope.deleteRole = function(row){
+		$('#home').addClass('md-scroll-mask');
 	    var confirm = $mdDialog.confirm()
+	    	  .clickOutsideToClose(true)
 	          .textContent('Are you sure you want to delete this project?')
 	          .ok('Ok')
 	          .cancel('Cancel');
@@ -283,32 +289,22 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 					{field : 'employeeId',displayName: 'Emp ID', enableColumnMenu: true, enableSorting: true, width:100},
 					{field : 'employeeName',displayName: 'Empl Name ', enableColumnMenu: false, enableSorting: false},
 					{field : 'emailId',displayName: 'Email Id ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'managerName',displayName: 'Manager ', enableColumnMenu: false, enableSorting: false},
 					{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:80},
 					{field : 'designation',displayName: 'Designation ', enableColumnMenu: false, enableSorting: false},
 					{field : 'billableStatus',displayName: 'Billability ', enableColumnMenu: false, enableSorting: false},
 				]
 			};
-			//$scope.gridOptions.data = $scope.records;
 			$scope.isDisabled = true;
 			$http({
 		        method : "GET",
 		        url : appConfig.appUri + "/projectTeam/getProjectDetails?projectId="+$scope.projectId
 		    }).then(function mySuccess(response) {
-		        //$scope.teamdetails=response.data;
-		        //$scope.gridOptions.data.push(response.data);
 		    	$scope.gridOptions.data = response.data;
 		    }, function myError(response) {
 		    	showAlert("Something went wrong while fetching data!!!");
 		    	$scope.gridOptions.data = [];
 		    });
 	}else if(dataToPass.action == "UnAssigned"){
-		//$scope.projectId = dataToPass.projectId;
-		//$scope.projectName = dataToPass.projectName;
-		//$scope.managerId = dataToPass.managerId;
-		//$scope.managerName = dataToPass.managerName;
-	  //  $scope.managerModel = dataToPass.managerModel;
 		$scope.gridOptions = {
 				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 				paginationPageSize : 10,
@@ -318,32 +314,19 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 					{field : 'employeeId',displayName: 'Emp ID', enableColumnMenu: true, enableSorting: true, width:100},
 					{field : 'employeeName',displayName: 'Empl Name ', enableColumnMenu: false, enableSorting: false},
 					{field : 'emailId',displayName: 'Email Id ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'managerName',displayName: 'Manager ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:50},
-					//{field : 'designation',displayName: 'Designation ', enableColumnMenu: false, enableSorting: false},
-					//{field : 'billableStatus',displayName: 'Billability ', enableColumnMenu: false, enableSorting: false},
 				]
 			};
-			//$scope.gridOptions.data = $scope.records;
 			$scope.isDisabled = true;
 			$http({
 		        method : "GET",
 		        url : appConfig.appUri + "/projectTeam/getUnAssignedEmployees"
 		    }).then(function mySuccess(response) {
-		        //$scope.teamdetails=response.data;
-		        //$scope.gridOptions.data.push(response.data);
 		    	$scope.gridOptions.data = response.data;
 		    }, function myError(response) {
 		    	showAlert("Something went wrong while fetching data!!!");
 		    	$scope.gridOptions.data = [];
 		    });
 	}else if(dataToPass.action == "allocated"){
-		//$scope.projectId = dataToPass.projectId;
-		//$scope.projectName = dataToPass.projectName;
-		//$scope.managerId = dataToPass.managerId;
-		//$scope.managerName = dataToPass.managerName;
-	  //  $scope.managerModel = dataToPass.managerModel;
 		$scope.gridOptions = {
 				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 				paginationPageSize : 10,
@@ -400,22 +383,17 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 			                }
 			            ]
 			};
-			//$scope.gridOptions.data = $scope.records;
 			$scope.isDisabled = true;
 			$http({
 		        method : "GET",
 		        url : appConfig.appUri + "/projectTeam/getProjectAllocations"
 		    }).then(function mySuccess(response) {
-		        //$scope.teamdetails=response.data;
-		        //$scope.gridOptions.data.push(response.data);
 		    	$scope.gridOptions.data = response.data;
 		    }, function myError(response) {
 		    	showAlert("Something went wrong while fetching data!!!");
 		    	$scope.gridOptions.data = [];
 		    });
 	}
-		//$scope.roles = ["HR","Manager","Employee"];
-		//$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 PM)"];
 		$scope.getManagers = function(){
 			if ($scope.managerModel !== undefined) {
 				return $scope.managerModel.employeeName;
@@ -430,6 +408,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 				return "Please select project status";
 			}
 		};
+<<<<<<< HEAD
 		$scope.getAccountText = function(){
 			if ($scope.account !== undefined) {
 				return $scope.account;
@@ -438,6 +417,8 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 			}
 		};
 
+=======
+>>>>>>> branch 'master' of https://github.com/srgajula-nisum-com/NisumTime
 		
 		$scope.validateEmpId = function(){
 			var searchId = $scope.empId;

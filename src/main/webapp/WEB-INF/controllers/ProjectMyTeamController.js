@@ -157,6 +157,7 @@ myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog
 	}
 	
 	$scope.assignRole = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddRoleController,
@@ -173,6 +174,7 @@ myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog
 		    });
 	};
 	$scope.updateEmployee = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddRoleController,
@@ -193,7 +195,9 @@ myApp.controller("projectMyTeamController",function($scope, myFactory, $mdDialog
 	};
 	
 	$scope.deleteRole = function(row){
+		$('#home').addClass('md-scroll-mask');
 	    var confirm = $mdDialog.confirm()
+	    	  .clickOutsideToClose(true)
 	          .textContent('Are you sure want to delete the role?')
 	          .ok('Ok')
 	          .cancel('Cancel');

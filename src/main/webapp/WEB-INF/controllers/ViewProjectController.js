@@ -131,6 +131,7 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 	}
 	
 	$scope.addProject = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -147,6 +148,7 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 		    });
 	};
 	$scope.viewTeamDetails = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -163,6 +165,7 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 		    });
 	};
 	$scope.getUnAssignedEmployees = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -179,6 +182,7 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 		    });
 	};
 	$scope.getAllocatedEmployees = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectController,
@@ -199,7 +203,9 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 	};
 	
 	$scope.deleteRole = function(row){
+		$('#home').addClass('md-scroll-mask');
 	    var confirm = $mdDialog.confirm()
+	    	  .clickOutsideToClose(true)
 	          .textContent('Are you sure you want to delete this project?')
 	          .ok('Ok')
 	          .cancel('Cancel');

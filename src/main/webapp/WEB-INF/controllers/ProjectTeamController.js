@@ -98,6 +98,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	}
 	
 	$scope.assignRole = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectTeamController,
@@ -107,7 +108,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('New Teammate assigned successfully');
+		    	if(result == "Add") showAlert('New Teammate assigned successfully');
 		    	else if(result == "Update") showAlert('Teammate updated successfully');
 		    	else if(result == "Cancelled") console.log(result);
 		    	else showAlert('Teammate assigning/updation failed!!!');
@@ -115,6 +116,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	};
 	
 	$scope.updateEmployee = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectTeamController,
@@ -124,7 +126,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		      locals:{dataToPass: userData, gridOptionsData: $scope.gridOptions.data, employees: $scope.employees},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('New Teammate assigned successfully');
+		    	if(result == "Add") showAlert('New Teammate assigned successfully');
 		    	else if(result == "Update") {
 		    		$scope.refreshPage();
 		    		showAlert('Teammate updated successfully');
@@ -139,7 +141,9 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	};
 	
 	$scope.deleteRole = function(row){
+		$('#home').addClass('md-scroll-mask');
 	    var confirm = $mdDialog.confirm()
+	    	  .clickOutsideToClose(true)
 	          .textContent('Are you sure you want to delete the teammate?')
 	          .ok('Ok')
 	          .cancel('Cancel');
@@ -195,7 +199,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		    });
 		};
 		
-		if(dataToPass.action == "Assign"){
+		if(dataToPass.action == "Add"){
 			$scope.empId = "";
 			$scope.empName = "";
 			$scope.empRole;
@@ -265,7 +269,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		
 		
 		$scope.validateFields = function(action){
-			if(action == "Assign"){
+			if(action == "Add"){
 				var employeeModel = $scope.employeeModel;
 				var projectModel = $scope.projectModel;
 				if(employeeModel == undefined){
@@ -297,7 +301,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		function updateGrid(action, record){
 			if($scope.alertMsg == ""){
 				if($scope.result == "Success"){
-					if(action == "Assign"){
+					if(action == "Add"){
 						gridOptionsData.push(record);
 					}else if(action == "Update"){
 						var existingRecord = getRowEntity($scope.empId);
@@ -314,7 +318,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		
 		function addOrUpdateRole(record, action){
 			var urlRequest  = "";
-			if(action == "Assign"){
+			if(action == "Add"){
 				urlRequest = appConfig.appUri+ "projectTeam/addEmployeeToTeam";
 			}else if(action == "Update"){
 				urlRequest = appConfig.appUri+ "projectTeam/updateTeammate";

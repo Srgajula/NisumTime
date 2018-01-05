@@ -62,6 +62,7 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 	$scope.gridOptions.data = [];
 	
 	$scope.getEmployeePresent = function(type){
+		$mdDialog.hide();
 		if(type == "onload"){
 			showProgressDialog("Fetching data please wait...");
 		}
@@ -120,6 +121,7 @@ myApp.controller("attendanceReportController", function($scope, $http, myFactory
 	}
 	
 	function showProgressDialog(msg){
+		$('#home').addClass('md-scroll-mask');
 		$mdDialog.show({
 	      templateUrl: 'templates/progressDialog.html',
 	      controller: ProgressController,
