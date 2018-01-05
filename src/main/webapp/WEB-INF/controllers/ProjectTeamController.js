@@ -211,13 +211,13 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			$scope.employeeName = dataToPass.employeeName;
 			$scope.role = dataToPass.role;
 			$scope.emailId = dataToPass.emailId;
-			$scope.shift = dataToPass.shift;
+			$scope.shift = (dataToPass.shift== null ?undefined: dataToPass.shift);
 			$scope.projectId = dataToPass.projectId;
 			$scope.projectName = dataToPass.projectName;
 			$scope.managerId = dataToPass.managerId;
 			$scope.managerName = dataToPass.managerName;
-			$scope.empDesignation = dataToPass.designation;
-			$scope.empBillableStatus = dataToPass.billableStatus;
+			$scope.empDesignation = (dataToPass.designation == null ? undefined : dataToPass.designation);
+			$scope.empBillableStatus = (dataToPass.billableStatus == null ? undefined : dataToPass.billableStatus);
 			$scope.mobileNumber = dataToPass.mobileNumber;
 			$scope.experience = dataToPass.experience;
 			$scope.isDisabled = true;

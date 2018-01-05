@@ -101,7 +101,6 @@ public class UserServiceImpl implements UserService {
 		update.set("employeeName", employeeRoles.getEmployeeName());
 		update.set("emailId", employeeRoles.getEmailId());
 		update.set("role", employeeRoles.getRole());
-		update.set("shift", employeeRoles.getShift());
 		update.set("lastModifiedOn", new Date());
 		FindAndModifyOptions options = new FindAndModifyOptions();
 		options.returnNew(true);
