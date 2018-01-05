@@ -81,6 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
 		update.set("projectName", project.getProjectName());
 		update.set("managerId", project.getManagerId());
 		update.set("managerName", project.getManagerName());
+		update.set("account", project.getAccount());
 		update.set("status", project.getStatus());
 		FindAndModifyOptions options = new FindAndModifyOptions();
 		options.returnNew(true);
@@ -91,6 +92,8 @@ public class ProjectServiceImpl implements ProjectService {
 		for (ProjectTeamMate emp : employeeDetails) {
 			emp.setManagerId(projectDB.getManagerId());
 			emp.setManagerName(projectDB.getManagerName());
+			emp.setAccount(projectDB.getAccount());
+			emp.setProjectName(projectDB.getProjectName());
 			projectTeamMatesRepo.save(emp);
 		}
 		}

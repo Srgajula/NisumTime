@@ -14,6 +14,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		getAllShifts();
 		getAllDesignations();
 		getAllTechnologies();
+		getAllAccounts();
 	}
 	
 	function onFailure(error){
@@ -82,6 +83,16 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	        url : appConfig.appUri + "user/getSkills"
 	    }).then(function mySuccess(response) {
 	   	myFactory.setTechnologies(response.data);
+	    }, function myError(response) {
+	   
+	    });
+	};
+	function getAllAccounts(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getAccounts"
+	    }).then(function mySuccess(response) {
+	   	myFactory.setAccounts(response.data);
 	    }, function myError(response) {
 	   
 	    });

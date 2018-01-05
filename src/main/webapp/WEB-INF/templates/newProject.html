@@ -1,4 +1,4 @@
-<md-dialog aria-label="Role Template" style="width:520px;height:400px;">
+<md-dialog aria-label="Role Template" style="width:520px;height:450px;">
 <form ng-cloak name="myForm">
 	<md-toolbar>
 	<div class="md-toolbar-tools"
@@ -15,9 +15,12 @@
 	<div class="md-dialog-content">
 		<div class="form-group">
 			<input type="text" class="form-control" id="projectId" name="projectId"
-				ng-model="projectId" placeholder="Project Id" ng-blur="" ng-disabled="isDisabled"/> <br>
+				ng-model="projectId" placeholder="Project Id Auto Generated" ng-blur="" ng-disabled="true"/> <br>
 			<input type="text" class="form-control" id="projectName" name="projectName"
 				ng-model="projectName" placeholder="Project Name" /><br>
+				<md-select ng-model="account" md-selected-text="getAccountText()" id="account">
+			<md-optgroup label="account"> <md-option ng-value="account"
+				ng-repeat="account in accounts">{{account}}</md-option> </md-optgroup> </md-select>
 				<md-select ng-model="managerModel" md-selected-text="getManagers()"  >
 			<md-optgroup label="managers"> <md-option ng-value="manager"
 				ng-repeat="manager in managerDetails">{{manager.employeeName}}</md-option> </md-optgroup> </md-select>

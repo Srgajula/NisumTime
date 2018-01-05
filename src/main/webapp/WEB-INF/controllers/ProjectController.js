@@ -4,6 +4,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 	$scope.parentData = {
 			"projectId": "",
 			"projectName": "",
+			"account": "",
 			"managerId":"",
 			"managerName": "",
 			"status": "",
@@ -24,7 +25,8 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		columnDefs : [ 
 			{field : 'projectId',displayName: 'Project ID', enableColumnMenu: true, enableSorting: true, width:120},
 			{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
-			{field : 'managerId',displayName: 'Manager ID ', enableColumnMenu: false, enableSorting: false},
+			{field : 'account',displayName: 'Account ', enableColumnMenu: false, enableSorting: false},
+			//{field : 'managerId',displayName: 'Manager ID ', enableColumnMenu: false, enableSorting: false},
 			{field : 'managerName',displayName: 'Manager Name ', enableColumnMenu: false, enableSorting: false},
 			{field : 'status',displayName: 'Status ', enableColumnMenu: false, enableSorting: false},
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:130} 
@@ -35,6 +37,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 	$scope.getRowData = function(row, action){
 		$scope.parentData.projectId = row.entity.projectId;
 		$scope.parentData.projectName = row.entity.projectName;
+		$scope.parentData.account = row.entity.account;
 		$scope.parentData.managerId = row.entity.managerId;
 		$scope.parentData.managerName = row.entity.managerName;
 		$scope.parentData.status = row.entity.status;
@@ -142,8 +145,8 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		      locals:{dataToPass: userData,gridOptionsData: $scope.gridOptions.data, managers: $scope.managers},
 		    })
 		    .then(function(result) {
-		    	if(result == "Assign") showAlert('Project created successfully');
-		    	else if(result == "Update") showAlert('Project updated successfully');
+		     	if(result == "Assign"){     	$scope.refreshPage();showAlert('Project created successfully');}
+		    	else if(result == "Update"){  	$scope.refreshPage(); showAlert('Project updated successfully');}
 		    	else if(result == "Cancelled") console.log(result);
 		    	else showAlert('Project assigning/updation failed!!!');
 		    });
@@ -245,6 +248,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		$scope.result = "";
 		$scope.managerDetails = managers;
 		$scope.prjctStses=["Active","Completed","On Hold","Proposed"];
+		$scope.accounts=myFactory.getAccounts();
 		if(dataToPass.action == "Assign"){
 			$scope.projectId = "";
 			$scope.projectName = "";
@@ -256,6 +260,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		$scope.projectName = dataToPass.projectName;
 		$scope.managerId = dataToPass.managerId;
 		$scope.managerName = dataToPass.managerName;
+		$scope.account = dataToPass.account;
 		$scope.projectStatus = dataToPass.status;
 		$scope.managerModel = {
 			 'employeeName': dataToPass.managerName,
@@ -425,13 +430,14 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 				return "Please select project status";
 			}
 		};
-//		$scope.getSelectedShift = function(){
-//			if ($scope.empShift !== undefined) {
-//				return $scope.empShift;
-//			} else {
-//				return "Please select a shift";
-//			}
-//		};
+		$scope.getAccountText = function(){
+			if ($scope.account !== undefined) {
+				return $scope.account;
+			} else {
+				return "Please select account";
+			}
+		};
+
 		
 		$scope.validateEmpId = function(){
 			var searchId = $scope.empId;
@@ -490,18 +496,22 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 			var projectName = $scope.projectName;
 			var managerModel = $scope.managerModel;
 			
-			if(project == ""){
-				$scope.alertMsg = "Project ID is mandatory";
-				document.getElementById('projectId').focus();
-			}else if(projectName == ""){
+//			if(project == ""){
+//				$scope.alertMsg = "Project ID is mandatory";
+//				document.getElementById('projectId').focus();
+//			}else 
+				if(projectName == ""){
 				$scope.alertMsg = "Project Name is mandatory";
 				document.getElementById('projectName').focus();
+			}else if(account == undefined || account == ""){
+				$scope.alertMsg = "Account is mandatory";
+				document.getElementById('account').focus();
 			}
 			else if(managerModel == undefined){
 				$scope.alertMsg = "Please select a manager";
 			}else{
 				$scope.alertMsg = "";
-				var record = {"projectId":$scope.projectId, "projectName": $scope.projectName, "managerId": $scope.managerModel.employeeId,  "managerName": $scope.managerModel.employeeName, "status": $scope.projectStatus};
+				var record = {"projectId":$scope.projectId, "projectName": $scope.projectName, "managerId": $scope.managerModel.employeeId,  "managerName": $scope.managerModel.employeeName, "status": $scope.projectStatus,"account": $scope.account};
 				addOrUpdateProject(record, $scope.templateTitle);
 				$timeout(function(){updateGrid($scope.templateTitle, record)},500);
 			}
@@ -547,7 +557,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result = "Success";
-			}, function myError(response){
+				}, function myError(response){
 				$scope.result = "Error";
 			});
 		}

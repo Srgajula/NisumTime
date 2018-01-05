@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.Account;
 import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Shift;
@@ -115,4 +116,12 @@ public class UserController {
 		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/getAccounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<String>> getAccounts() throws MyTimeException {
+		List<String> technologies = userService.getAccounts().stream()
+				.filter(e -> "Y".equalsIgnoreCase(e.getStatus())).map(Account::getAccountName).sorted()
+				.collect(Collectors.toList());
+		System.out.println("technologies"+technologies);
+		return new ResponseEntity<>(technologies, HttpStatus.OK);
+}
 }

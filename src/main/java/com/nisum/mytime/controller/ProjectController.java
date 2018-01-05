@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.Account;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
+import com.nisum.mytime.repository.AccountRepo;
 import com.nisum.mytime.service.ProjectService;
 import com.nisum.mytime.service.UserService;
 
@@ -26,7 +28,8 @@ public class ProjectController {
 	private UserService userService;
 	@Autowired
 	private ProjectService projectService;
-
+	@Autowired
+	private AccountRepo accountRepo;
 	@RequestMapping(value = "/employee", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> getEmployeeRole(@RequestParam("emailId") String emailId)
 			throws MyTimeException {
@@ -35,8 +38,16 @@ public class ProjectController {
 	}
 
 	@RequestMapping(value = "/addProject", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Project> addProject(@RequestBody Project employeeRoles) throws MyTimeException {
-		Project project = projectService.addProject(employeeRoles);
+	public ResponseEntity<Project> addProject(@RequestBody Project projectAdded) throws MyTimeException {
+		    String accountName=projectAdded.getAccount();
+		   Account account= accountRepo.findByAccountName(accountName);
+		  int sequenceNumber= account.getAccountProjectSequence();
+		       account.setAccountProjectSequence(sequenceNumber+1);
+		       accountRepo.save(account);
+		     String projectId=  accountName+String.format("%04d", sequenceNumber+1);
+		     projectAdded.setProjectId(projectId);
+		Project project = projectService.addProject(projectAdded);
+		System.out.println(project.getProjectId());
 		return new ResponseEntity<>(project, HttpStatus.OK);
 	}
 

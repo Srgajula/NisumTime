@@ -12,12 +12,14 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.Account;
 import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.ProjectTeamMate;
 import com.nisum.mytime.model.Shift;
 import com.nisum.mytime.model.Skill;
+import com.nisum.mytime.repository.AccountRepo;
 import com.nisum.mytime.repository.DesignationRepo;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
 import com.nisum.mytime.repository.ProjectTeamMatesRepo;
@@ -37,6 +39,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private DesignationRepo designationRepo;
+	
+	@Autowired
+	private AccountRepo accountRepo;
+	
 	@Autowired
 	private TechnologyRepo technologyRepo;
 
@@ -112,12 +118,15 @@ public class UserServiceImpl implements UserService {
 	public List<Shift> getAllShifts() throws MyTimeException {
 		return shiftRepo.findAll();
 	}
-
+	
 	@Override
 	public List<Designation> getAllDesignations() throws MyTimeException {
 		return designationRepo.findAll();
 	}
-
+	@Override
+	public List<Account> getAccounts() throws MyTimeException {
+		return accountRepo.findAll();
+	}
 	@Override
 	public List<Skill> getTechnologies() throws MyTimeException {
 	return technologyRepo.findAll();

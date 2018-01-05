@@ -3,6 +3,7 @@ package com.nisum.mytime.service;
 import java.util.List;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.Account;
 import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
@@ -36,4 +37,6 @@ public interface UserService {
 	List<Skill> getTechnologies() throws MyTimeException;
 	
 	public EmployeeRoles updateProfile(EmployeeRoles employeeRoles) throws MyTimeException;
+	
+	public List<Account> getAccounts() throws MyTimeException; 
 }

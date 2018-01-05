@@ -18,20 +18,17 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Document(collection = "Projects")
-public class Project implements Serializable {
+@Document(collection = "Accounts")
+public class Account implements Serializable {
 
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	private ObjectId id;
-	private String projectId;
-	private String projectName;
-	private String managerId;
-	private String managerName;
-	private String account;
-	private String status;
-	private List<String> employeeIds;
-
+	private String accountId;
+	private String accountName;
+	private int accountProjectSequence;
+    private String status;
+	
 }
