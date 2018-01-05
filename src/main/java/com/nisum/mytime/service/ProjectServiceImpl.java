@@ -123,7 +123,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectTeamMate updateTeammate(ProjectTeamMate projectTeamMate) {
 
 		ProjectTeamMate existingTeammate = projectTeamMatesRepo
-				.findByEmployeeIdAndProjectId(projectTeamMate.getEmployeeId(), projectTeamMate.getManagerId());
+				.findByEmployeeIdAndProjectId(projectTeamMate.getEmployeeId(), projectTeamMate.getProjectId());
 		existingTeammate.setProjectId(projectTeamMate.getProjectId());
 		existingTeammate.setProjectName(projectTeamMate.getProjectName());
 		existingTeammate.setExperience(projectTeamMate.getExperience());
