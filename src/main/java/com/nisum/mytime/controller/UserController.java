@@ -121,7 +121,6 @@ public class UserController {
 		List<String> technologies = userService.getAccounts().stream()
 				.filter(e -> "Y".equalsIgnoreCase(e.getStatus())).map(Account::getAccountName).sorted()
 				.collect(Collectors.toList());
-		System.out.println("technologies"+technologies);
 		return new ResponseEntity<>(technologies, HttpStatus.OK);
 }
 }
