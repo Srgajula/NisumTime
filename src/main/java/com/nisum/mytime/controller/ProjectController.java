@@ -47,7 +47,6 @@ public class ProjectController {
 		     String projectId=  accountName+String.format("%04d", sequenceNumber+1);
 		     projectAdded.setProjectId(projectId);
 		Project project = projectService.addProject(projectAdded);
-		System.out.println(project.getProjectId());
 		return new ResponseEntity<>(project, HttpStatus.OK);
 	}
 

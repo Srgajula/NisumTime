@@ -6,9 +6,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nisum.mytime.controller.ProjectController;
+import com.nisum.mytime.model.Account;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
+import com.nisum.mytime.repository.AccountRepo;
 import com.nisum.mytime.service.ProjectService;
 import com.nisum.mytime.service.UserService;
 
@@ -33,6 +38,9 @@ public class ProjectControllerTest {
 	
 	@Mock
 	ProjectService projectService;
+	
+	@Mock
+	AccountRepo accountRepo;
 
 	@InjectMocks
 	ProjectController projectController;
@@ -49,7 +57,6 @@ public class ProjectControllerTest {
 	@Test
 	public void testgetEmployeeRole() throws Exception{
 		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d",null,null,"user@nisum.com", null,null,null,null,null,null,null, new Date(2017-11-12),new Date(2017-12-12));
-		System.out.println(employeesRole);
 		when(userService.getEmployeesRole("user@nisum.com")).thenReturn(employeesRole);
 		mockMvc.perform(get("/project/employee").param("emailId", "user@nisum.com")).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(userService).getEmployeesRole("user@nisum.com");		
@@ -63,10 +70,10 @@ public class ProjectControllerTest {
 		list.add("16102");
 		list.add("16103");
 		Project employeeRole1 = new Project(new ObjectId ("9976ef15874c902c98b8a05d"),"102","OMS","16101","Srikanth","Macys","Billable",list);
-		System.out.println(employeeRole1);
 		String jsonvalue =(new ObjectMapper()).writeValueAsString(employeeRole1).toString();
-		System.out.println(jsonvalue);
+		Account account = new Account(new ObjectId("5a4f03661dca211ea7f94c02"),"2", "Macys", 0,"Y");
 		when(projectService.addProject(employeeRole1)).thenReturn(employeeRole1);
+		when(accountRepo.findByAccountName("Macys")).thenReturn(account);
 		mockMvc.perform(post("/project/addProject").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonvalue)).andExpect(MockMvcResultMatchers.status().isOk());
 	}
 	
@@ -77,10 +84,8 @@ public class ProjectControllerTest {
 		list1.add("16105");
 		list1.add("16106");
 		Project project = new Project(new ObjectId ("5976ef15874c902c98b8a05d"),"101","MOSAIC","16100","Rajeshekar","Gap","Billable",list1);
-		System.out.println(project);
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(project);
-		System.out.println(jsonString);
 		when(projectService.updateProject(any())).thenReturn(project);
 		mockMvc.perform(post("/project/updateProject").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonString)).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(projectService).updateProject(any());
@@ -95,7 +100,6 @@ public class ProjectControllerTest {
 	@Test
 	public void testgetProjects() throws Exception{
 		List<Project> projects = CreateProjectDetails();
-		System.out.println(projects.toString());
 		when(projectService.getProjects()).thenReturn(projects);
 		mockMvc.perform(get("/project/getProjects").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(projectService).getProjects();
@@ -105,7 +109,6 @@ public class ProjectControllerTest {
 	@Test
 	public void testgetEmployeeRoleData() throws Exception{
 		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d","16127",null,null,null, null,null,null,null,null,null,new Date(2017-11-18),new Date(2017-12-18));
-		System.out.println(employeesRole);
 		when(userService.getEmployeesRoleData("16127")).thenReturn(employeesRole);
 		mockMvc.perform(get("/project/getEmployeeRoleData").param("empId", "16127").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(userService).getEmployeesRoleData("16127");		

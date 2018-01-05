@@ -1,3 +1,4 @@
+defaultTasks = ['clean','build']
 buildscript {
 	ext {
 		springBootVersion = '1.5.8.RELEASE'
@@ -42,7 +43,6 @@ dependencies {
 	compile('org.projectlombok:lombok:1.16.+')
 	compile('org.quartz-scheduler:quartz:2.2.1')
 	compile('org.quartz-scheduler:quartz:2.3.0')
-	
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'1.5.8.RELEASE'
 	testCompile ('junit:junit:4.12')
 	compile('net.sf.ucanaccess:ucanaccess:4.0.1')
