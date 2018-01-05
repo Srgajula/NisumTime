@@ -6,9 +6,6 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	
 	function onSignIn(googleUser) {
 		var profile = googleUser.getBasicProfile();
-		console.log('Name: ' + profile.getName());
-		console.log('Email: ' + profile.getEmail()); 
-		console.log('Image URL: ' + profile.getImageUrl());
 		getUserRole(profile);
 		getAllUserRoles();
 		getAllShifts();
