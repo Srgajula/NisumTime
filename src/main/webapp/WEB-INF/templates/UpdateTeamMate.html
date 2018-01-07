@@ -18,6 +18,9 @@
 			<output>Employee Id : {{employeeId}}</output>
 			<output>Email Id : {{emailId}}</output>
 			<output>Role : {{role}}</output>
+			<output>Designation : {{designation}}</output>
+			<output>Experience : {{experience}}</output>
+			<output>Mobile Number : {{mobileNumber}}</output>
 			<md-select ng-model="projectModel"
 				md-selected-text="getProjectSelected()" id="selectProject">
 			<md-optgroup label="Project"> <md-option
@@ -26,16 +29,16 @@
 			<md-select ng-model="shift" md-selected-text="getSelectedShift()" id="empShift">
 			<md-optgroup label="shifts"> <md-option ng-value="shift"
 				ng-repeat="shift in shifts">{{shift}}</md-option> </md-optgroup> </md-select>
-			<md-select ng-model="empDesignation" md-selected-text="getSelectedDesignation()" id="empDesignation">
+		<!-- 	<md-select ng-model="empDesignation" md-selected-text="getSelectedDesignation()" id="empDesignation">
 			<md-optgroup label="designations"> <md-option ng-value="designation"
-				ng-repeat="designation in designations">{{designation}}</md-option> </md-optgroup> </md-select>
+				ng-repeat="designation in designations">{{designation}}</md-option> </md-optgroup> </md-select> -->
 			<md-select ng-model="empBillableStatus" md-selected-text="getSelectedBillableStatus()" id="empBillableStatus">
 			<md-optgroup label="billable statuses"> <md-option ng-value="billableStatus"
 				ng-repeat="billableStatus in billableStatuses">{{billableStatus}}</md-option> </md-optgroup> </md-select>
-			<input type="text" class="form-control" id="experience"
+			<!-- <input type="text" class="form-control" id="experience"
 				name="experience" ng-model="experience" placeholder="Experience" /><br> 
 			<input type="text" class="form-control" id="mobileNumber"
-				name="mobileNumber" ng-model="mobileNumber" placeholder="MobileNumber" /><br>
+				name="mobileNumber" ng-model="mobileNumber" placeholder="MobileNumber" /><br> -->
 			<div role="alert">
 				<span class="error" style="color: red;">{{alertMsg}}</span>
 			</div>

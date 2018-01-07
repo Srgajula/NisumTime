@@ -31,6 +31,7 @@ public class EmployeeRoles implements Serializable {
 	private String employeeName;
 	private String emailId;
 	private String role;
+	private String designation;
 	private String shift;
 	private String baseTechnology;
 	private String technologyKnown;

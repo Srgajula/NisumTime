@@ -48,7 +48,7 @@ public class UserControllerTest {
 	@Test
 	public void testgetEmployeeRole() throws Exception {
 		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d", null, null,
-				"user@nisum.com", null,null,null,null,null,null, null,new Date(2017-11-20),new Date(2017-12-23));
+				"user@nisum.com", null,null,null,null,null,null,null, null,new Date(2017-11-20),new Date(2017-12-23));
 		System.out.println(employeesRole);
 		when(userService.getEmployeesRole("user@nisum.com")).thenReturn(employeesRole);
 		mockMvc.perform(get("/user/employee").param("emailId", "user@nisum.com"))
@@ -60,7 +60,7 @@ public class UserControllerTest {
 	@Test
 	public void testassigingEmployeeRole() throws Exception {
 		EmployeeRoles employeeRole = new EmployeeRoles("5976ef15874c902c98b8a05c", "16135", "Monika",
-				"user1@nisum.com", "HR", "06:00-09:00","Java/J2EE","Spring","8767893452","5687234567","user1@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
+				"user1@nisum.com", "HR",null, "06:00-09:00","Java/J2EE","Spring","8767893452","5687234567","user1@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
 		System.out.println(employeeRole);
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(employeeRole);
@@ -75,7 +75,7 @@ public class UserControllerTest {
 	@Test
 	public void testupdateEmployeeRole() throws Exception {
 		EmployeeRoles employeeRole2 = new EmployeeRoles("5976ef15874c902c98b8a05d", "67890", "Sonika",
-				"user2@nisum.com", "Manager", "09:00am-06:00am","php","Hibernate","9878678956","9989782210","user2@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
+				"user2@nisum.com", "Manager",null, "09:00am-06:00am","php","Hibernate","9878678956","9989782210","user2@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
 		System.out.println(employeeRole2);
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(employeeRole2);
@@ -106,7 +106,7 @@ public class UserControllerTest {
 
 	@Test
 	public void testgetEmployeeRoleData() throws Exception {
-		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d", "16127", null, null,
+		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d", "16127",null, null, null,
 				null, null,null,null,null,null,null,new Date(2017-11-13),new Date(2017-12-20));
 		System.out.println(employeesRole);
 		when(userService.getEmployeesRoleData("16127")).thenReturn(employeesRole);

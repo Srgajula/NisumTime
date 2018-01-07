@@ -38,11 +38,13 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 	function UpdateProfileController($scope, $mdDialog, dataToPass) {
 		$scope.profile = dataToPass;
 		$scope.technologies=myFactory.getTechnologies();
+		$scope.designations=myFactory.getDesignations();
 		$scope.baseTechnology=(dataToPass.baseTechnology == null ? undefined: dataToPass.baseTechnology);
 		$scope.mobileNumber=dataToPass.mobileNumber;
 		$scope.alternateMobileNumber=dataToPass.alternateMobileNumber;
 		$scope.personalEmailId=dataToPass.personalEmailId;
 		$scope.technologyKnown=dataToPass.technologyKnown;
+		$scope.designationEmp=(dataToPass.designation == null ? undefined: dataToPass.designation);
 		$scope.cancel = function() {
 		    $mdDialog.hide();
 		};
@@ -54,12 +56,18 @@ myApp.controller("profileController", function($scope, $http, myFactory, $mdDial
 				return "Please select primary skill";
 			}
 		};
+		$scope.getDesignationText = function(){
+			if ($scope.designationEmp !== undefined) {
+				return $scope.designationEmp;
+			} else {
+				return "Please select designation";
+			}
+		};
 		$scope.validateFields = function(){
 				var mobileNumber = $scope.mobileNumber;
 				$scope.alertMsg = "";
-				var record = {"employeeId":myFactory.getEmpId(), "mobileNumber": mobileNumber, "alternateMobileNumber": $scope.alternateMobileNumber, "personalEmailId": $scope.personalEmailId, "baseTechnology": $scope.baseTechnology, "technologyKnown": $scope.technologyKnown};
-
-				var urlRequest  = "";
+				var record = {"employeeId":myFactory.getEmpId(),"designation": $scope.designationEmp, "mobileNumber": mobileNumber, "alternateMobileNumber": $scope.alternateMobileNumber, "personalEmailId": $scope.personalEmailId, "baseTechnology": $scope.baseTechnology, "technologyKnown": $scope.technologyKnown};
+                var urlRequest  = "";
 					urlRequest = appConfig.appUri+ "user/updateProfile";
 				
 				var req = {

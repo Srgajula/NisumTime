@@ -83,23 +83,31 @@ public class ProjectTeamController {
 	}
 
 	@RequestMapping(value = "/addEmployeeToTeam", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProjectTeamMate> addEmployeeToTeam(@RequestBody ProjectTeamMate employeeRoles)
+	public ResponseEntity<ProjectTeamMate> addEmployeeToTeam(@RequestBody ProjectTeamMate teamMate)
 			throws MyTimeException {
-		ProjectTeamMate project = projectService.addProject(employeeRoles);
-		return new ResponseEntity<>(project, HttpStatus.OK);
+		teamMate.setActive(true);
+		ProjectTeamMate teamMateDB = projectService.addProjectTeamMate(teamMate);
+		return new ResponseEntity<>(teamMateDB, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/updateTeammate", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProjectTeamMate> updateTeammate(@RequestBody ProjectTeamMate projectTeamMate)
 			throws MyTimeException {
+		System.out.println(projectTeamMate.getId());
 		ProjectTeamMate updatedTeammate = projectService.updateTeammate(projectTeamMate);
 		return new ResponseEntity<>(updatedTeammate, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/deleteTeammate", method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
+	/*@RequestMapping(value = "/deleteTeammate", method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> deleteTeammate(@RequestParam("empId") String empId,
-			@RequestParam("managerId") String managerId) throws MyTimeException {
-		projectService.deleteTeammate(empId, managerId);
+			@RequestParam("projectId") String projectId,@RequestParam("id") String id) throws MyTimeException {
+	*/	
+	@RequestMapping(value = "/deleteTeammate", method = RequestMethod.POST,produces = MediaType.TEXT_PLAIN_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> deleteTeammate(@RequestBody ProjectTeamMate projectTeamMate) throws MyTimeException {
+	
+		System.out.println("id from UI"+projectTeamMate.getId());
+		System.out.println("id from UI"+projectTeamMate.getEmployeeId());
+		projectService.deleteTeammate(projectTeamMate.getEmployeeId(), projectTeamMate.getProjectId(),projectTeamMate.getId());
 		return new ResponseEntity<>("Success", HttpStatus.OK);
 	}
 
@@ -143,5 +151,10 @@ public class ProjectTeamController {
 		List<ProjectTeamMate> employeesRoles = projectService.getProjectDetails(projectId);
 		return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
 	}
-	
+	@RequestMapping(value = "/getMyProjectAllocations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProjectTeamMate>> getMyProjectAllocations(@RequestParam("employeeId") String employeeId)
+			throws MyTimeException {
+		List<ProjectTeamMate> projectAllocations = projectService.getMyProjectAllocations(employeeId);
+		return new ResponseEntity<>(projectAllocations, HttpStatus.OK);
+	}
 }

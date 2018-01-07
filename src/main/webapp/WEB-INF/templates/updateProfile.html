@@ -1,4 +1,4 @@
-<md-dialog aria-label="Role Template" style="width:400px;height:550px;">
+<md-dialog aria-label="Role Template" style="width:400px;height:600px;">
 <form ng-cloak name="myForm">
 	<md-toolbar>
 	<div class="md-toolbar-tools"
@@ -14,6 +14,9 @@
 	<div class="md-dialog-content">
 
 	<div class="form-group">
+	<md-select ng-model="designationEmp"  md-selected-text="getDesignationText()" id="designationEmp" >
+			<md-optgroup label="designations"> <md-option ng-value="designation"
+				ng-repeat="designation in designations">{{designation}}</md-option> </md-optgroup> </md-select>
 			<input type="text" class="form-control" id="mobileNumber" name="mobileNumber"
 				ng-model="mobileNumber" placeholder="Mobile Number" alt="Mobile Number"/> <br>
 			<input type="text" class="form-control" id="alternateMobileNumber" name="alternateMobileNumber"

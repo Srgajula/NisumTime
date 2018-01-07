@@ -105,7 +105,16 @@ public class UserServiceImpl implements UserService {
 		FindAndModifyOptions options = new FindAndModifyOptions();
 		options.returnNew(true);
 		options.upsert(true);
-		return mongoTemplate.findAndModify(query, update, options, EmployeeRoles.class);
+		EmployeeRoles emp= mongoTemplate.findAndModify(query, update, options, EmployeeRoles.class);
+		 try {
+				List<ProjectTeamMate>  employeeProfiles=	projectTeamMatesRepo.findByEmployeeId(emp.getEmployeeId());
+				if(employeeProfiles!=null&&!employeeProfiles.isEmpty()) {
+					for(ProjectTeamMate profile:employeeProfiles){
+						profile.setRole(emp.getRole());;
+						projectTeamMatesRepo.save(profile);
+					}
+				}}catch(Exception e) {}
+	   return emp;
 	}
 
 	@Override
@@ -132,21 +141,37 @@ public class UserServiceImpl implements UserService {
 	}
 	@Override
 	public EmployeeRoles updateProfile(EmployeeRoles employeeRoles) throws MyTimeException {
+		System.out.println("employeeRoles"+employeeRoles.getId());
 		boolean mobileNumberChnaged=false;
+		boolean designationChnaged=false;
 		employeeRoles.setLastModifiedOn(new Date());
 		EmployeeRoles existingEmployee=employeeRolesRepo.findByEmployeeId(employeeRoles.getEmployeeId());
+		System.out.println("existingEmployee"+existingEmployee.getId());
 		String newMobileNumber=employeeRoles.getMobileNumber();
+		String designation=employeeRoles.getDesignation();
 		if(newMobileNumber!=null&&!newMobileNumber.equalsIgnoreCase("")) {
 			if((existingEmployee!=null&&existingEmployee.getMobileNumber()!=null&&!existingEmployee.getMobileNumber().equalsIgnoreCase(newMobileNumber) )|| (existingEmployee.getMobileNumber()==null )){
 				mobileNumberChnaged=true;
 			}
 		}
-		EmployeeRoles employeeRolesDB= employeeRolesRepo.save(employeeRoles);
-		if(mobileNumberChnaged) {
+		if(designation!=null&&!designation.equalsIgnoreCase("")) {
+			if((existingEmployee!=null&&existingEmployee.getDesignation()!=null&&!existingEmployee.getDesignation().equalsIgnoreCase(newMobileNumber) )|| (existingEmployee.getDesignation()==null )){
+				designationChnaged=true;
+			}
+		}
+		existingEmployee.setDesignation(employeeRoles.getDesignation());
+		existingEmployee.setMobileNumber(employeeRoles.getMobileNumber());
+		existingEmployee.setAlternateMobileNumber(employeeRoles.getAlternateMobileNumber());
+		existingEmployee.setPersonalEmailId(employeeRoles.getPersonalEmailId());
+		existingEmployee.setBaseTechnology(employeeRoles.getBaseTechnology());
+		existingEmployee.setTechnologyKnown(employeeRoles.getTechnologyKnown());
+		EmployeeRoles employeeRolesDB= employeeRolesRepo.save(existingEmployee);
+		if(mobileNumberChnaged || designationChnaged) {
 			try {
 		List<ProjectTeamMate>  employeeProfiles=	projectTeamMatesRepo.findByEmployeeId(employeeRoles.getEmployeeId());
 		if(employeeProfiles!=null&&!employeeProfiles.isEmpty()) {
 			for(ProjectTeamMate profile:employeeProfiles){
+				profile.setDesignation(employeeRolesDB.getDesignation());
 				profile.setMobileNumber(employeeRolesDB.getMobileNumber());
 				projectTeamMatesRepo.save(profile);
 			}

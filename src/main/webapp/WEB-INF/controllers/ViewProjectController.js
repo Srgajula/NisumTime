@@ -257,7 +257,6 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 			$scope.managerName = "";
 			$scope.isDisabled = false;
 	}else if(dataToPass.action == "Update"){
-		//alert("dataToPass"+dataToPass)
 		$scope.projectId = dataToPass.projectId;
 		$scope.projectName = dataToPass.projectName;
 		$scope.managerId = dataToPass.managerId;
@@ -268,12 +267,7 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 			 'employeeId': dataToPass.managerId
 			  };
 		$scope.managerDetails = managers;
-//	 	$scope.managerModel.managerId=$scope.managerId;
-//		$scope.managerModel.employeeName=$scope.managerName;
-		//alert('$scope.managers'+$scope.managerDetails)
-		//alert('$scope.managerModel'+$scope.managerModel)
-		//$scope.managerModel.employeeName=dataToPass.managerName;
-			$scope.isDisabled = true;
+        $scope.isDisabled = true;
 	}else if(dataToPass.action == "View"){
 		$scope.projectId = dataToPass.projectId;
 		$scope.projectName = dataToPass.projectName;
@@ -421,8 +415,6 @@ myApp.controller("viewProjectController",function($scope, myFactory,exportUiGrid
 		    	$scope.gridOptions.data = [];
 		    });
 	}
-		//$scope.roles = ["HR","Manager","Employee"];
-		//$scope.shifts = ["Shift 1(09:00 AM - 06:00 PM)","Shift 2(03:30 PM - 12:30 PM)", "Shift 3(09:00 PM - 06:00 PM)"];
 		$scope.getManagers = function(){
 			if ($scope.managerModel !== undefined) {
 				return $scope.managerModel.employeeName;

@@ -48,7 +48,7 @@ public class ProjectTeamControllerTest {
 
 	@Test
 	public void testgetEmployeeRole() throws Exception{
-		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d",null,null,null,null,null,null,null,"user@nisum.com", null,null,new Date(2017-11-20),new Date(2107-12-23));
+		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d",null,null,null,null,null,null,null,null,"user@nisum.com", null,null,new Date(2017-11-20),new Date(2107-12-23));
 		System.out.println(employeesRole);
 		when(userService.getEmployeesRole("user@nisum.com")).thenReturn(employeesRole);
 		mockMvc.perform(get("/projectTeam/employee").param("emailId", "user@nisum.com")).andExpect(MockMvcResultMatchers.status().isOk());
@@ -72,7 +72,7 @@ public class ProjectTeamControllerTest {
 	
 	@Test
 	public void testupdateEmployeeRole() throws Exception{
-		EmployeeRoles employeesRoles2 = new EmployeeRoles("1976ef15874c902c98b8a05d","16111","Vinay Singh","vsingh@nisum.com","Manager","09:00-06:00","Java/J2EE","Testing","8755672341","8800543678","vsingh@gmail.com",new Date(2017-11-29),new Date(2017-12-20));
+		EmployeeRoles employeesRoles2 = new EmployeeRoles("1976ef15874c902c98b8a05d","16111","Vinay Singh","vsingh@nisum.com","Manager",null,"09:00-06:00","Java/J2EE","Testing","8755672341","8800543678","vsingh@gmail.com",new Date(2017-11-29),new Date(2017-12-20));
 		System.out.println(employeesRoles2);
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(employeesRoles2);
@@ -91,7 +91,7 @@ public class ProjectTeamControllerTest {
 	
 	@Test
 	public void testgetEmployeeRoleData() throws Exception{
-		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d","16127",null,null,null,null,null,null,null, null,null,new Date(2017-11-20),new Date(2107-12-23));
+		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d","16127",null,null,null,null,null,null,null,null, null,null,new Date(2017-11-20),new Date(2107-12-23));
 		System.out.println(employeesRole);
 		when(userService.getEmployeesRoleData("16127")).thenReturn(employeesRole);
 		mockMvc.perform(get("/projectTeam/getEmployeeRoleData").param("empId", "16127").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk());
@@ -118,17 +118,15 @@ public class ProjectTeamControllerTest {
 	
 	@Test
 	public void testaddEmployeeToTeam() throws Exception{
-		ProjectTeamMate project = new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127", "Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP","16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388");
-		System.out.println(project);
-		String jsonvalue =(new ObjectMapper()).writeValueAsString(project).toString();
-		System.out.println(jsonvalue);
-		when(projectService.addProject(project)).thenReturn(project);
+		ProjectTeamMate projectTeamMate = new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127", "Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP","16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388",true);
+		String jsonvalue =(new ObjectMapper()).writeValueAsString(projectTeamMate).toString();
+		when(projectService.addProjectTeamMate(projectTeamMate)).thenReturn(projectTeamMate);
 		mockMvc.perform(post("/projectTeam/addEmployeeToTeam").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonvalue)).andExpect(MockMvcResultMatchers.status().isOk());
 	}
 
 	@Test
 	public void testupdateTeammate() throws Exception{
-		ProjectTeamMate updatedTeammate =new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127", "Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP","16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388");
+		ProjectTeamMate updatedTeammate =new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127", "Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP","16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388",true);
 		System.out.println(updatedTeammate);
 		String jsonvalue =(new ObjectMapper()).writeValueAsString(updatedTeammate).toString();
 		System.out.println(jsonvalue);
@@ -139,7 +137,7 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testdeleteTeammate() throws Exception{
 	mockMvc.perform(delete("/projectTeam/deleteTeammate").param("empId","16127").param("managerId", "16051")).andExpect(MockMvcResultMatchers.status().isOk());
-	verify(projectService).deleteTeammate("16127", "16051");
+	verify(projectService).deleteTeammate("16127", "16051",new ObjectId());
 	}
 	
 	@Test

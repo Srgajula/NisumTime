@@ -73,7 +73,8 @@ public class UserController {
 	public ResponseEntity<List<EmployeeRoles>> getManagers() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
 		List<EmployeeRoles> managers = employeesRoles
-				.stream().filter(e -> ("Manager".equalsIgnoreCase(e.getRole())
+				.stream().filter(e -> ("Director".equalsIgnoreCase(e.getRole())||"Delivery Manager".equalsIgnoreCase(e.getRole())
+						||"Manager".equalsIgnoreCase(e.getRole())
 						|| "HR Manager".equalsIgnoreCase(e.getRole()) || "Lead".equalsIgnoreCase(e.getRole())))
 				.sorted(Comparator.comparing(EmployeeRoles::getEmployeeName)).collect(Collectors.toList());
 		return new ResponseEntity<>(managers, HttpStatus.OK);
@@ -106,13 +107,14 @@ public class UserController {
 	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> updateProfile(@RequestBody EmployeeRoles employeeRoles)
 			throws MyTimeException {
-		EmployeeRoles employeeDB = userService.getEmployeesRoleData(employeeRoles.getEmployeeId());
+		/*EmployeeRoles employeeDB = userService.getEmployeesRoleData(employeeRoles.getEmployeeId());
 		employeeDB.setMobileNumber(employeeRoles.getMobileNumber());
 		employeeDB.setAlternateMobileNumber(employeeRoles.getAlternateMobileNumber());
 		employeeDB.setPersonalEmailId(employeeRoles.getPersonalEmailId());
 		employeeDB.setBaseTechnology(employeeRoles.getBaseTechnology());
 		employeeDB.setTechnologyKnown(employeeRoles.getTechnologyKnown());
-		EmployeeRoles employeeRole = userService.updateProfile(employeeDB);
+		EmployeeRoles employeeRole = userService.updateProfile(employeeDB);*/
+		EmployeeRoles employeeRole = userService.updateProfile(employeeRoles);
 		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
 

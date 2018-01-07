@@ -3,6 +3,7 @@ package com.nisum.mytime.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -115,8 +116,8 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectTeamMate addProject(ProjectTeamMate project) throws MyTimeException {
-		return projectTeamMatesRepo.save(project);
+	public ProjectTeamMate addProjectTeamMate(ProjectTeamMate projectTeamMate) throws MyTimeException {
+		return projectTeamMatesRepo.save(projectTeamMate);
 	}
 
 	@Override
@@ -124,18 +125,25 @@ public class ProjectServiceImpl implements ProjectService {
 
 		ProjectTeamMate existingTeammate = projectTeamMatesRepo
 				.findByEmployeeIdAndProjectId(projectTeamMate.getEmployeeId(), projectTeamMate.getProjectId());
+		System.out.println(existingTeammate);
+		System.out.println("existingTeammate"+existingTeammate.getId());
+		ProjectTeamMate existingTeammate1 = projectTeamMatesRepo
+				.findById(projectTeamMate.getId());
+		System.out.println(existingTeammate1);
+		System.out.println("existingTeammate1"+existingTeammate1.getId());
+		
 		existingTeammate.setProjectId(projectTeamMate.getProjectId());
 		existingTeammate.setProjectName(projectTeamMate.getProjectName());
-		existingTeammate.setExperience(projectTeamMate.getExperience());
-		existingTeammate.setDesignation(projectTeamMate.getDesignation());
+		//existingTeammate.setExperience(projectTeamMate.getExperience());
+		//existingTeammate.setDesignation(projectTeamMate.getDesignation());
 		existingTeammate.setBillableStatus(projectTeamMate.getBillableStatus());
-		existingTeammate.setMobileNumber(projectTeamMate.getMobileNumber());
+		//existingTeammate.setMobileNumber(projectTeamMate.getMobileNumber());
 		existingTeammate.setShift(projectTeamMate.getShift());
 		ProjectTeamMate teamMate= projectTeamMatesRepo.save(existingTeammate);
 		try {
 		EmployeeRoles employeeDB= employeeRolesRepo.findByEmployeeId(teamMate.getEmployeeId());
 		employeeDB.setShift(teamMate.getShift());
-		employeeDB.setMobileNumber(teamMate.getMobileNumber());
+		//employeeDB.setMobileNumber(teamMate.getMobileNumber());
 		employeeRolesRepo.save(employeeDB);
 		}
 		catch(Exception e) {}
@@ -143,9 +151,10 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public void deleteTeammate(String empId, String managerId) {
-		ProjectTeamMate existingTeammate = projectTeamMatesRepo.findByEmployeeIdAndManagerId(empId, managerId);
-		projectTeamMatesRepo.delete(existingTeammate);
+	public void deleteTeammate(String empId, String projectId,ObjectId id) {
+		ProjectTeamMate existingTeammate = projectTeamMatesRepo.findById(id);
+		existingTeammate.setActive(false);
+		projectTeamMatesRepo.save(existingTeammate);
 	}
 
 	@Override
@@ -159,7 +168,9 @@ public class ProjectServiceImpl implements ProjectService {
 		List<ProjectTeamMate> teamMates = new ArrayList<>();
 		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findByEmployeeId(empId);
 		for (ProjectTeamMate pt : empRecords) {
+			if(pt.isActive()) {
 			teamMates.addAll(projectTeamMatesRepo.findByProjectId(pt.getProjectId()));
+			}
 		}
 		return teamMates;
 	}
@@ -223,4 +234,11 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectTeamMatesRepo.findByProjectId(projectId);
 
 	}
+	@Override
+	public List<ProjectTeamMate> getMyProjectAllocations(String empId) {
+		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findByEmployeeId(empId);
+		
+		return empRecords;
+	}
+
 }

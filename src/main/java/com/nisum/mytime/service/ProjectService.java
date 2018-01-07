@@ -2,6 +2,8 @@ package com.nisum.mytime.service;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
@@ -28,11 +30,11 @@ public interface ProjectService {
 
 	List<ProjectTeamMate> getTeamDetails(String empId);
 
-	ProjectTeamMate addProject(ProjectTeamMate project) throws MyTimeException;
+	public ProjectTeamMate addProjectTeamMate(ProjectTeamMate projectTeamMate) throws MyTimeException;
 
 	ProjectTeamMate updateTeammate(ProjectTeamMate projectTeamMate);
 
-	void deleteTeammate(String empId, String managerId);
+	void deleteTeammate(String empId, String projectId,ObjectId id);
 
 	List<Project> getProjects(String managerId) throws MyTimeException;
 
@@ -45,4 +47,5 @@ public interface ProjectService {
 	List<ProjectTeamMate> getAllProjectDetails();
 	
 	List<ProjectTeamMate> getProjectDetails(String projectId);
+	public List<ProjectTeamMate> getMyProjectAllocations(String empId);
 }

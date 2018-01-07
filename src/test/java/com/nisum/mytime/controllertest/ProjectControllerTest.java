@@ -56,7 +56,7 @@ public class ProjectControllerTest {
 
 	@Test
 	public void testgetEmployeeRole() throws Exception{
-		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d",null,null,"user@nisum.com", null,null,null,null,null,null,null, new Date(2017-11-12),new Date(2017-12-12));
+		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d",null,null,"user@nisum.com",null, null,null,null,null,null,null,null, new Date(2017-11-12),new Date(2017-12-12));
 		when(userService.getEmployeesRole("user@nisum.com")).thenReturn(employeesRole);
 		mockMvc.perform(get("/project/employee").param("emailId", "user@nisum.com")).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(userService).getEmployeesRole("user@nisum.com");		
@@ -108,7 +108,7 @@ public class ProjectControllerTest {
 	
 	@Test
 	public void testgetEmployeeRoleData() throws Exception{
-		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d","16127",null,null,null, null,null,null,null,null,null,new Date(2017-11-18),new Date(2017-12-18));
+		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d","16127",null,null,null,null, null,null,null,null,null,null,new Date(2017-11-18),new Date(2017-12-18));
 		when(userService.getEmployeesRoleData("16127")).thenReturn(employeesRole);
 		mockMvc.perform(get("/project/getEmployeeRoleData").param("empId", "16127").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(userService).getEmployeesRoleData("16127");		
