@@ -328,7 +328,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			
 		}
 		$scope.designations = myFactory.getDesignations(); 
-		$scope.billableStatuses = ["Billable","Shadow","Bench"];
+		$scope.billableStatuses = ["Billable","Shadow","Bench","NA"];
 		$scope.shifts =myFactory.getShifts();
 		$scope.getSelectedDesignation = function(){
 			if ($scope.empDesignation !== undefined) {
