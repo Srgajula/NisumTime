@@ -17,6 +17,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'war'
 
 war {
+	dependsOn test
     baseName = 'myTime'
     version = ''
 }
