@@ -20,8 +20,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Document(collection = "ProjectTeamMate")
-public class ProjectTeamMate implements Serializable {
+@Document(collection = "TeamMateBilling")
+public class TeamMateBilling implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -29,22 +29,11 @@ public class ProjectTeamMate implements Serializable {
 	private ObjectId id;
 	private String employeeId;
 	private String employeeName;
-	private String emailId;
-	private String role;
-	private String shift;
-	private String projectId;
-	private String projectName;
-	private String account;
-	private String managerId;
-	private String managerName;
-	private String experience;
-	private String designation;
-	private String billableStatus;
-	private String mobileNumber;
+    private String projectId;
 	@DateTimeFormat(iso = ISO.DATE)
-	private Date startDate;
+	private Date billingStartDate;
 	@DateTimeFormat(iso = ISO.DATE)
-	private Date endDate;
-	private boolean active;
+	private Date billingEndDate;
+	
 	
 }

@@ -1,6 +1,7 @@
 package com.nisum.mytime.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,6 +87,7 @@ public class ProjectTeamController {
 	public ResponseEntity<ProjectTeamMate> addEmployeeToTeam(@RequestBody ProjectTeamMate teamMate)
 			throws MyTimeException {
 		teamMate.setActive(true);
+		teamMate.setStartDate(new Date());
 		ProjectTeamMate teamMateDB = projectService.addProjectTeamMate(teamMate);
 		return new ResponseEntity<>(teamMateDB, HttpStatus.OK);
 	}

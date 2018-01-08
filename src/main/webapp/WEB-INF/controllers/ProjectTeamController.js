@@ -40,7 +40,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	       }},
 			{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100}, 
 			{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false, enableSorting: true,width:70}, 
-			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false,cellTooltip:function (row, col) {
+			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: true,cellTooltip:function (row, col) {
 		           return  row.entity.projectName;
 		           
 		       }},

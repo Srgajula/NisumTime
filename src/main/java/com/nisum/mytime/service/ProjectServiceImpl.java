@@ -1,6 +1,7 @@
 package com.nisum.mytime.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -140,6 +141,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public void deleteTeammate(String empId, String projectId, ObjectId id) {
 		ProjectTeamMate existingTeammate = projectTeamMatesRepo.findById(id);
 		existingTeammate.setActive(false);
+		existingTeammate.setEndDate(new Date());
 		projectTeamMatesRepo.save(existingTeammate);
 	}
 

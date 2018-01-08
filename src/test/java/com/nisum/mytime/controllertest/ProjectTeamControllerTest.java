@@ -122,7 +122,7 @@ public class ProjectTeamControllerTest {
 	public void testaddEmployeeToTeam() throws Exception {
 		ProjectTeamMate projectTeamMate = new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127",
 				"Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP",
-				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388", true);
+				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388",new Date(),new Date(), true);
 		String jsonvalue = (new ObjectMapper()).writeValueAsString(projectTeamMate).toString();
 		when(projectService.addProjectTeamMate(projectTeamMate)).thenReturn(projectTeamMate);
 		mockMvc.perform(
@@ -134,7 +134,7 @@ public class ProjectTeamControllerTest {
 	public void testupdateTeammate() throws Exception {
 		ProjectTeamMate updatedTeammate = new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127",
 				"Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP",
-				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388", true);
+				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388",new Date(),new Date(), true);
 		String jsonvalue = (new ObjectMapper()).writeValueAsString(updatedTeammate).toString();
 		when(projectService.updateTeammate(updatedTeammate)).thenReturn(updatedTeammate);
 		mockMvc.perform(
@@ -146,7 +146,7 @@ public class ProjectTeamControllerTest {
 	public void testdeleteTeammate() throws Exception {
 		ProjectTeamMate deleteTeamMate = new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127",
 				"Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP",
-				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388", true);
+				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388",new Date(),new Date(), true);
 		String jsonvalue = (new ObjectMapper()).writeValueAsString(deleteTeamMate).toString();
 		mockMvc.perform(
 				post("/projectTeam/deleteTeammate").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonvalue))
