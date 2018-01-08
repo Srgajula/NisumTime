@@ -295,7 +295,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		}else if(dataToPass.action == "ViewTeamDetail"){
 			    $scope.employeeId = dataToPass.employeeId;
 				$scope.employeeName = dataToPass.employeeName;
-				var getCellTemplate1='<div ng-show="COL_FIELD!=\'Employee\' && COL_FIELD!=\'HR\' "><p class="col-lg-12">{{COL_FIELD}}  <i class="fa fa-sitemap fa-2x"  aria-hidden="true" style="font-size:1.5em;color:blue;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'ViewTeamDetail\')"></i></p></div><div ng-show="COL_FIELD==\'Employee\' || COL_FIELD==\'HR\'"><p class="col-lg-12">{{COL_FIELD}}</p></div>'
+				//var getCellTemplate1='<div ng-show="COL_FIELD!=\'Employee\' && COL_FIELD!=\'HR\' "><p class="col-lg-12">{{COL_FIELD}}  <i class="fa fa-sitemap fa-2x"  aria-hidden="true" style="font-size:1.5em;color:blue;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'ViewTeamDetail\')"></i></p></div><div ng-show="COL_FIELD==\'Employee\' || COL_FIELD==\'HR\'"><p class="col-lg-12">{{COL_FIELD}}</p></div>'
 					$scope.gridOptions = {
 						paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 						paginationPageSize : 10,
@@ -308,7 +308,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 							{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100}, 
 							{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false, enableSorting: false}, 
 							{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false},
-							{field : 'role',displayName: 'Role',cellTemplate: getCellTemplate1, enableColumnMenu: false, enableSorting: false},
+							{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false},
 							//{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
 								
 						]
