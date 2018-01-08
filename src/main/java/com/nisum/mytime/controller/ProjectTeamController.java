@@ -102,11 +102,8 @@ public class ProjectTeamController {
 	public ResponseEntity<String> deleteTeammate(@RequestParam("empId") String empId,
 			@RequestParam("projectId") String projectId,@RequestParam("id") String id) throws MyTimeException {
 	*/	
-	@RequestMapping(value = "/deleteTeammate", method = RequestMethod.POST,produces = MediaType.TEXT_PLAIN_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/deleteTeammate", method = RequestMethod.DELETE,produces = MediaType.TEXT_PLAIN_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> deleteTeammate(@RequestBody ProjectTeamMate projectTeamMate) throws MyTimeException {
-	
-		System.out.println("id from UI"+projectTeamMate.getId());
-		System.out.println("id from UI"+projectTeamMate.getEmployeeId());
 		projectService.deleteTeammate(projectTeamMate.getEmployeeId(), projectTeamMate.getProjectId(),projectTeamMate.getId());
 		return new ResponseEntity<>("Success", HttpStatus.OK);
 	}

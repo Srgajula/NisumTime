@@ -90,16 +90,16 @@ public class ProjectServiceImpl implements ProjectService {
 		FindAndModifyOptions options = new FindAndModifyOptions();
 		options.returnNew(true);
 		options.upsert(true);
-		Project projectDB= mongoTemplate.findAndModify(query, update, options, Project.class);
-		List<ProjectTeamMate> employeeDetails=	projectTeamMatesRepo.findByProjectId(project.getProjectId());
-		if(employeeDetails!=null&&projectDB!=null) {
-		for (ProjectTeamMate emp : employeeDetails) {
-			emp.setManagerId(projectDB.getManagerId());
-			emp.setManagerName(projectDB.getManagerName());
-			emp.setAccount(projectDB.getAccount());
-			emp.setProjectName(projectDB.getProjectName());
-			projectTeamMatesRepo.save(emp);
-		}
+		Project projectDB = mongoTemplate.findAndModify(query, update, options, Project.class);
+		List<ProjectTeamMate> employeeDetails = projectTeamMatesRepo.findByProjectId(project.getProjectId());
+		if (employeeDetails != null && projectDB != null) {
+			for (ProjectTeamMate emp : employeeDetails) {
+				emp.setManagerId(projectDB.getManagerId());
+				emp.setManagerName(projectDB.getManagerName());
+				emp.setAccount(projectDB.getAccount());
+				emp.setProjectName(projectDB.getProjectName());
+				projectTeamMatesRepo.save(emp);
+			}
 		}
 		return projectDB;
 	}
@@ -125,33 +125,19 @@ public class ProjectServiceImpl implements ProjectService {
 
 		ProjectTeamMate existingTeammate = projectTeamMatesRepo
 				.findByEmployeeIdAndProjectId(projectTeamMate.getEmployeeId(), projectTeamMate.getProjectId());
-		System.out.println(existingTeammate);
-		System.out.println("existingTeammate"+existingTeammate.getId());
-		ProjectTeamMate existingTeammate1 = projectTeamMatesRepo
-				.findById(projectTeamMate.getId());
-		System.out.println(existingTeammate1);
-		System.out.println("existingTeammate1"+existingTeammate1.getId());
-		
 		existingTeammate.setProjectId(projectTeamMate.getProjectId());
 		existingTeammate.setProjectName(projectTeamMate.getProjectName());
-		//existingTeammate.setExperience(projectTeamMate.getExperience());
-		//existingTeammate.setDesignation(projectTeamMate.getDesignation());
 		existingTeammate.setBillableStatus(projectTeamMate.getBillableStatus());
-		//existingTeammate.setMobileNumber(projectTeamMate.getMobileNumber());
 		existingTeammate.setShift(projectTeamMate.getShift());
-		ProjectTeamMate teamMate= projectTeamMatesRepo.save(existingTeammate);
-		try {
-		EmployeeRoles employeeDB= employeeRolesRepo.findByEmployeeId(teamMate.getEmployeeId());
+		ProjectTeamMate teamMate = projectTeamMatesRepo.save(existingTeammate);
+		EmployeeRoles employeeDB = employeeRolesRepo.findByEmployeeId(teamMate.getEmployeeId());
 		employeeDB.setShift(teamMate.getShift());
-		//employeeDB.setMobileNumber(teamMate.getMobileNumber());
 		employeeRolesRepo.save(employeeDB);
-		}
-		catch(Exception e) {}
 		return teamMate;
 	}
 
 	@Override
-	public void deleteTeammate(String empId, String projectId,ObjectId id) {
+	public void deleteTeammate(String empId, String projectId, ObjectId id) {
 		ProjectTeamMate existingTeammate = projectTeamMatesRepo.findById(id);
 		existingTeammate.setActive(false);
 		projectTeamMatesRepo.save(existingTeammate);
@@ -168,8 +154,8 @@ public class ProjectServiceImpl implements ProjectService {
 		List<ProjectTeamMate> teamMates = new ArrayList<>();
 		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findByEmployeeId(empId);
 		for (ProjectTeamMate pt : empRecords) {
-			if(pt.isActive()) {
-			teamMates.addAll(projectTeamMatesRepo.findByProjectId(pt.getProjectId()));
+			if (pt.isActive()) {
+				teamMates.addAll(projectTeamMatesRepo.findByProjectId(pt.getProjectId()));
 			}
 		}
 		return teamMates;
@@ -182,9 +168,9 @@ public class ProjectServiceImpl implements ProjectService {
 		List<String> teamMates = new ArrayList<>();
 		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findAll();
 		for (ProjectTeamMate pt : empRecords) {
-			Project project= projectRepo.findByProjectId(pt.getProjectId());
-			if(project!=null&&project.getStatus()!=null&&!project.getStatus().equalsIgnoreCase("Completed")) {
-			teamMates.add(pt.getEmployeeId());
+			Project project = projectRepo.findByProjectId(pt.getProjectId());
+			if (project != null && project.getStatus() != null && !"Completed".equalsIgnoreCase(project.getStatus())) {
+				teamMates.add(pt.getEmployeeId());
 			}
 		}
 		for (EmployeeRoles emp : allEmployees) {
@@ -196,49 +182,48 @@ public class ProjectServiceImpl implements ProjectService {
 
 		return notAssignedEmployees;
 	}
+
 	@Override
 	public List<ProjectTeamMate> getShiftDetails(String shift) {
 		List<Project> projects = projectRepo.findAll();
-		List<ProjectTeamMate> shiftEmpDetails =new ArrayList<>();  //projectTeamMatesRepo.findAll();
+		List<ProjectTeamMate> shiftEmpDetails = new ArrayList<>(); 
 		for (Project pt : projects) {
-			if(pt.getStatus().equalsIgnoreCase("Active")) {
-			List<ProjectTeamMate> employeeDetails=	projectTeamMatesRepo.findByProjectId(pt.getProjectId());
-		for (ProjectTeamMate emp : employeeDetails) {
-
-			if (emp.getShift()!=null&&emp.getShift().equalsIgnoreCase(shift)) {
-				shiftEmpDetails.add(emp);
-			}else if(emp.getShift()==null&&shift.equalsIgnoreCase("Shift 1(09:00 AM - 06:00 PM)")) {
-				shiftEmpDetails.add(emp);
+			if ("Active".equalsIgnoreCase(pt.getStatus())) {
+				List<ProjectTeamMate> employeeDetails = projectTeamMatesRepo.findByProjectId(pt.getProjectId());
+				for (ProjectTeamMate emp : employeeDetails) {
+					if (emp.getShift() != null && emp.getShift().equalsIgnoreCase(shift)) {
+						shiftEmpDetails.add(emp);
+					} else if (emp.getShift() == null && "Shift 1(09:00 AM - 06:00 PM)".equalsIgnoreCase(shift)) 
+						shiftEmpDetails.add(emp);
+				}
 			}
-		}
-		}
 		}
 		return shiftEmpDetails;
 	}
-	
+
 	@Override
 	public List<ProjectTeamMate> getAllProjectDetails() {
 		List<Project> projects = projectRepo.findAll();
-		List<ProjectTeamMate> allprojectMates =new ArrayList<>();  
+		List<ProjectTeamMate> allprojectMates = new ArrayList<>();
 		for (Project pt : projects) {
-			if(!pt.getStatus().equalsIgnoreCase("Completed")) {
-			List<ProjectTeamMate> employeeDetails=	projectTeamMatesRepo.findByProjectId(pt.getProjectId());
-			allprojectMates.addAll(employeeDetails);
+			if (!"Completed".equalsIgnoreCase(pt.getStatus())) {
+				List<ProjectTeamMate> employeeDetails = projectTeamMatesRepo.findByProjectId(pt.getProjectId());
+				allprojectMates.addAll(employeeDetails);
+			}
+
 		}
-		
+		return allprojectMates;
 	}
-		return allprojectMates;	
-	}
+
 	@Override
 	public List<ProjectTeamMate> getProjectDetails(String projectId) {
 		return projectTeamMatesRepo.findByProjectId(projectId);
 
 	}
+
 	@Override
 	public List<ProjectTeamMate> getMyProjectAllocations(String empId) {
-		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findByEmployeeId(empId);
-		
-		return empRecords;
+		return projectTeamMatesRepo.findByEmployeeId(empId);
 	}
 
 }
