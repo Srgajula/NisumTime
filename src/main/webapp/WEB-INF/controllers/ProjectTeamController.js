@@ -159,6 +159,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	    $mdDialog.hide();
 	};
 	$scope.viewTeamDetail = function(action, userData){
+		$('#home').addClass('md-scroll-mask');
 		userData.action = action;
 		$mdDialog.show({
 		      controller: AddProjectTeamController,
@@ -178,9 +179,11 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		    	else showAlert('Teammate assigning/updation failed!!!');
 		    });
 	};
+	
 	$scope.cancel = function() {
 	    $mdDialog.hide();
 	};
+	
 	$scope.deleteRole = function(row,id){
 	     $('#home').addClass('md-scroll-mask');
 	    var confirm = $mdDialog.confirm()
@@ -190,8 +193,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	          .cancel('Cancel');
 	    $mdDialog.show(confirm).then(function() {
 	        deleteUserRole(row.entity.employeeId, row.entity.projectId,row.entity.id);
-		   	$scope.refreshPage();
-			$timeout(function(){updateGridAfterDelete(row)},500);
+			$timeout(function(){updateGridAfterDelete(row.entity.employeeId)},500);
 	    }, function() {
 	 
 	    	console.log("Cancelled dialog");
@@ -200,7 +202,6 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	
 	function deleteUserRole(empId, projectId,id){
 		var record = {"id":id,"employeeId":empId,"projectId":projectId};
-		
 		var req = {
 				method : 'POST',
 				url : appConfig.appUri+ "projectTeam/deleteTeammate",
@@ -211,36 +212,31 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result =response.data;
-				
-				
 			}, function myError(response){
 				$scope.result = "Error";
 			});
-		
-		
-		/*	var req = {
-				method : 'DELETE',
-				url : appConfig.appUri+ "projectTeam/deleteTeammate?empId="+empId+"&projectId="+projectId+"&id="+id
-			}
-			$http(req).then(function mySuccess(response) {
-				$scope.result = response.data;
-				console.log($scope.result);
-			}, function myError(response){
-				$scope.result = "Error";
-			});*/
 	}
 	
-	function updateGridAfterDelete(row){
+	function updateGridAfterDelete(empId){
+		var gridOptionsData = $scope.gridOptions.data; 
 		if($scope.result == "Success" || $scope.result == ""){
-			var index = $scope.gridOptions.data.indexOf(row.entity);
-			//TODO
-			//$scope.gridOptions.data.splice(index, 1);
-			//var existingRecord = getRowEntity($scope.empId);
-			//var index = gridOptionsData.indexOf(existingRecord);
-			//sgridOptionsData[index] = row;
+			var existingRecord = getRowEntity(empId);
+			existingRecord.active = false;
+			var index = gridOptionsData.indexOf(existingRecord);
+			gridOptionsData[index] = existingRecord;
 			showAlert('Teammate removed from team successfully');
 		}else if($scope.result == "Error"){
 			showAlert('Something went wrong while deleting the role.')
+		}
+	}
+	
+	function getRowEntity(empId){
+		var gridOptionsData = $scope.gridOptions.data; 
+		for(var i=0;i<gridOptionsData.length;i++){
+			var record = gridOptionsData[i];
+			if(record.employeeId == empId){
+				return record;
+			}
 		}
 	}
 	
@@ -295,7 +291,6 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		}else if(dataToPass.action == "ViewTeamDetail"){
 			    $scope.employeeId = dataToPass.employeeId;
 				$scope.employeeName = dataToPass.employeeName;
-				//var getCellTemplate1='<div ng-show="COL_FIELD!=\'Employee\' && COL_FIELD!=\'HR\' "><p class="col-lg-12">{{COL_FIELD}}  <i class="fa fa-sitemap fa-2x"  aria-hidden="true" style="font-size:1.5em;color:blue;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'ViewTeamDetail\')"></i></p></div><div ng-show="COL_FIELD==\'Employee\' || COL_FIELD==\'HR\'"><p class="col-lg-12">{{COL_FIELD}}</p></div>'
 					$scope.gridOptions = {
 						paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 						paginationPageSize : 10,
@@ -308,8 +303,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 							{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100}, 
 							{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false, enableSorting: false}, 
 							{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: false},
-							{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false},
-							//{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
+							{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false}
 								
 						]
 					};
@@ -379,6 +373,9 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 				}else if(projectModel == undefined){
 					$scope.alertMsg = "Please select a project";
 					document.getElementById('selectProject').focus();
+				}else if(employeeModel != undefined && projectModel != undefined 
+						&& getExistingRecordProjectStatus(employeeModel.employeeId, projectModel.projectName)){
+					$scope.alertMsg = "Employee is already assigned to the selected project";
 				} else {
 					$scope.alertMsg = "";
 					var record = {"employeeId":employeeModel.employeeId, "employeeName":employeeModel.employeeName, "emailId": employeeModel.emailId, "role": employeeModel.role, "shift": employeeModel.shift,"projectId":projectModel.projectId,"projectName":projectModel.projectName,"account":$scope.projectModel.account,"managerId":myFactory.getEmpId(),"managerName":myFactory.getEmpName(),"mobileNumber":employeeModel.mobileNumber,"active":true};
@@ -446,6 +443,17 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 					return record;
 				}
 			}
+		}
+		
+		function getExistingRecordProjectStatus(empId, projectName){
+			for(var i=0;i<gridOptionsData.length;i++){
+				var record = gridOptionsData[i];
+				if(record.employeeId == empId){
+					if(record.active == true && record.projectName == projectName)
+						return true;
+				}
+			}
+			return false;
 		}
 	}
 });
