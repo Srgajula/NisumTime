@@ -47,5 +47,6 @@ public interface ProjectService {
 	List<ProjectTeamMate> getAllProjectDetails();
 	
 	List<ProjectTeamMate> getProjectDetails(String projectId);
+	
 	public List<ProjectTeamMate> getMyProjectAllocations(String empId);
 }

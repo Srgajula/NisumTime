@@ -50,7 +50,6 @@ public class ProjectTeamControllerTest {
 	public void testgetEmployeeRole() throws Exception {
 		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d", null, null, null, null, null, null,
 				null, null, "user@nisum.com", null, null, new Date(2017 - 11 - 20), new Date(2107 - 12 - 23));
-		System.out.println(employeesRole);
 		when(userService.getEmployeesRole("user@nisum.com")).thenReturn(employeesRole);
 		mockMvc.perform(get("/projectTeam/employee").param("emailId", "user@nisum.com"))
 				.andExpect(MockMvcResultMatchers.status().isOk());
@@ -65,9 +64,7 @@ public class ProjectTeamControllerTest {
 		list.add("16103");
 		Project employeeRole1 = new Project(new ObjectId("9976ef15874c902c98b8a05d"), "102", "OMS", "16101", "Srikanth",
 				"Gap", "Billable", list);
-		System.out.println(employeeRole1);
 		String jsonvalue = (new ObjectMapper()).writeValueAsString(employeeRole1).toString();
-		System.out.println(jsonvalue);
 		when(projectService.addProject(employeeRole1)).thenReturn(employeeRole1);
 		mockMvc.perform(
 				post("/projectTeam/addProject").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonvalue))
@@ -79,10 +76,8 @@ public class ProjectTeamControllerTest {
 		EmployeeRoles employeesRoles2 = new EmployeeRoles("1976ef15874c902c98b8a05d", "16111", "Vinay Singh",
 				"vsingh@nisum.com", "Manager", null, "09:00-06:00", "Java/J2EE", "Testing", "8755672341", "8800543678",
 				"vsingh@gmail.com", new Date(2017 - 11 - 29), new Date(2017 - 12 - 20));
-		System.out.println(employeesRoles2);
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(employeesRoles2);
-		System.out.println(jsonString);
 		when(userService.updateEmployeeRole(any())).thenReturn(employeesRoles2);
 		mockMvc.perform(post("/projectTeam/updateEmployeeRole").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(jsonString)).andExpect(MockMvcResultMatchers.status().isOk());
@@ -100,7 +95,6 @@ public class ProjectTeamControllerTest {
 	public void testgetEmployeeRoleData() throws Exception {
 		EmployeeRoles employeesRole = new EmployeeRoles("5976ef15874c902c98b8a05d", "16127", null, null, null, null,
 				null, null, null, null, null, null, new Date(2017 - 11 - 20), new Date(2107 - 12 - 23));
-		System.out.println(employeesRole);
 		when(userService.getEmployeesRoleData("16127")).thenReturn(employeesRole);
 		mockMvc.perform(get("/projectTeam/getEmployeeRoleData").param("empId", "16127")
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk());
@@ -110,7 +104,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetManagers() throws Exception {
 		List<EmployeeRoles> employeesRoles = createEmployeeRoles();
-		System.out.println(employeesRoles);
 		when(userService.getEmployeeRoles()).thenReturn(employeesRoles);
 		mockMvc.perform(get("/projectTeam/getEmployeesToTeam")).andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -119,7 +112,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetTeamDetails() throws Exception {
 		List<ProjectTeamMate> employeesRoles = createProjectTeamMate();
-		System.out.println(employeesRoles);
 		when(projectService.getTeamDetails("16127")).thenReturn(employeesRoles);
 		mockMvc.perform(get("/projectTeam/getTeamDetails").param("employeeId", "16127"))
 				.andExpect(MockMvcResultMatchers.status().isOk());
@@ -143,9 +135,7 @@ public class ProjectTeamControllerTest {
 		ProjectTeamMate updatedTeammate = new ProjectTeamMate(new ObjectId("1976ef15874c902c98b8a05d"), "16127",
 				"Monika Srivastava", "msrivastava@nisum.com", "Employee", "09:00-06:00", "101", "MOSAIC", "GAP",
 				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388", true);
-		System.out.println(updatedTeammate);
 		String jsonvalue = (new ObjectMapper()).writeValueAsString(updatedTeammate).toString();
-		System.out.println(jsonvalue);
 		when(projectService.updateTeammate(updatedTeammate)).thenReturn(updatedTeammate);
 		mockMvc.perform(
 				post("/projectTeam/updateTeammate").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonvalue))
@@ -167,7 +157,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetProjects() throws Exception {
 		List<Project> projects = CreateProjectDetails();
-		System.out.println(projects);
 		when(projectService.getProjects("16127")).thenReturn(projects);
 		mockMvc.perform(get("/projectTeam/getProjects").param("employeeId", "16127"))
 				.andExpect(MockMvcResultMatchers.status().isOk());
@@ -177,7 +166,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetMyTeamDetails() throws Exception {
 		List<ProjectTeamMate> employeesRoles = createProjectTeamMate();
-		System.out.println(employeesRoles);
 		when(projectService.getMyTeamDetails("16127")).thenReturn(employeesRoles);
 		mockMvc.perform(get("/projectTeam/getMyTeamDetails").param("employeeId", "16127"))
 				.andExpect(MockMvcResultMatchers.status().isOk());
@@ -187,7 +175,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetUnAssignedEmployees() throws Exception {
 		List<EmployeeRoles> employeesRoles = createEmployeeRoles();
-		System.out.println(employeesRoles);
 		when(projectService.getUnAssignedEmployees()).thenReturn(employeesRoles);
 		mockMvc.perform(get("/projectTeam/getUnAssignedEmployees")).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(projectService).getUnAssignedEmployees();
@@ -196,7 +183,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetShiftDetails() throws Exception {
 		List<ProjectTeamMate> employeesRoles = createProjectTeamMate();
-		System.out.println(employeesRoles);
 		when(projectService.getShiftDetails("09:00-06:00")).thenReturn(employeesRoles);
 		mockMvc.perform(get("/projectTeam/getShiftDetails").param("shift", "09:00-06:00"))
 				.andExpect(MockMvcResultMatchers.status().isOk());
@@ -206,7 +192,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetProjectAllocations() throws Exception {
 		List<ProjectTeamMate> employeesRoles = createProjectTeamMate();
-		System.out.println(employeesRoles);
 		when(projectService.getAllProjectDetails()).thenReturn(employeesRoles);
 		mockMvc.perform(get("/projectTeam/getProjectAllocations")).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(projectService).getAllProjectDetails();
@@ -215,7 +200,6 @@ public class ProjectTeamControllerTest {
 	@Test
 	public void testgetProjectDetails() throws Exception {
 		List<ProjectTeamMate> employeesRoles = createProjectTeamMate();
-		System.out.println(employeesRoles);
 		when(projectService.getProjectDetails("101")).thenReturn(employeesRoles);
 		mockMvc.perform(get("/projectTeam/getProjectDetails").param("projectId", "101"))
 				.andExpect(MockMvcResultMatchers.status().isOk());

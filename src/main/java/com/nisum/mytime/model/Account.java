@@ -20,7 +20,6 @@ import lombok.ToString;
 @Document(collection = "Accounts")
 public class Account implements Serializable {
 
-
 	private static final long serialVersionUID = 1L;
 
 	@Id

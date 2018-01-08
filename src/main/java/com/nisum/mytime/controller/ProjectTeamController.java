@@ -93,15 +93,10 @@ public class ProjectTeamController {
 	@RequestMapping(value = "/updateTeammate", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProjectTeamMate> updateTeammate(@RequestBody ProjectTeamMate projectTeamMate)
 			throws MyTimeException {
-		System.out.println(projectTeamMate.getId());
 		ProjectTeamMate updatedTeammate = projectService.updateTeammate(projectTeamMate);
 		return new ResponseEntity<>(updatedTeammate, HttpStatus.OK);
 	}
 
-	/*@RequestMapping(value = "/deleteTeammate", method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> deleteTeammate(@RequestParam("empId") String empId,
-			@RequestParam("projectId") String projectId,@RequestParam("id") String id) throws MyTimeException {
-	*/	
 	@RequestMapping(value = "/deleteTeammate", method = RequestMethod.DELETE,produces = MediaType.TEXT_PLAIN_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> deleteTeammate(@RequestBody ProjectTeamMate projectTeamMate) throws MyTimeException {
 		projectService.deleteTeammate(projectTeamMate.getEmployeeId(), projectTeamMate.getProjectId(),projectTeamMate.getId());

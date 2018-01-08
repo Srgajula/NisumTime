@@ -32,8 +32,10 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private EmployeeRolesRepo employeeRolesRepo;
+	
 	@Autowired
 	private ProjectTeamMatesRepo projectTeamMatesRepo;
+	
 	@Autowired
 	private ShiftRepo shiftRepo;
 	
@@ -131,22 +133,23 @@ public class UserServiceImpl implements UserService {
 	public List<Designation> getAllDesignations() throws MyTimeException {
 		return designationRepo.findAll();
 	}
+	
 	@Override
 	public List<Account> getAccounts() throws MyTimeException {
 		return accountRepo.findAll();
 	}
+	
 	@Override
 	public List<Skill> getTechnologies() throws MyTimeException {
 	return technologyRepo.findAll();
 	}
+	
 	@Override
 	public EmployeeRoles updateProfile(EmployeeRoles employeeRoles) throws MyTimeException {
-		System.out.println("employeeRoles"+employeeRoles.getId());
 		boolean mobileNumberChnaged=false;
 		boolean designationChnaged=false;
 		employeeRoles.setLastModifiedOn(new Date());
 		EmployeeRoles existingEmployee=employeeRolesRepo.findByEmployeeId(employeeRoles.getEmployeeId());
-		System.out.println("existingEmployee"+existingEmployee.getId());
 		String newMobileNumber=employeeRoles.getMobileNumber();
 		String designation=employeeRoles.getDesignation();
 		if(newMobileNumber!=null&&!newMobileNumber.equalsIgnoreCase("")) {

@@ -47,7 +47,6 @@ public class AttendanceControllerTest {
 	@Test
 	public void testemployeeLoginsBasedOnDate() throws Exception {
 		List<EmpLoginData> message = createLoginData();
-		System.out.println(message);
 		when(userService.employeeLoginsBasedOnDate(12345, "2017-11-15", "2017-12-15")).thenReturn(message);
 		mockMvc.perform(get("/attendance/employeeLoginsBasedOnDate?empId="+12345).param("fromDate", "2017-11-15").param("toDate", "2017-12-15"))
 		.andDo(print()).andExpect(status().isOk());	
@@ -64,7 +63,6 @@ public class AttendanceControllerTest {
 	@Test
 	public void testattendanciesReport() throws Exception{
 		List<AttendenceData> lisOfAttendenceData = createAttendenceData();
-		System.out.println(lisOfAttendenceData);
 		when(attendanceService.getAttendanciesReport("2017-12-29")).thenReturn(lisOfAttendenceData);
 		mockMvc.perform(get("/attendance/attendanciesReport/2017-12-29")).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(attendanceService).getAttendanciesReport("2017-12-29");

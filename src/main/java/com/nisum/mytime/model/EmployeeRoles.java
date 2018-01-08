@@ -41,5 +41,4 @@ public class EmployeeRoles implements Serializable {
 	private Date createdOn;
 	private Date lastModifiedOn;
 	
-
 }

@@ -72,9 +72,9 @@ public class UserController {
 	@RequestMapping(value = "/getManagers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<EmployeeRoles>> getManagers() throws MyTimeException {
 		List<EmployeeRoles> employeesRoles = userService.getEmployeeRoles();
-		List<EmployeeRoles> managers = employeesRoles
-				.stream().filter(e -> ("Director".equalsIgnoreCase(e.getRole())||"Delivery Manager".equalsIgnoreCase(e.getRole())
-						||"Manager".equalsIgnoreCase(e.getRole())
+		List<EmployeeRoles> managers = employeesRoles.stream()
+				.filter(e -> ("Director".equalsIgnoreCase(e.getRole())
+						|| "Delivery Manager".equalsIgnoreCase(e.getRole()) || "Manager".equalsIgnoreCase(e.getRole())
 						|| "HR Manager".equalsIgnoreCase(e.getRole()) || "Lead".equalsIgnoreCase(e.getRole())))
 				.sorted(Comparator.comparing(EmployeeRoles::getEmployeeName)).collect(Collectors.toList());
 		return new ResponseEntity<>(managers, HttpStatus.OK);
@@ -107,22 +107,14 @@ public class UserController {
 	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> updateProfile(@RequestBody EmployeeRoles employeeRoles)
 			throws MyTimeException {
-		/*EmployeeRoles employeeDB = userService.getEmployeesRoleData(employeeRoles.getEmployeeId());
-		employeeDB.setMobileNumber(employeeRoles.getMobileNumber());
-		employeeDB.setAlternateMobileNumber(employeeRoles.getAlternateMobileNumber());
-		employeeDB.setPersonalEmailId(employeeRoles.getPersonalEmailId());
-		employeeDB.setBaseTechnology(employeeRoles.getBaseTechnology());
-		employeeDB.setTechnologyKnown(employeeRoles.getTechnologyKnown());
-		EmployeeRoles employeeRole = userService.updateProfile(employeeDB);*/
 		EmployeeRoles employeeRole = userService.updateProfile(employeeRoles);
 		return new ResponseEntity<>(employeeRole, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getAccounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> getAccounts() throws MyTimeException {
-		List<String> technologies = userService.getAccounts().stream()
-				.filter(e -> "Y".equalsIgnoreCase(e.getStatus())).map(Account::getAccountName).sorted()
-				.collect(Collectors.toList());
+		List<String> technologies = userService.getAccounts().stream().filter(e -> "Y".equalsIgnoreCase(e.getStatus()))
+				.map(Account::getAccountName).sorted().collect(Collectors.toList());
 		return new ResponseEntity<>(technologies, HttpStatus.OK);
-}
+	}
 }

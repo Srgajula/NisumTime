@@ -39,10 +39,8 @@ public class EmailControllerTest {
 	public void testsendAttachmentMail_success() throws Exception{
 		EmailDomain emailObj = new EmailDomain("12345","2017-11-18","2017-12-18",
 				               new String[]{"to@nisum.com"},new String[]{"cc@nisum.com"},new String[]{});
-		System.out.println(emailObj.toString());
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(emailObj);
-		System.out.println(jsonString);
 		when(mailService.sendEmailWithAttachment(any())).thenReturn("Success");
 		mockMvc.perform(post("/sendEmail").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE).content(jsonString)).andExpect(MockMvcResultMatchers.status().isOk());		
 	}
@@ -51,7 +49,6 @@ public class EmailControllerTest {
 	public void testsendAttachmentMail_failure() throws Exception{
 		EmailDomain emailObj = new EmailDomain("1234567890","2017-11-18","2017-12-18",
 	               new String[]{"to@nisum.com"},new String[]{"cc@nisum.com"},new String[]{});
-		System.out.println(emailObj.toString());
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(emailObj);
 		System.out.println(jsonString);
