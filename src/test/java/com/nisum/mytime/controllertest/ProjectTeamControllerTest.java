@@ -149,7 +149,7 @@ public class ProjectTeamControllerTest {
 				"16081", "Rajeshekar", "01", "Software Engineer", "Non-Billable", "8765588388", true);
 		String jsonvalue = (new ObjectMapper()).writeValueAsString(deleteTeamMate).toString();
 		mockMvc.perform(
-				delete("/projectTeam/deleteTeammate").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonvalue))
+				post("/projectTeam/deleteTeammate").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonvalue))
 				.andExpect(MockMvcResultMatchers.status().isOk());
 		verify(projectService).deleteTeammate("16127", "101", new ObjectId("1976ef15874c902c98b8a05d"));
 	}

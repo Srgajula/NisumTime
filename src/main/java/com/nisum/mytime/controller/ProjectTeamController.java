@@ -97,7 +97,7 @@ public class ProjectTeamController {
 		return new ResponseEntity<>(updatedTeammate, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/deleteTeammate", method = RequestMethod.DELETE,produces = MediaType.TEXT_PLAIN_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/deleteTeammate", method = RequestMethod.POST,produces = MediaType.TEXT_PLAIN_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> deleteTeammate(@RequestBody ProjectTeamMate projectTeamMate) throws MyTimeException {
 		projectService.deleteTeammate(projectTeamMate.getEmployeeId(), projectTeamMate.getProjectId(),projectTeamMate.getId());
 		return new ResponseEntity<>("Success", HttpStatus.OK);
