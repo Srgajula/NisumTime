@@ -24,9 +24,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nisum.mytime.controller.UserController;
+import com.nisum.mytime.model.Account;
 import com.nisum.mytime.model.Designation;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Shift;
+import com.nisum.mytime.model.Skill;
 import com.nisum.mytime.service.UserService;
 
 public class UserControllerTest {
@@ -59,7 +61,7 @@ public class UserControllerTest {
 	@Test
 	public void testassigingEmployeeRole() throws Exception {
 		EmployeeRoles employeeRole = new EmployeeRoles("5976ef15874c902c98b8a05c", "16135", "Monika",
-				"user1@nisum.com", "HR",null, "06:00-09:00","Java/J2EE","Spring","8767893452","5687234567","user1@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
+				"user1@nisum.com", "HR","Human Resource Lead", "06:00-09:00","Java/J2EE","Spring","8767893452","5687234567","user1@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(employeeRole);
 		when(userService.assigingEmployeeRole(anyObject())).thenReturn(employeeRole);
@@ -72,7 +74,7 @@ public class UserControllerTest {
 	@Test
 	public void testupdateEmployeeRole() throws Exception {
 		EmployeeRoles employeeRole2 = new EmployeeRoles("5976ef15874c902c98b8a05d", "67890", "Sonika",
-				"user2@nisum.com", "Manager",null, "09:00am-06:00am","php","Hibernate","9878678956","9989782210","user2@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
+				"user2@nisum.com", "Manager","Senior Software Engineer", "09:00am-06:00am","php","Hibernate","9878678956","9989782210","user2@gmail.com",new Date(2017-11-20),new Date(2017-12-23));
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = mapper.writeValueAsString(employeeRole2);
 		when(userService.updateEmployeeRole(anyObject())).thenReturn(employeeRole2);
@@ -112,6 +114,7 @@ public class UserControllerTest {
 	@Test
 	public void testgetManagers() throws Exception {
 		List<EmployeeRoles> employeesRole4 = CreateUserRoles();
+		System.out.println(employeesRole4);
 		when(userService.getEmployeeRoles()).thenReturn(employeesRole4);
 		mockMvc.perform(get("/user/getManagers")).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(userService).getEmployeeRoles();
@@ -133,6 +136,78 @@ public class UserControllerTest {
 		 verify(userService).getAllDesignations();
 	}
 	
+	@Test
+	public void testgetTechnologies() throws Exception{
+		List<Skill> skills=CreateSkill();
+		System.out.println(skills);
+		when(userService.getTechnologies()).thenReturn(skills);
+		mockMvc.perform(get("/user/getSkills")).andExpect(MockMvcResultMatchers.status().isOk());
+		verify(userService).getTechnologies();
+	}
+	
+	@Test
+	public void testupdateProfile() throws Exception{
+		EmployeeRoles employeeRole = new EmployeeRoles("5996ef15874c902c98b8a05d", "16127", "Monika Srivastava", "msrivastava@nisum.com", "Employee", "Software Engineer", "09:00-06:00", "Java/J2EE", "Spring", "8765588388", "9978567723", "msrivastava@gmail.com", new Date(2017-01-01), new Date(2017-03-01));
+		System.out.println(employeeRole);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = mapper.writeValueAsString(employeeRole);
+		System.out.println(jsonString);
+		when(userService.updateProfile(anyObject())).thenReturn(employeeRole);
+		mockMvc.perform(post("/user/updateProfile").contentType(MediaType.APPLICATION_JSON_VALUE).content(jsonString)).andExpect(MockMvcResultMatchers.status().isOk());
+		verify(userService).updateProfile(anyObject());
+	}
+	
+	@Test
+	public void getAccounts() throws Exception{
+		List<Account> account = CreateAccount();
+		System.out.println(account);
+		when(userService.getAccounts()).thenReturn(account);
+		mockMvc.perform(get("/user/getAccounts")).andExpect(MockMvcResultMatchers.status().isOk());
+		verify(userService).getAccounts();
+	}
+	
+	private List<Account> CreateAccount() {
+	List<Account> data = new ArrayList<>();
+		
+		Account account1=new Account();
+		account1.setId(new ObjectId("5976ef15874c902c98b8a05d"));
+		account1.setAccountId("01");
+		account1.setAccountName("GAP");
+		account1.setAccountProjectSequence(1);
+		account1.setStatus("Active");
+		data.add(account1);
+		
+		Account account2=new Account();
+		account2.setId(new ObjectId("2476ef15874c902c98b8a05d"));
+		account2.setAccountId("02");
+		account2.setAccountName("MACYS");
+		account2.setAccountProjectSequence(2);
+		account2.setStatus("Non-Active");
+		data.add(account2);
+		return data;
+		
+	}
+
+	private List<Skill> CreateSkill() {
+		List<Skill> data = new ArrayList<>();
+		
+		Skill skills1=new Skill();
+		skills1.setId(new ObjectId("5976ef15874c902c98b8a05d"));
+		skills1.setSkillId("01");
+		skills1.setSkillName("Java");
+		skills1.setActiveStatus("Active");
+		data.add(skills1);
+		
+		Skill skills2=new Skill();
+		skills2.setId(new ObjectId("2476ef15874c902c98b8a05d"));
+		skills2.setSkillId("02");
+		skills2.setSkillName("Big Data");
+		skills2.setActiveStatus("Active");
+		data.add(skills2);
+		return data;
+		
+	}
+
 	private List<Designation> CreateDesignations() {
     List<Designation> data = new ArrayList<>();
 		
@@ -177,9 +252,10 @@ public class UserControllerTest {
 		EmployeeRoles data1 = new EmployeeRoles();
 		data1.setId("3976ef15874c902c98b8a05d");
 		data1.setEmployeeId("16101");
-		data1.setEmployeeName("Reshma");
+		data1.setEmployeeName("Abc");
 		data1.setEmailId("user1@nisum.com");
 		data1.setRole("HR");
+		data1.setDesignation("Human Resource Manager");
 		data1.setShift("09:00-06:00");
 		data1.setBaseTechnology("Spring");
 		data1.setTechnologyKnown("Jmeter");
@@ -192,9 +268,10 @@ public class UserControllerTest {
 		EmployeeRoles data2 = new EmployeeRoles();
 		data2.setId("4976ef15874c902c98b8a05d");
 		data2.setEmployeeId("16102");
-		data2.setEmployeeName("Sasmita");
+		data2.setEmployeeName("Xyz");
 		data2.setEmailId("user2@nisum.com");
 		data2.setRole("Manager");
+		data2.setDesignation("Senior Software Engineer");
 		data2.setShift("03:00-12:00");
 		data2.setBaseTechnology("Hibernate");
 		data2.setTechnologyKnown("EJB");
