@@ -249,7 +249,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		$scope.projectList = [];
 		$scope.employeeModel;
 		$scope.projectModel;
-		
+		$scope.objectId = "";
 		$scope.getProjects = function(){
 			$http({
 		        method : "GET",
@@ -400,6 +400,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			if($scope.alertMsg == ""){
 				if($scope.result == "Success"){
 					if(action == "Add"){
+						record.id = $scope.objectId;
 						gridOptionsData.push(record);
 					}else if(action == "Update"){
 						var existingRecord = getRowEntity($scope.empId);
@@ -431,6 +432,7 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 			}
 			$http(req).then(function mySuccess(response) {
 				$scope.result = "Success";
+				$scope.objectId = response.data.id;
 			}, function myError(response){
 				$scope.result = "Error";
 			});
