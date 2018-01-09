@@ -22,14 +22,15 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		paginationPageSize : 10,
 	    pageNumber: 1,
 		pageSize:10,
+		enableFiltering: true,
 		columnDefs : [ 
-			{field : 'projectId',displayName: 'Project ID', enableColumnMenu: true, enableSorting: true, width:120},
-			{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: false},
-			{field : 'account',displayName: 'Account ', enableColumnMenu: false, enableSorting: false},
+			{field : 'projectId',displayName: 'Project ID', enableColumnMenu: false, enableSorting: false,enableFiltering:false, width:120},
+			{field : 'projectName',displayName: 'Project ', enableColumnMenu: false, enableSorting: true,enableFiltering:true},
+			{field : 'account',displayName: 'Account ', enableColumnMenu: false, enableSorting: true,enableFiltering:true},
 			//{field : 'managerId',displayName: 'Manager ID ', enableColumnMenu: false, enableSorting: false},
-			{field : 'managerName',displayName: 'Manager Name ', enableColumnMenu: false, enableSorting: false},
-			{field : 'status',displayName: 'Status ', enableColumnMenu: false, enableSorting: false},
-			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:130} 
+			{field : 'managerName',displayName: 'Manager Name ', enableColumnMenu: false, enableSorting: true,enableFiltering:true},
+			{field : 'status',displayName: 'Status ', enableColumnMenu: false, enableSorting: true,enableFiltering:false},
+			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, enableFiltering:false,width:130} 
 		]
 	};
 	$scope.gridOptions.data = $scope.records;

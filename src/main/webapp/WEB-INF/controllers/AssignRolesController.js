@@ -17,12 +17,13 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		paginationPageSize : 10,
 	    pageNumber: 1,
 		pageSize:10,
+		enableFiltering: true,
 		columnDefs : [ 
-			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true, width:120},
-			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
-			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
-			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: false, width:100}, 
-			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
+			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true,enableFiltering: true, width:120},
+			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
+			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false,enableFiltering: false},
+			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: true,enableFiltering: true, width:100}, 
+			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false,enableFiltering: false, width:100} 
 		]
 	};
 	$scope.gridOptions.data = $scope.records;
