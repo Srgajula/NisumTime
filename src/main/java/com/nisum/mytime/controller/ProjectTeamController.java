@@ -19,6 +19,7 @@ import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
 import com.nisum.mytime.model.ProjectTeamMate;
+import com.nisum.mytime.model.TeamMateBilling;
 import com.nisum.mytime.service.ProjectService;
 import com.nisum.mytime.service.UserService;
 
@@ -150,5 +151,11 @@ public class ProjectTeamController {
 			throws MyTimeException {
 		List<ProjectTeamMate> projectAllocations = projectService.getMyProjectAllocations(employeeId);
 		return new ResponseEntity<>(projectAllocations, HttpStatus.OK);
+	}
+	@RequestMapping(value = "/getEmployeeBillingDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<TeamMateBilling>> getEmployeeBillingDetails(@RequestParam("employeeId") String employeeId,@RequestParam("projectId") String projectId)
+			throws MyTimeException {
+		List<TeamMateBilling> billings = projectService.getEmployeeBillingDetails(employeeId,projectId);
+		return new ResponseEntity<>(billings, HttpStatus.OK);
 	}
 }

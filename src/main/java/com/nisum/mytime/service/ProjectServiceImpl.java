@@ -18,9 +18,11 @@ import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
 import com.nisum.mytime.model.ProjectTeamMate;
+import com.nisum.mytime.model.TeamMateBilling;
 import com.nisum.mytime.repository.EmployeeRolesRepo;
 import com.nisum.mytime.repository.ProjectRepo;
 import com.nisum.mytime.repository.ProjectTeamMatesRepo;
+import com.nisum.mytime.repository.TeamMatesBillingRepo;
 import com.nisum.mytime.utils.PdfReportGenerator;
 
 @Service("projectService")
@@ -33,6 +35,8 @@ public class ProjectServiceImpl implements ProjectService {
 	private ProjectRepo projectRepo;
 	@Autowired
 	private ProjectTeamMatesRepo projectTeamMatesRepo;
+	@Autowired
+	private TeamMatesBillingRepo teamMatesBillingRepo;
 
 	@Autowired
 	private EmployeeDataService employeeDataBaseService;
@@ -226,6 +230,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<ProjectTeamMate> getMyProjectAllocations(String empId) {
 		return projectTeamMatesRepo.findByEmployeeId(empId);
+	}
+
+	@Override
+	public List<TeamMateBilling> getEmployeeBillingDetails(String empId,String projectId) {
+		return teamMatesBillingRepo.findByEmployeeIdAndProjectId(empId, projectId);
 	}
 
 }

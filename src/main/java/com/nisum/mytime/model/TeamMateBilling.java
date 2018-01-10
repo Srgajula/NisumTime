@@ -30,10 +30,11 @@ public class TeamMateBilling implements Serializable {
 	private String employeeId;
 	private String employeeName;
     private String projectId;
+    private String projectName;
 	@DateTimeFormat(iso = ISO.DATE)
 	private Date billingStartDate;
 	@DateTimeFormat(iso = ISO.DATE)
 	private Date billingEndDate;
-	
+	private boolean active;
 	
 }

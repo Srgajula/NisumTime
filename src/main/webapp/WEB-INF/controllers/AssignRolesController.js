@@ -6,6 +6,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			"employeeName": "",
 			"emailId":"",
 			"role": "",
+			"designation":"",
 			"action":""
 	};
 	
@@ -21,6 +22,7 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		columnDefs : [ 
 			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true,enableFiltering: true, width:120},
 			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
+			{field : 'mobileNumber',displayName: 'Mobile', enableColumnMenu: false, enableSorting: false,enableFiltering: false},
 			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false,enableFiltering: false},
 			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: true,enableFiltering: true, width:100}, 
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false,enableFiltering: false, width:100} 

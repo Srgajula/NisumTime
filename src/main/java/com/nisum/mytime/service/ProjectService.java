@@ -9,6 +9,7 @@ import com.nisum.mytime.model.EmpLoginData;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
 import com.nisum.mytime.model.ProjectTeamMate;
+import com.nisum.mytime.model.TeamMateBilling;
 
 public interface ProjectService {
 
@@ -49,4 +50,6 @@ public interface ProjectService {
 	List<ProjectTeamMate> getProjectDetails(String projectId);
 	
 	public List<ProjectTeamMate> getMyProjectAllocations(String empId);
+	
+	List<TeamMateBilling> getEmployeeBillingDetails(String empId,String projectId);
 }
