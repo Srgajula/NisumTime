@@ -1,7 +1,7 @@
 var myApp = angular.module(
 		"myTimeApp",
 		[ "ngRoute", "ngCookies", "ui.grid", "ui.grid.pagination",
-				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter' ]).config(
+				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter', 'ngIdle' ]).config(
 		function($mdDateLocaleProvider) {
 			$mdDateLocaleProvider.formatDate = function(date) {
 				var day = date.getDate();

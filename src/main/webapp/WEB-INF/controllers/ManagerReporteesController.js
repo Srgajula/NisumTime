@@ -39,6 +39,7 @@ myApp.controller("reporteesController", function($scope, $http, myFactory, $mdDi
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
 		$scope.isVisible = false;
+		$scope.avgLoginHrs = "";
 	};
 	
 	$scope.getReporteesDetails = function(){
@@ -68,6 +69,7 @@ myApp.controller("reporteesController", function($scope, $http, myFactory, $mdDi
 			showAlert('Please select an Employee ID');
 			document.getElementById('reporteeDetail').focus();
 		}else{
+			$scope.avgLoginHrs = "";
 			getData(searchId.employeeId, fromDate, toDate);
 		}
 		
@@ -138,6 +140,7 @@ myApp.controller("reporteesController", function($scope, $http, myFactory, $mdDi
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
 		$scope.isVisible = false;
+		$scope.avgLoginHrs = "";
 	}
 	
 	function treatAsUTC(date) {

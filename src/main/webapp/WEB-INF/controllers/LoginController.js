@@ -12,12 +12,14 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		getAllDesignations();
 		getAllTechnologies();
 		getAllAccounts();
+		$("#start").trigger("click");
 	}
 	
 	function onFailure(error){
 		if(error.type == "tokenFailed"){
 			showAlert('Please login with @Nisum account');
 		}
+		$("#stop").trigger("click");
 	}
 	
 	function showAlert(message) {
@@ -303,7 +305,7 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 	    auth2.disconnect();
 	    
 		//Clear if any values set to factory
-		var menuItems = [];
+	    var menuItems = [], designations = [], accounts = [], technologies = [], shifts = [];
 		myFactory.setEmpId("");
 		myFactory.setEmpName("");
 		myFactory.setEmpEmailId("");
@@ -311,6 +313,10 @@ myApp.controller("loginController",function($scope, myFactory, $compile, $window
 		myFactory.setMenuItems(menuItems);
 		myFactory.setTemplateUrl("");
 		myFactory.setProfileUrl("");
+		myFactory.setDesignations(designations);
+		myFactory.setAccounts(accounts);
+		myFactory.setTechnologies(technologies);
+		myFactory.setShifts(shifts);
 		
 		var element = document.getElementById('home');
 		var path = "'templates/login.html'";

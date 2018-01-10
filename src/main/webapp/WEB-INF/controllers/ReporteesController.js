@@ -159,6 +159,7 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 		$scope.toDate = today;
 		$scope.gridOptions.data = [];
 		$scope.isVisible = false;
+		$scope.avgLoginHrs = "";
 	}
 	
 	function treatAsUTC(date) {
