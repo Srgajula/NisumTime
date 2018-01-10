@@ -75,6 +75,14 @@ public class AttendanceControllerTest {
 		verify(userService).fetchEmployeesData("2018-01-01");
 	}
 	
+	@Test
+	public void testcopyRemoteMdbFileToLocal() throws Exception{
+	when(attendanceService.copyRemoteMdbFileToLocal()).thenReturn(true);
+	mockMvc.perform(get("/attendance/copyRemoteMdbFileToLocal")).andExpect(MockMvcResultMatchers.status().isOk());
+	verify(attendanceService).copyRemoteMdbFileToLocal();
+	}
+	
+	
 	private List<AttendenceData> createAttendenceData() {
 		List<AttendenceData> data = new ArrayList<>();
 		

@@ -205,6 +205,15 @@ public class ProjectTeamControllerTest {
 				.andExpect(MockMvcResultMatchers.status().isOk());
 		verify(projectService).getProjectDetails("101");
 	}
+	
+	@Test
+	public void testgetMyProjectAllocations() throws Exception{
+		List<ProjectTeamMate> projectAllocations=createProjectTeamMate();
+		System.out.println(projectAllocations);
+		when(projectService.getMyProjectAllocations("16127")).thenReturn(projectAllocations);
+		mockMvc.perform(get("/projectTeam/getMyProjectAllocations").param("employeeId", "16127")).andExpect(MockMvcResultMatchers.status().isOk());
+		verify(projectService).getMyProjectAllocations("16127");
+	}
 
 	private List<Project> CreateProjectDetails() {
 		List<Project> data = new ArrayList<>();
