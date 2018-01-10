@@ -24,6 +24,7 @@ import com.nisum.mytime.controller.ProjectTeamController;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
 import com.nisum.mytime.model.ProjectTeamMate;
+import com.nisum.mytime.model.TeamMateBilling;
 import com.nisum.mytime.service.ProjectService;
 import com.nisum.mytime.service.UserService;
 
@@ -213,6 +214,45 @@ public class ProjectTeamControllerTest {
 		when(projectService.getMyProjectAllocations("16127")).thenReturn(projectAllocations);
 		mockMvc.perform(get("/projectTeam/getMyProjectAllocations").param("employeeId", "16127")).andExpect(MockMvcResultMatchers.status().isOk());
 		verify(projectService).getMyProjectAllocations("16127");
+	}
+
+	@Test
+	public void testgetEmployeeBillingDetails() throws Exception{
+		List<TeamMateBilling> billings=CreateTeamMateBilling();	
+		System.out.println(billings);
+		when(projectService.getEmployeeBillingDetails("16127", "101")).thenReturn(billings);
+		mockMvc.perform(get("/projectTeam/getEmployeeBillingDetails").param("employeeId", "16127").param("projectId", "101"))
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		verify(projectService).getEmployeeBillingDetails("16127", "101");
+	}
+	
+	private List<TeamMateBilling> CreateTeamMateBilling() {
+		List<TeamMateBilling> data = new ArrayList<>();
+
+		TeamMateBilling team1 = new TeamMateBilling();
+		team1.setId(new ObjectId("5976ef15874c902c98b8a05d"));
+		team1.setEmployeeId("16127");
+		team1.setEmployeeName("Employee1");
+		team1.setProjectId("101");
+		team1.setProjectName("MOSAIC");
+		team1.setBillingStartDate(new Date(2017-01-10));
+		team1.setBillingEndDate(new Date(2017-02-10));
+		team1.setActive(true);
+		data.add(team1);
+
+		TeamMateBilling team2 = new TeamMateBilling();
+		team2.setId(new ObjectId("1976ef15874c902c98b8a05d"));
+		team2.setEmployeeId("16128");
+		team2.setEmployeeName("Employee2");
+		team2.setProjectId("102");
+		team2.setProjectName("OMS");
+		team2.setBillingStartDate(new Date(2017-01-15));
+		team2.setBillingEndDate(new Date(2017-02-15));
+		team2.setActive(false);
+		data.add(team2);
+
+		return data;
+		
 	}
 
 	private List<Project> CreateProjectDetails() {
