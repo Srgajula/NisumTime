@@ -61,10 +61,10 @@
 </head>
 <body>
    	<ng-include src="'templates/login.html'" id="home"></ng-include>
-   	<section data-ng-controller="SessionController" ng-show="false">
+   	<section data-ng-controller="SessionController" ng-hide="true">
 	  <p>
-	    <button type="button" class="btn btn-success" id="start" data-ng-hide="started" data-ng-click="start()">Start</button>
-	    <button type="button" class="btn btn-danger" id="stop" data-ng-show="started" data-ng-click="stop()">Stop</button>
+	    <button type="button" class="btn btn-success" id="start" data-ng-hide="started" data-ng-click="start()" ng-hide="true">Start</button>
+	    <button type="button" class="btn btn-danger" id="stop" data-ng-show="started" data-ng-click="stop()" ng-hide="true">Stop</button>
 	  </p>
 	</section>
 </body>

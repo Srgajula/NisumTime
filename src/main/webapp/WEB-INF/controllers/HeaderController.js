@@ -43,6 +43,7 @@ myApp.controller("headerController",function($scope, myFactory, $compile, $mdDia
 	}
 	
 	function showProgressDialog(){
+		$('#home').addClass('md-scroll-mask');
 		$mdDialog.show({
 	      templateUrl: 'templates/progressDialog.html',
 	      controller: ProgressController,

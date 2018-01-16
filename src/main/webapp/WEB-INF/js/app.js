@@ -18,7 +18,10 @@ myApp.constant('appConfig', {
 			appUri: "http://192.168.15.17:8080/myTime/", 
 			version:"1.0", 
 			empStartId:16001, 
-			empEndId:16999
+			empEndId:16999,
+			sessionIdle: 900,
+			timeOut: 3,
+			keepAlive: 5
 		});
 
 myApp.factory('myFactory', function() {

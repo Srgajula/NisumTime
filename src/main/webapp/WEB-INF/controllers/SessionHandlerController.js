@@ -89,8 +89,8 @@ myApp.controller('SessionController',
 			}
 		})
 
-.config(function(IdleProvider, KeepaliveProvider) {
-	IdleProvider.idle(600);
-	IdleProvider.timeout(3);
-	KeepaliveProvider.interval(5);
+.config(function(IdleProvider, KeepaliveProvider, appConfig) {
+	IdleProvider.idle(appConfig.sessionIdle);
+	IdleProvider.timeout(appConfig.timeOut);
+	KeepaliveProvider.interval(appConfig.keepAlive);
 });

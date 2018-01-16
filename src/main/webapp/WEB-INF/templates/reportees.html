@@ -1,11 +1,13 @@
 
 <div class="md-padding" style="width: 100%; padding: 3px 0px 0px 0px;"
 	id="popupContainer" ng-controller="reporteesController">
-	<div class="container-fluid mainDivHeaderClass" ng-init="getReporteesDetails()">
+	<div class="container-fluid mainDivHeaderClass"
+		ng-init="getReporteesDetails()">
 		<div class="row">
 			<div class="col-lg-12">
 				<p align="center" class="col-xs-11"
-					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Reportees Login Details</p>
+					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Reportees
+					Login Details</p>
 				<p align="right" class="col-xs-1"
 					style="vertical-align: middle; font-weight: bold; font-size: 1.5em; margin-top: 8px; cursor: pointer;">
 					<i class="fa fa-refresh" aria-hidden="true"
@@ -16,49 +18,58 @@
 		</div>
 	</div>
 	<br />
-	<div class="container" style="text-align: center; padding-left: 25px;">
-		<div class="row col-lg-12">
-			<div class="col-xs-2">
-				<md-select ng-model="reporteeDetail" md-selected-text="getSelectedReportee()" id="reporteeDetail" style="margin: 0px;width: 178px;">
-					<md-optgroup label="reportees"> <md-option ng-value="reportee"
-					ng-repeat="reportee in reportees">{{reportee.employeeName}}</md-option> </md-optgroup> </md-select>
-			</div>
-			<div class="col-xs-4">
-				<p>
-					<b>From Date:</b>
-					<md-datepicker ng-model="fromDate" md-placeholder="Enter date"
-						md-min-date="minDate" md-max-date="maxDate"
-						onkeydown="return false"
-						ng-change="validateDates(fromDate, 'FromDate')"></md-datepicker>
-				</p>
-			</div>
-			<div class="col-xs-4" style="margin-left: -50px;">
-				<p>
-					<b>To Date:</b>
-
-					<md-datepicker ng-model="toDate" md-placeholder="Enter date"
-						md-min-date="minDate" md-max-date="maxDate"
-						onkeydown="return false"
-						ng-change="validateDates(toDate, 'ToDate')"></md-datepicker>
-				</p>
-			</div>
-			<div class="col-xs-2" style="cursor: pointer;" align="left">
-				<panel> <md-button class="md-raised md-primary"
-					style="width:100px;background: cadetblue;margin-left:-15px;"
-					ng-click="getEmployeeData();"> <i
-					class="fa fa-search fa-2x"
-					style="margin-top: 5px; font-size: 1.5em; float: left"></i> Search</md-button>
-				</panel>
+	<div class="form-horizontal">
+		<div class="form-group">
+			<div class="form-inline col-lg-12" style="margin-left: 3%;">
+				<div class="form-group col-lg-2 col-md-4 col-sm-6 col-xs-12">
+					<md-select ng-model="reporteeDetail"
+						md-selected-text="getSelectedReportee()" id="reporteeDetail"
+						style="margin: 0px;width: 178px;"> <md-optgroup
+						label="reportees"> <md-option ng-value="reportee"
+						ng-repeat="reportee in reportees">{{reportee.employeeName}}</md-option>
+					</md-optgroup> </md-select>
+				</div>
+				<div class="form-group col-lg-1"></div>
+				<div class="form-group col-lg-4">
+					<label class="" for="fromDate">From Date: <md-datepicker
+							ng-model="fromDate" md-placeholder="Enter date"
+							md-min-date="minDate" md-max-date="maxDate"
+							onkeydown="return false"
+							ng-change="validateDates(fromDate, 'FromDate')"></md-datepicker></label>
+				</div>
+				<div class="form-group col-lg-4">
+					<label class="" for="toDate">To Date: <md-datepicker
+							ng-model="toDate" md-placeholder="Enter date"
+							md-min-date="minDate" md-max-date="maxDate"
+							onkeydown="return false"
+							ng-change="validateDates(toDate, 'ToDate')"></md-datepicker></label>
+				</div>
+				<div class="form-group col-lg-1">
+					<label class="" for="submitBtn"><md-button
+							class="md-raised md-primary"
+							style="width:100px;background: cadetblue;"
+							ng-click="getEmployeeData();"> <i
+							class="fa fa-search fa-2x"
+							style="margin-top: 5px; font-size: 1.5em; float: left"></i>
+						Search</md-button></label>
+				</div>
 			</div>
 		</div>
-		<div class="row col-lg-12" style="height: 15px;"></div>
-	</div>
-	<p style="margin-left: 40px;" ng-show="isVisible">
-		<b>Average Login hours:&nbsp;&nbsp;</b> {{avgLoginHrs}} 
-	</p>
-	<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination
-		class="myGrid" style="width:99%;height:370px;">
-		<div class="watermark" ng-show="!gridOptions.data.length">Search
-			by Employee ID</div>
+		<div class="form-group">
+			<div class="form-inline col-lg-12" ng-show="isVisible"
+				style="margin-left: 3%;">
+				<label class="control-label" for="avgHrs"> Average Login
+					hours:&nbsp;&nbsp; </label>{{avgLoginHrs}}
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="form-inline col-lg-12">
+				<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination
+					class="grid" style="width: 99%; height: 362px; margin-left: 5px;">
+					<div class="watermark" ng-show="!gridOptions.data.length">Search
+						by Employee ID</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

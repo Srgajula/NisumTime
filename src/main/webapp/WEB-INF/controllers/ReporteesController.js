@@ -100,8 +100,10 @@ myApp.controller("employeesController", function($scope, $http, myFactory, $mdDi
 	    			$scope.isVisible = false;
 	    			$scope.gridOptions.data = response.data;
 	    		}else{
-	    			$scope.isVisible = true;
-	    			$scope.avgLoginHrs = response.data[0].totalAvgTime +" Hrs";
+	    			if(response.data.length >0 ){
+	    				$scope.isVisible = true;
+		    			$scope.avgLoginHrs = response.data[0].totalAvgTime +" Hrs";
+	    			}
 	    			$scope.gridOptions.data = response.data;
 	    		}
 	    		
