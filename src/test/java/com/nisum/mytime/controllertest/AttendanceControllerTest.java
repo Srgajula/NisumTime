@@ -70,9 +70,9 @@ public class AttendanceControllerTest {
 	
 	@Test
 	public void testemployeesDataSave() throws Exception{
-		when(userService.fetchEmployeesData("2018-01-01")).thenReturn(true);
+		when(userService.fetchEmployeesData("2018-01-01",false)).thenReturn(true);
 		mockMvc.perform(post("/attendance/employeesDataSave/2018-01-01")).andExpect(MockMvcResultMatchers.status().isOk());
-		verify(userService).fetchEmployeesData("2018-01-01");
+		verify(userService).fetchEmployeesData("2018-01-01",false);
 	}
 	
 	@Test

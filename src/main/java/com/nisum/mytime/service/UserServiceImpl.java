@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public Boolean fetchEmployeesData(String perticularDate) throws MyTimeException {
-		return employeeDataBaseService.fetchEmployeesData(perticularDate);
+	public Boolean fetchEmployeesData(String perticularDate,boolean resynchFlag) throws MyTimeException {
+		return employeeDataBaseService.fetchEmployeesData(perticularDate,resynchFlag);
 	}
 	
 	@Override

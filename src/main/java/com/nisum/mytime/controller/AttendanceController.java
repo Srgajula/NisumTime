@@ -53,16 +53,20 @@ public class AttendanceController {
 	@RequestMapping(value = "employeesDataSave/{searchDate}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Boolean> employeesDataSave(@PathVariable("searchDate") String searchDate)
 			throws MyTimeException {
-		Boolean result = userService.fetchEmployeesData(searchDate);
+		Boolean result = userService.fetchEmployeesData(searchDate,false);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "copyRemoteMdbFileToLocal", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Boolean> copyRemoteMdbFileToLocal()
-			throws MyTimeException {
+	public ResponseEntity<Boolean> copyRemoteMdbFileToLocal() throws MyTimeException {
 		Boolean result = attendanceService.copyRemoteMdbFileToLocal();
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "resyncMonthData/{fromDate}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> resyncMonthData(@PathVariable("fromDate") String fromDate) throws MyTimeException {
+		Boolean result = userService.fetchEmployeesData(fromDate,true);
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 
 }

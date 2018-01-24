@@ -12,7 +12,7 @@ import com.nisum.mytime.model.Skill;
 
 public interface UserService {
 
-	Boolean fetchEmployeesData(String perticularDate) throws MyTimeException;
+	Boolean fetchEmployeesData(String perticularDate,boolean resynchFlag) throws MyTimeException;
 
 	List<EmpLoginData> employeeLoginsBasedOnDate(long id, String fromDate, String toDate) throws MyTimeException;
 
