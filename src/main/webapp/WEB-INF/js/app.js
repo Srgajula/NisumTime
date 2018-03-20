@@ -1,7 +1,7 @@
 var myApp = angular.module(
 		"myTimeApp",
 		[ "ngRoute", "ngCookies", "ui.grid", "ui.grid.pagination",
-				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter' ]).config(
+				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter','ui.grid.edit', 'ui.grid.cellNav','ngIdle' ]).config(
 		function($mdDateLocaleProvider) {
 			$mdDateLocaleProvider.formatDate = function(date) {
 				var day = date.getDate();
@@ -18,7 +18,10 @@ myApp.constant('appConfig', {
 			appUri: "http://192.168.15.17:8080/myTime/", 
 			version:"1.0", 
 			empStartId:16001, 
-			empEndId:16999
+			empEndId:16999,
+			sessionIdle: 900,
+			timeOut: 3,
+			keepAlive: 5
 		});
 
 myApp.factory('myFactory', function() {

@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
+import com.nisum.mytime.model.EmployeeDashboardVO;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
 import com.nisum.mytime.model.ProjectTeamMate;
@@ -52,4 +53,10 @@ public interface ProjectService {
 	public List<ProjectTeamMate> getMyProjectAllocations(String empId);
 	
 	List<TeamMateBilling> getEmployeeBillingDetails(String empId,String projectId);
+
+	TeamMateBilling addEmployeeBillingDetails(TeamMateBilling teamMate);
+
+	TeamMateBilling  updateEmployeeBilling(TeamMateBilling teamMate);
+	
+	public List<EmployeeDashboardVO> getEmployeesDashBoard();
 }

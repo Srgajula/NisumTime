@@ -1,11 +1,18 @@
 package com.nisum.mytime.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
 import com.nisum.mytime.model.EmpLoginData;
+import com.nisum.mytime.model.EmployeeDashboardVO;
 import com.nisum.mytime.model.EmployeeRoles;
 import com.nisum.mytime.model.Project;
 import com.nisum.mytime.model.ProjectTeamMate;
@@ -234,7 +242,108 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public List<TeamMateBilling> getEmployeeBillingDetails(String empId,String projectId) {
-		return teamMatesBillingRepo.findByEmployeeIdAndProjectId(empId, projectId);
+		
+		List<TeamMateBilling> billings= teamMatesBillingRepo.findByEmployeeIdAndProjectId(empId, projectId);
+		List<TeamMateBilling> billingsSorted=billings;
+				try {
+				billingsSorted=(billings==null || billings.size()==0)?billings: billings.stream().sorted(Comparator.comparing(TeamMateBilling::getCreateDate).reversed()).collect(Collectors.toList());
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+	    return billingsSorted;
 	}
 
+	@Override
+	public TeamMateBilling addEmployeeBillingDetails(TeamMateBilling teamMate) {
+		List<TeamMateBilling> billingsPast = getEmployeeBillingDetails(teamMate.getEmployeeId(),teamMate.getProjectId());
+		for(TeamMateBilling tB:billingsPast) {
+			tB.setActive(false);
+			teamMatesBillingRepo.save(tB);
+		}
+		teamMate.setCreateDate(new Date());
+		return teamMatesBillingRepo.save(teamMate);
+	}
+
+	@Override
+	public TeamMateBilling updateEmployeeBilling(TeamMateBilling teamMate) {
+		// TODO Auto-generated method stub
+		return teamMatesBillingRepo.save(teamMate);
+	}
+	@Override
+	public List<EmployeeDashboardVO> getEmployeesDashBoard() {
+		List<EmployeeRoles> allEmployees = employeeRolesRepo.findAll();
+		List<EmployeeRoles> notAssignedEmployees = new ArrayList<>();
+		List<EmployeeDashboardVO> employeeDashboard = new ArrayList<>();
+		Map<String,Object> teamMatesMap=new HashMap();
+		Map<String,Object> teamMatesStatusMap=new HashMap();
+		
+		List<ProjectTeamMate> empRecords = projectTeamMatesRepo.findAll(); //find all active employees
+		for (ProjectTeamMate pt : empRecords) {
+			if(pt.isActive()) {
+			Project project = projectRepo.findByProjectId(pt.getProjectId());
+			if (project != null && project.getStatus() != null && !"Completed".equalsIgnoreCase(project.getStatus())) {
+				Object projectTeamMate=	teamMatesMap.get(pt.getEmployeeId());
+				
+				if(projectTeamMate==null) {
+					List listOfObjects=new ArrayList<>();
+					listOfObjects.add(pt);
+				teamMatesMap.put(pt.getEmployeeId(),listOfObjects);//TODO a person can have multiple active projects with billability
+				}else {
+					List existingRecordsInMap=(List) teamMatesMap.get(pt.getEmployeeId());
+					existingRecordsInMap.add(pt);
+					teamMatesMap.put(pt.getEmployeeId(),existingRecordsInMap);
+					
+				}
+			}
+			}
+		}  
+		for (EmployeeRoles emp : allEmployees) {
+		if(emp.getEmployeeId()!=null&&emp.getEmployeeId().equalsIgnoreCase("16112")) {
+			System.out.println(emp);
+		}
+			
+			if (teamMatesMap.containsKey(emp.getEmployeeId())) {
+				System.out.println("***************** Empl alrady assigned");
+				Object value= teamMatesMap.get(emp.getEmployeeId());
+				if(value instanceof List) {
+					List listOfTeamMates=(List) value;
+					String billableStatus="NA";
+					
+					for(Object obj:listOfTeamMates) {
+						ProjectTeamMate	projectTeamMate=(ProjectTeamMate) obj;
+						String status=projectTeamMate.getBillableStatus();
+						if(status==null) {
+							status="NA";
+						}
+						System.out.println("---------------------------");
+						EmployeeDashboardVO empVo=new EmployeeDashboardVO();
+						
+						System.out.println(emp);
+					     BeanUtils.copyProperties(emp, empVo);
+						BeanUtils.copyProperties(projectTeamMate, empVo,"employeeId","employeeName" ,"emailId","role","designation","mobileNumber");
+						
+						employeeDashboard.add(empVo);
+					}
+					
+					
+					
+				}
+				}else {
+					EmployeeDashboardVO empVo=new EmployeeDashboardVO();
+					
+					System.out.println(emp);
+				     BeanUtils.copyProperties(emp, empVo);
+				empVo.setBillableStatus("UA");
+				empVo.setProjectAssigned(false);
+				employeeDashboard.add(empVo);
+			}
+			System.out.println("&&&&&&&&&&");
+			//System.out.println(empVo);
+			
+			System.out.println("---------------------------");
+			
+		}
+
+		return employeeDashboard;
+	}
 }

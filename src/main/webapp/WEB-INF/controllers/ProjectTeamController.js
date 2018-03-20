@@ -25,29 +25,49 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-minus-circle fa-2x" aria-hidden="true" style="font-size:1.5em;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'Delete\')"></i></p>';
 	var getCellTemplate1='<div ng-show="COL_FIELD!=\'Employee\' && COL_FIELD!=\'HR\' "><p class="col-lg-12">{{COL_FIELD}}  <i class="fa fa-sitemap fa-2x"  aria-hidden="true" style="font-size:1.5em;color:blue;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'ViewTeamDetail\')"></i></p></div><div ng-show="COL_FIELD==\'Employee\' || COL_FIELD==\'HR\'"><p class="col-lg-12">{{COL_FIELD}}</p></div>'
 	var getCellActiveTemplate='<div ng-show="COL_FIELD==true"><p class="col-lg-12">Y</P></div><div ng-show="COL_FIELD==false"><p class="col-lg-12">N</p></div>';
-	//var getCellTemplateBillable='<div><p class="col-lg-12">{{COL_FIELD}}  <i class="fa fa-usd fa-2x"  aria-hidden="true" style="font-size:1.5em;color:blue;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'ViewBillability\')"></i></p></div>'
-	var getCellTemplateBillable='<div><p class="col-lg-12">{{COL_FIELD}}</p></div>'
+	var getCellTemplateBillable='<div><p class="col-lg-12">{{COL_FIELD}}  <i class="fa fa-usd fa-lg"  aria-hidden="true" style="font-size:1.5em;color:blue;margin-top:3px;cursor:pointer;" ng-click="grid.appScope.getRowData(row,\'ViewBillability\')"></i></p></div>'
+	//var getCellTemplateBillable='<div><p class="col-lg-12">{{COL_FIELD}}</p></div>'
 				
 		$scope.gridOptions = {
 		paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 		paginationPageSize : 10,
 	    pageNumber: 1,
 		pageSize:10,
-		columnDefs : [ 
-			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true, width:100},
-			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
-			{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100}, 
-			{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false,cellTemplate: getCellTemplateBillable, enableSorting: true,width:100}, 
-			{field : 'projectName',displayName: 'Project', enableColumnMenu: false, enableSorting: true,cellTooltip:function (row, col) {
+		enableCellEdit: false,
+		enableCellEditOnFocus: true,
+		enableFiltering: true,
+		cellEditableCondition: function($scope) {
+
+		      // put your enable-edit code here, using values from $scope.row.entity and/or $scope.col.colDef as you desire
+		      return true; // in this example, we'll only allow active rows to be edited
+
+		    },
+        columnDefs : [ 
+			{field : 'employeeId',displayName: 'Employee ID eeee', enableColumnMenu: true, enableSorting: true, width:100,enableFiltering: false},
+			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false, enableCellEdit: true,enableFiltering: false},
+			{field : 'mobileNumber',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100,enableFiltering: false}, 
+			{field : 'billableStatus',displayName: 'Billability', enableColumnMenu: false,cellTemplate: getCellTemplateBillable, enableSorting: true,width:100,enableFiltering: false}, 
+			{field : 'projectName',displayName: 'Project', enableColumnMenu: false,enableFiltering: true, enableSorting: true,cellTooltip:function (row, col) {
 		           return  row.entity.projectName;
 		           
 		       }},
-			{field : 'role',displayName: 'Role',cellTemplate: getCellTemplate1, enableColumnMenu: false, enableSorting: false},
-			{field : 'active',displayName: 'Active', enableColumnMenu: false,cellTemplate: getCellActiveTemplate, enableSorting: true,width:60},
-			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100} 
+			{field : 'role',displayName: 'Role',cellTemplate: getCellTemplate1, enableColumnMenu: false, enableSorting: false,enableFiltering: false},
+			{field : 'active',displayName: 'Active', enableColumnMenu: false,cellTemplate: getCellActiveTemplate, enableSorting: true,width:60,enableFiltering: false},
+			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false, width:100,enableFiltering: false} 
 				
 		]
 	};
+	$scope.gridOptions.onRegisterApi = function(gridApi) {
+		//alert('test');
+	    $scope.gridApi = gridApi;
+
+	  gridApi.edit.on.afterCellEdit($scope, function(rowEntity, colDef, newValue, oldValue) {
+        $scope.$apply();
+
+	    });
+
+	  };
+	
 	$scope.gridOptions.data = $scope.records;
 	
 	$scope.getRowData = function(row, action){
@@ -346,24 +366,168 @@ myApp.controller("projectTeamController",function($scope, myFactory, $mdDialog, 
 		}else if(dataToPass.action == "ViewBillability"){
 		    $scope.employeeId = dataToPass.employeeId;
 			$scope.employeeName = dataToPass.employeeName;
+			$scope.projectName = dataToPass.projectName;
+			$scope.projectId = dataToPass.projectId;
+			 //function to be called on row edit button click
+		    //Passing the selected row object as parameter, we use this row object to identify  the edited row
+		    $scope.edit = function (row) {
+		        //Get the index of selected row from row object
+		        var index = $scope.gridOptions.data.indexOf(row);
+		        //Use that to set the editrow attrbute value for seleted rows
+		        $scope.gridOptions.data[index].editrow = !$scope.gridOptions.data[index].editrow;
+		    };
+
+		    //Method to cancel the edit mode in UIGrid
+		    $scope.cancelEdit = function (row) {
+		        //Get the index of selected row from row object
+		        var index = $scope.gridOptions.data.indexOf(row);
+		        //Use that to set the editrow attrbute value to false
+		        $scope.gridOptions.data[index].editrow = false;
+		        //Display Successfull message after save
+		        $scope.alerts.push({
+		            msg: 'Row editing cancelled',
+		            type: 'info'
+		        });
+		    };
+		    $scope.toggleBillability = function() {
+		        $scope.showBillable = !$scope.showBillable;
+		    };
+		    $scope.addBilling = function() {
+		    	var record = {"employeeId": $scope.employeeId, "employeeName":$scope.employeeName, "projectId": $scope.projectId, 
+		    			"projectName": $scope.projectName, "billingStartDate":$scope.fromDate,"billingEndDate": $scope.toDate,"active":true};
+		    	addOrUpdateBilling(record,"Add")
+				
+		    };
+		    function addOrUpdateBilling(record, action){
+		     	var urlRequest  = "";
+				if(action == "Add"){
+					urlRequest = appConfig.appUri+ "projectTeam/addEmployeeBilling";
+				}else if(action == "Update"){
+					urlRequest = appConfig.appUri+ "projectTeam/updateEmployeeBilling";
+				}
+				var req = {
+					method : 'POST',
+					url : urlRequest,
+					headers : {
+						"Content-type" : "application/json"
+					},
+					data : record
+				}
+				$http(req).then(function mySuccess(response) {
+					$scope.result = "Success";
+					$scope.objectId = response.data.id;
+					$http({
+				        method : "GET",
+				        url : appConfig.appUri + "/projectTeam/getEmployeeBillingDetails?employeeId="+record.employeeId+"&projectId="+record.projectId
+				    }).then(function mySuccess(response) {
+				    	    $scope.gridOptions.data = response.data;
+				         }, function myError(response) {
+				    	showAlert("Something went wrong while fetching data!!!");
+				    	$scope.gridOptions.data = [];
+				    });
+					if(action == "Add"){
+					 $scope.toggleBillability();
+					}
+					alert("Billability added successfully!!!")
+				 	//showAlert("Billability added successfully!!!");
+				}, function myError(response){
+					$scope.result = "Error";
+					alert("Error Adding billability!!!")
+				 	//showAlert("Error Adding billability!!!");
+				});
+			};
+		  //Function to save the data
+		    //Here we pass the row object as parmater, we use this row object to identify  the edited row
+		    $scope.saveRow = function (row) {
+		       //get the index of selected row 
+		        var index = $scope.gridOptions.data.indexOf(row);
+		        //Remove the edit mode when user click on Save button
+		       
+		        $scope.gridOptions.data[index].editrow = false;
+		        addOrUpdateBilling(row,"Update");
+		    };
+		    var getCellActiveTemplateBilling='<div ng-show="COL_FIELD==true"><p class="col-lg-12">Y</P></div><div ng-show="COL_FIELD==false"><p class="col-lg-12">N</p></div>';
+			
 				$scope.gridOptions = {
 					paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 					paginationPageSize : 10,
 				    pageNumber: 1,
 					pageSize:10,
-					columnDefs : [ 
-						{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true, width:120},
-						{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false},
-						{field : 'projectId',displayName: 'Email', enableColumnMenu: false, enableSorting: false},
-						{field : 'projectName',displayName: 'Mobile No', enableColumnMenu: false, enableSorting: false, width:100}, 
-						{field : 'billingStartDate',displayName: 'Start Date', enableColumnMenu: false, enableSorting: false}, 
-						{field : 'billingEndDate',displayName: 'End Date', enableColumnMenu: false, enableSorting: false},
-						{field : 'active',displayName: 'Active', enableColumnMenu: false, enableSorting: false}
-							
+					enableCellEditOnFocus: true,
+			/*		 cellEditableCondition: function($scope) {
+
+					      // put your enable-edit code here, using values from $scope.row.entity and/or $scope.col.colDef as you desire
+					      return true; // in this example, we'll only allow active rows to be edited
+
+					    },
+					    
+					  	columnDefs : [ 
+						{name : 'id',displayName: 'Id', enableColumnMenu: false, enableSorting: false,cellTemplate: '<div>{{row.rowIndex + 1}}</div>'}, 
+					 {field : 'billingStartDate',displayName: 'Start Date', enableColumnMenu: false,enableSorting: false,cellTemplate: '<div  ng-if="!row.entity.editrow">{{COL_FIELD|date:"dd-MMM-yyyy"}}</div> <div ng-if="row.entity.editrow"><input ng-class="\'colt\' + col.index" datepicker-popup is-open="false" ng-model="COL_FIELD" /></div>'}, 
+						{field : 'billingEndDate',displayName: 'End Date', enableColumnMenu: false, enableSorting: false,cellTemplate: '<div  ng-if="!row.entity.editrow">{{COL_FIELD|date:"dd-MMM-yyyy"}}</div> <div ng-if="row.entity.editrow"><form name="inputForm"><div ui-grid-edit-datepicker ng-class="\'colt\' + col.uid" is-open="false"></div></form></div>'},
+						{field : 'comments',displayName: 'Comments',  enableColumnMenu: false, enableSorting: false,cellTemplate: '<div  ng-if="!row.entity.editrow">{{COL_FIELD}}</div><div ng-if="row.entity.editrow"><input type="text" style="height:30px" ng-model="MODEL_COL_FIELD"</div>'},
+						{field : 'active',displayName: 'Active',enableColumnMenu: false, enableSorting: false},
+						{
+		                      name: 'Actions', field: 'edit', enableFiltering: false, enableSorting: false,
+		                      cellTemplate: '<div><button ng-show="!row.entity.editrow"  ng-click="grid.appScope.edit(row.entity)"><ifa-edit"></i></button>' +  //Edit Button
+		                                     '<button ng-show="row.entity.editrow"  ng-click="grid.appScope.saveRow(row.entity)"><i class="fa fa-floppy-o"></i></button>' +//Save Button
+		                                     '<button ng-show="row.entity.editrow" ng-click="grid.appScope.cancelEdit(row.entity)"><i class="fa fa-times"></i></button>' + //Cancel Button
+		                                     '</div>', width: 100
+		                  }  	
 					]
+					    */
+					
+					columnDefs : [ 
+						{name : 'id',displayName: 'Id', enableColumnMenu: false, enableSorting: false,cellTemplate: '<div>{{rowRenderIndex + 1}}</div>',enableCellEdit: false}, 
+					// {field : 'billingStartDate',displayName: 'Start Date', enableColumnMenu: false,enableSorting: false,cellTemplate: '<div  ng-if="!row.entity.editrow">{{COL_FIELD|date:"dd-MMM-yyyy"}}</div> <div ng-if="row.entity.editrow"><input ng-class="\'colt\' + col.index" datepicker-popup is-open="false" ng-model="COL_FIELD" /></div>'}, 
+						{
+					        field: 'billingStartDate',
+					        displayName: 'Start Date',
+					        cellFilter: 'date:"dd-MMM-yyyy"',
+					        editableCellTemplate: '<div><form name="inputForm"><div ui-grid-edit-datepicker ng-class="\'colt\' + col.uid"></div></form></div>',
+					        enableCellEdit: true
+					      },
+						{
+					        field: 'billingEndDate',
+					        displayName: 'End Date',
+					        cellFilter: 'date:"dd-MMM-yyyy"',
+					        editableCellTemplate: '<div><form name="inputForm"><div ui-grid-edit-datepicker ng-class="\'colt\' + col.uid"></div></form></div>',
+					        enableCellEdit: true
+					      },
+						//{field : 'billingEndDate',displayName: 'End Date', enableColumnMenu: false, enableSorting: false,cellTemplate: '<div  ng-if="!row.entity.editrow">{{COL_FIELD|date:"dd-MMM-yyyy"}}</div> <div ng-if="row.entity.editrow"><form name="inputForm"><div ui-grid-edit-datepicker ng-class="\'colt\' + col.uid" is-open="false"></div></form></div>'},
+						{field : 'comments',displayName: 'Comments',  enableColumnMenu: false, enableSorting: false,cellTemplate: '<div  ng-if="!row.entity.editrow">{{COL_FIELD}}</div><div ng-if="row.entity.editrow"><input type="text" style="height:30px" ng-model="MODEL_COL_FIELD"</div>'},
+						{field : 'active',displayName: 'Active',enableColumnMenu: false, enableSorting: false,cellTemplate:getCellActiveTemplateBilling,enableCellEdit: false},
+						{
+		                      name: 'Actions', field: 'edit', enableFiltering: false, enableSorting: false,enableCellEdit: false,
+		                      cellTemplate: '<div><button ng-show="!row.entity.editrow"  ng-click="grid.appScope.edit(row.entity)"><i class="fa fa-edit"></i></button>' +  //Edit Button
+		                                     '<button ng-show="row.entity.editrow"  ng-click="grid.appScope.saveRow(row.entity)"><i class="fa fa-floppy-o"></i></button>' +//Save Button
+		                                     '<button ng-show="row.entity.editrow" ng-click="grid.appScope.cancelEdit(row.entity)"><i class="fa fa-times"></i></button>' + //Cancel Button
+		                                     '</div>', width: 100
+		                  }  	
+					],rowStyle: function(row){/*
+		                if(row.entity.editrow){
+		                    return 'green';
+		                  }else{
+		                    return 'red';
+		                  }
+		                */},
+		                rowTemplate: '<div ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.colDef.name" class="ui-grid-cell" ng-class="{ \'ui-grid-row-header-cell\': col.isRowHeader, \'customBilling\':grid.options.rowStyle(row) }" ui-grid-cell></div>'
+		                	     
 				};
 				$scope.gridOptions.data = $scope.records;
+				$scope.gridOptions.onRegisterApi = function(gridApi) {
+					//alert('test');
+				    $scope.gridApi = gridApi;
 
+				/*  gridApi.edit.on.afterCellEdit($scope, function(rowEntity, colDef, newValue, oldValue) {
+
+				     alert('id: ' + rowEntity.id + ', Column: ' + colDef.name + ', New Value: ' + newValue + ', Old Value: ' + oldValue);
+			//alert('test');
+				      $scope.$apply();
+
+				    });*/
+
+				  };
 		$http({
 	        method : "GET",
 	        url : appConfig.appUri + "/projectTeam/getEmployeeBillingDetails?employeeId="+dataToPass.employeeId+"&projectId="+dataToPass.projectId

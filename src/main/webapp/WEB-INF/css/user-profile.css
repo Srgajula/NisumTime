@@ -70,3 +70,7 @@
 .ui-grid-pager-control input{
 	width: 65px;
 }
+.customBilling    {
+    background-color:green !important;
+    font-weight:bold;
+  }

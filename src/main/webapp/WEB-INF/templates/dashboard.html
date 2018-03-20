@@ -1,0 +1,61 @@
+
+<div class="md-padding" style="width: 100%; padding: 3px 0px 0px 0px;"
+	id="popupContainer" ng-controller="dashboardController"
+	ng-init="getEmployeesDashBoardData()">
+	<div class="container-fluid mainDivHeaderClass">
+		<div class="row">
+			<div class="col-lg-12">
+				<p align="center" class="col-xs-11"
+					style="vertical-align: middle; font-weight: bold; font-size: 30px;">Dashboard</p>
+				<p align="right" class="col-xs-1"
+					style="vertical-align: middle; font-weight: bold; font-size: 1.5em; margin-top: 8px; cursor: pointer;">
+					<i class="fa fa-refresh" aria-hidden="true"
+						ng-click="refreshPage()"></i>
+				</p>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<br />
+	
+
+			<div class="row col-lg-12" style="height: 15px;"></div>
+	<div class="row col-lg-12">
+		<div class="col-lg-4" style="float: left;padding-left:20px;">
+		<!-- 	<md-button class="md-raised md-primary"
+				style="width:182px;background: cadetblue;"
+				ng-click="getUnAssignedEmployees('UnAssigned', parentData)"> <i
+				class="fa fa-crosshairs fa-2x"
+				style="margin-top: 5px; font-size: 1.5em; float: left"></i>Free Pool Employees</md-button> -->
+		</div>
+		<div class="col-lg-4" style="float: left;padding-left:20px;">
+		<!-- 	<md-button class="md-raised md-primary"
+				style="width:182px;background: cadetblue;"
+				ng-click="getAllocatedEmployees('allocated', parentData)"> <i
+				class="fa fa-product-hunt fa-2x"
+				style="margin-top: 5px; font-size: 1.5em; float: left"></i>Project Allocations</md-button> -->
+		</div>
+		<div class="col-lg-1"
+			style="cursor: pointer; float: right; right: 75px;">
+			<!-- <md-button class="md-raised md-primary"
+				style="width:142px;background: cadetblue;"
+				ng-click="addProject('Assign', parentData)"> <i
+				class="fa fa-plus-circle fa-2x"
+				style="margin-top: 5px; font-size: 1.5em; float: left"></i> Add
+			Project</md-button> -->
+		</div>
+	</div>
+	<div class="row col-lg-12" style="height: 15px;"></div>
+
+
+		
+		<div class="row col-lg-12" style="margin-left: 0px;">
+
+		<div id="gridTest" ui-grid="gridOptions" ui-grid-pagination ui-grid-selection ui-grid-exporter
+			class="myGrid" style="width:99%;height:370px;margin-left:0px;">
+			<div class="watermark" ng-show="!gridOptions.data.length">No
+				data available</div>
+		</div>
+	</div>
+</div>
+	

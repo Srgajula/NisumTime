@@ -28,17 +28,25 @@
 	<link rel="stylesheet" href="css/bootstrap.min.css"></link>
 	<link rel="stylesheet" href="css/default-styles.css"></link>
 	<script src="js/bootstrap.min.js"></script>
+	<script src="js/angular-idle.js"></script>
 	<script src="http://ui-grid.info/release/ui-grid.js"></script>
     <script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>
     <script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.9.12/xlsx.full.min.js"></script>
     <script src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.min.js"></script>
    
+<script src="http://ui-grid.info/release/ui-grid-unstable.js"></script>
+  
+    <link rel="stylesheet" href="http://ui-grid.info/release/ui-grid-unstable.css" type="text/css">
+
+   
 	<link rel="stylesheet" href="http://ui-grid.info/release/ui-grid.css" type="text/css">
 	<link rel="stylesheet" href="css/leftmenu.css"></link>
 	<link rel="stylesheet" href="css/pdf-viewer.css"></link>
 	<link rel="stylesheet" href="css/user-profile.css"></link>
 	<script src="js/app.js"></script>
+	<script src="js/date-text-filter.js"></script>
+	<script src="js/ui-grid-edit-datepicker.js"></script>
 	<script src="controllers/LoginController.js"></script>
 	<script src="controllers/HeaderController.js"></script>
 	<script src="controllers/LeftMenuController.js"></script>
@@ -56,8 +64,18 @@
 	<script src="controllers/MyProfileController.js"></script>
 	<script src="controllers/ResyncDataController.js"></script>
 	<script src="controllers/MyProjectAllocations.js"></script>
+    <script src="controllers/DashboardController.js"></script>
+	<script src="controllers/VisaController.js"></script>
+	<script src="controllers/TravelController.js"></script>
+	<script src="controllers/SessionHandlerController.js"></script>
 </head>
 <body>
    	<ng-include src="'templates/login.html'" id="home"></ng-include>
+   	<section data-ng-controller="SessionController" ng-hide="true">
+	  <p>
+	    <button type="button" class="btn btn-success" id="start" data-ng-hide="started" data-ng-click="start()" ng-hide="true">Start</button>
+	    <button type="button" class="btn btn-danger" id="stop" data-ng-show="started" data-ng-click="stop()" ng-hide="true">Stop</button>
+	  </p>
+	</section>
 </body>
 </html>

@@ -35,6 +35,9 @@ public class TeamMateBilling implements Serializable {
 	private Date billingStartDate;
 	@DateTimeFormat(iso = ISO.DATE)
 	private Date billingEndDate;
+	private String comments;
 	private boolean active;
+	@DateTimeFormat(iso = ISO.DATE)
+	private Date createDate;
 	
 }

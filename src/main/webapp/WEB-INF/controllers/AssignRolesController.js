@@ -23,12 +23,32 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 			{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true,enableFiltering: true, width:120},
 			{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
 			{field : 'mobileNumber',displayName: 'Mobile', enableColumnMenu: false, enableSorting: false,enableFiltering: false},
-			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false,enableFiltering: false},
+			{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
+			{field : 'baseTechnology',displayName: 'Skill', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
+			{field : 'designation',displayName: 'Designation', enableColumnMenu: false, enableSorting: true,enableFiltering: true}, 
 			{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: true,enableFiltering: true, width:100}, 
 			{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false,enableFiltering: false, width:100} 
 		]
 	};
 	$scope.gridOptions.data = $scope.records;
+	$scope.gridOptionsOrgView = {
+			paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
+			paginationPageSize : 10,
+		    pageNumber: 1,
+			pageSize:10,
+			enableFiltering: true,
+			columnDefs : [ 
+				{field : 'employeeId',displayName: 'Employee ID', enableColumnMenu: true, enableSorting: true,enableFiltering: true, width:120},
+				{field : 'employeeName',displayName: 'Name', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
+				//{field : 'mobileNumber',displayName: 'Mobile', enableColumnMenu: false, enableSorting: false,enableFiltering: false},
+				{field : 'emailId',displayName: 'Email', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
+				{field : 'baseTechnology',displayName: 'Skill', enableColumnMenu: false, enableSorting: false,enableFiltering: true},
+				{field : 'designation',displayName: 'Designation', enableColumnMenu: false, enableSorting: true,enableFiltering: true}, 
+			//	{field : 'role',displayName: 'Role', enableColumnMenu: false, enableSorting: true,enableFiltering: true, width:100}, 
+			//	{name : 'Actions', displayName: 'Actions',cellTemplate: getCellTemplate, enableColumnMenu: false, enableSorting: false,enableFiltering: false, width:100} 
+			]
+		};
+		//$scope.gridOptionsOrgView.data = $scope.records;
 	
 	$scope.getRowData = function(row, action){
 		$scope.parentData.employeeId = row.entity.employeeId;
@@ -45,7 +65,9 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 		$scope.empSearchId = "";
 		$scope.getUserRoles();
 	}
-	
+	$scope.refreshPageOrg = function(){
+		$scope.getOrgEmps();
+	}
 	$scope.getUserRoles = function(){
 		$http({
 	        method : "GET",
@@ -55,6 +77,17 @@ myApp.controller("assignRoleController",function($scope, myFactory, $mdDialog, $
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
 	    	$scope.gridOptions.data = [];
+	    });
+	};
+	$scope.getOrgEmps = function(){
+		$http({
+	        method : "GET",
+	        url : appConfig.appUri + "user/getUserRoles"
+	    }).then(function mySuccess(response) {
+	        $scope.gridOptionsOrgView.data = response.data;
+	    }, function myError(response) {
+	    	showAlert("Something went wrong while fetching data!!!");
+	    	$scope.gridOptionsOrgView.data = [];
 	    });
 	};
 	

@@ -281,6 +281,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 		$scope.managerId = dataToPass.managerId;
 		$scope.managerName = dataToPass.managerName;
 		$scope.projectStatus = dataToPass.status;
+		var getCellActiveTemplate='<div ng-show="COL_FIELD==true"><p class="col-lg-12">Y</P></div><div ng-show="COL_FIELD==false"><p class="col-lg-12">N</p></div>';
 	    $scope.gridOptions = {
 				paginationPageSizes : [ 10, 20, 30, 40, 50, 100],
 				paginationPageSize : 10,
@@ -292,6 +293,7 @@ myApp.controller("projectController",function($scope, myFactory,exportUiGridServ
 					{field : 'emailId',displayName: 'Email Id ', enableColumnMenu: false, enableSorting: false},
 					{field : 'experience',displayName: 'Exp', enableColumnMenu: true, enableSorting: true,width:80},
 					{field : 'designation',displayName: 'Designation ', enableColumnMenu: false, enableSorting: false},
+					{field : 'active',displayName: 'Status ', enableColumnMenu: false, enableSorting: false,cellTemplate: getCellActiveTemplate},
 					{field : 'billableStatus',displayName: 'Billability ', enableColumnMenu: false, enableSorting: false},
 				]
 			};

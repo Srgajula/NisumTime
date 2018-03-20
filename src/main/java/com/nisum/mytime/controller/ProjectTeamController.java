@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nisum.mytime.exception.handler.MyTimeException;
+import com.nisum.mytime.model.EmployeeDashboardVO;
 import com.nisum.mytime.model.EmployeeRoles;
+import com.nisum.mytime.model.EmployeeVisa;
 import com.nisum.mytime.model.Project;
 import com.nisum.mytime.model.ProjectTeamMate;
 import com.nisum.mytime.model.TeamMateBilling;
+import com.nisum.mytime.repository.EmployeeVisaRepo;
 import com.nisum.mytime.service.ProjectService;
 import com.nisum.mytime.service.UserService;
 
@@ -32,6 +35,9 @@ public class ProjectTeamController {
 	
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private EmployeeVisaRepo employeeVisaRepo;
 
 	@RequestMapping(value = "/employee", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<EmployeeRoles> getEmployeeRole(@RequestParam("emailId") String emailId)
@@ -158,4 +164,51 @@ public class ProjectTeamController {
 		List<TeamMateBilling> billings = projectService.getEmployeeBillingDetails(employeeId,projectId);
 		return new ResponseEntity<>(billings, HttpStatus.OK);
 	}
+			@RequestMapping(value = "/addEmployeeBilling", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TeamMateBilling> addEmployeeBilling(@RequestBody TeamMateBilling teamMate)
+			throws MyTimeException {
+		TeamMateBilling billings = projectService.addEmployeeBillingDetails(teamMate);
+		
+		return new ResponseEntity<>(billings, HttpStatus.OK);
+	}	
+			@RequestMapping(value = "/updateEmployeeBilling", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+			public ResponseEntity<TeamMateBilling> updateEmployeeBilling(@RequestBody TeamMateBilling teamMate)
+					throws MyTimeException {
+				TeamMateBilling billings = projectService.updateEmployeeBilling(teamMate);
+				return new ResponseEntity<>(billings, HttpStatus.OK);
+			}
+			@RequestMapping(value = "/getEmployeesDashBoard", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+			public ResponseEntity<List<EmployeeDashboardVO>> getEmployeesDashBoard() throws MyTimeException {
+				List<EmployeeDashboardVO> employeesRoles = projectService.getEmployeesDashBoard();
+				return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+			}
+			@RequestMapping(value = "/getEmployeesHavingVisa", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+			public ResponseEntity<List<EmployeeRoles>> getEmployeesHavingVisa(@RequestParam("visa") String visa) throws MyTimeException {
+				if(visa!=null&&!visa.equalsIgnoreCase("passport")) {
+			List<EmployeeVisa>	employeeVisas=	employeeVisaRepo.findByVisaName(visa);
+			List<String> employeeIds=new ArrayList();
+			List<EmployeeRoles> employeesRoles = new ArrayList<>();
+					if(employeeVisas!=null) {
+						employeeIds=employeeVisas.stream().map(EmployeeVisa::getEmployeeId).collect(Collectors.toList());
+					}
+					if(employeeIds!=null&&employeeIds.size()>0) {
+						List<EmployeeRoles> emps=userService.getEmployeeRoles();
+						for(EmployeeRoles e:emps) {
+							if(employeeIds.contains(e.getEmployeeId())) {
+								employeesRoles.add(e);
+							}
+						}
+					}
+					return new ResponseEntity<>(employeesRoles, HttpStatus.OK);	
+				}else {
+				List<EmployeeRoles> employeesRoles = new ArrayList<>();
+				if(userService.getEmployeeRoles()!=null) {
+					employeesRoles=userService.getEmployeeRoles().stream().sorted((o1, o2)->o1.getEmployeeName().
+		                compareTo(o2.getEmployeeName())).
+		                collect(Collectors.toList());
+				}
+				return new ResponseEntity<>(employeesRoles, HttpStatus.OK);
+				}
+				
+			}
 }
