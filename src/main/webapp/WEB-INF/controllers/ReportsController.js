@@ -150,9 +150,9 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	function previewPdfReport(){
 		var pdfTemplate = '';
 		if($scope.pdfUrl != "No data available"){
-			pdfTemplate = '<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf" scale="page-fit" page=1 style="width:940px;border-radius:5px;"></ng-pdf>';
+			pdfTemplate = '<ng-pdf template-url="templates/pdf-viewer.html" canvasid="pdf" scale="page-fit" page=1 style="width:99%;border-radius:5px;"></ng-pdf>';
 		}else{
-			pdfTemplate = '<p style="color: #fff; font-size: 1.35em; vertical-align: middle; margin-top: 200px; margin-left: 300px;">No data available for the search criteria...</p>';
+			pdfTemplate = '<p style="color: #fff; font-size: 1.35em; text-align: center;vertical-align:middle;position:relative;top:50%;">No data available for the search criteria...</p>';
 		}
 		$("#pdfReportPreview").html($compile(pdfTemplate)($scope));
 		$mdDialog.hide();
@@ -233,8 +233,8 @@ myApp.controller("reportsController", function($scope, $http, myFactory, $mdDial
 	  }
 	  
 	  function setDefaults(){
-		  var defaultTemplate = '<p id="reportMsg" style="color: #fff; font-size: 1.35em; opacity: 0.5; vertical-align: middle; margin-top: 200px;'+ 
-			  'margin-left: 300px;">Please generate a report for preview.</p>';
+		  var defaultTemplate = '<p id="reportMsg" style="color: #fff; font-size: 1.35em; opacity: 0.5; text-align:center;vertical-align:middle;position:relative;top:50%;'+ 
+			  '">Please generate a report for preview.</p>';
 		  $("#pdfReportPreview").html($compile(defaultTemplate)($scope));
 		  $scope.searchId="";
 	  }

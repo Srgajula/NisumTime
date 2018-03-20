@@ -83,16 +83,18 @@ public class EmployeeDataService {
 
 	@Autowired
 	private EmployeeAttendanceRepo employeeLoginsRepo;
-	
+
 	private File finalfile = null;
 
-	public Boolean fetchEmployeesData(String perticularDate) throws MyTimeException {
+	public Boolean fetchEmployeesData(String perticularDate, boolean resynchFlag) throws MyTimeException {
 		Boolean result = false;
 		StringBuilder queryMonthDecider = new StringBuilder();
 		long start_ms = System.currentTimeMillis();
 		List<EmpLoginData> loginsData = new ArrayList<>();
 		Map<String, List<EmpLoginData>> map = new HashMap<>();
 		boolean frstQuery = true;
+		Date searchdDate = null;
+		Date endOfsearchDate = null;
 		Map<String, EmpLoginData> emp = new HashMap<>();
 		try {
 			File dir = new File(localFileDirectory);
@@ -113,10 +115,16 @@ public class EmployeeDataService {
 				connection = DbConnection.getDBConnection(dbURL);
 				statement = connection.createStatement();
 
-				calendar.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH), 6, 00, 00);
-				Date searchdDate = calendar.getTime();
-
-				Date endOfsearchDate = DateUtils.addHours(searchdDate, 24);
+				if (!resynchFlag) {
+					calendar.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH), 6, 00, 00);
+					searchdDate = calendar.getTime();
+					endOfsearchDate = DateUtils.addHours(searchdDate, 24);
+				} else {
+					calendar.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH), 6, 00, 00);
+					endOfsearchDate = calendar.getTime();
+					calendar.set(year, (month - 1), calendar.get(Calendar.DAY_OF_MONTH) - 15, 6, 00, 00);
+					searchdDate = calendar.getTime();
+				}
 
 				queryMonthDecider.append(MyTimeUtils.QUERY);
 				queryMonthDecider.append((calendar.get(Calendar.MONTH)) + 1);

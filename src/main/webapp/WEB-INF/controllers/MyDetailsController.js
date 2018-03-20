@@ -26,6 +26,7 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	$scope.gridOptions.data = [];
 	
 	$scope.getEmployeeData = function(){
+		$scope.avgLoginHrs = "";
 		var fromDate = getFormattedDate($scope.fromDate);
 		var toDate = getFormattedDate($scope.toDate);
 		var empId = $scope.empId;
@@ -34,7 +35,9 @@ myApp.controller("employeeController", function($scope, $http, myFactory, $mdDia
 	        url : appConfig.appUri + "attendance/employeeLoginsBasedOnDate?empId=" + empId + "&fromDate=" + fromDate + "&toDate=" +toDate
 	    }).then(function mySuccess(response) {
 	        $scope.gridOptions.data = response.data;
-	        $scope.avgLoginHrs = response.data[0].totalAvgTime + " Hrs";
+	        if(response.data.length > 0){
+	        	$scope.avgLoginHrs = response.data[0].totalAvgTime + " Hrs";
+	        }
 	    }, function myError(response) {
 	    	showAlert("Something went wrong while fetching data!!!");
 	    	$scope.gridOptions.data = [];

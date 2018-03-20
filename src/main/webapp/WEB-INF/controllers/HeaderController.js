@@ -15,7 +15,7 @@ myApp.controller("headerController",function($scope, myFactory, $compile, $mdDia
 	    auth2.disconnect();
 	    
 		//Clear if any values set to factory
-		var menuItems = [];
+	    var menuItems = [], designations = [], accounts = [], technologies = [], shifts = [];
 		myFactory.setEmpId("");
 		myFactory.setEmpName("");
 		myFactory.setEmpEmailId("");
@@ -23,6 +23,10 @@ myApp.controller("headerController",function($scope, myFactory, $compile, $mdDia
 		myFactory.setMenuItems(menuItems);
 		myFactory.setTemplateUrl("");
 		myFactory.setProfileUrl("");
+		myFactory.setDesignations(designations);
+		myFactory.setAccounts(accounts);
+		myFactory.setTechnologies(technologies);
+		myFactory.setShifts(shifts);
 		
 		$timeout(function(){redirectToLoginPage();},2000);
 		
@@ -39,6 +43,7 @@ myApp.controller("headerController",function($scope, myFactory, $compile, $mdDia
 	}
 	
 	function showProgressDialog(){
+		$('#home').addClass('md-scroll-mask');
 		$mdDialog.show({
 	      templateUrl: 'templates/progressDialog.html',
 	      controller: ProgressController,

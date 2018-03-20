@@ -16,15 +16,16 @@
 		</div>
 	</div>
 	<div class="row col-lg-12" style="height: 15px;"></div>
-	<div class="container" style="text-align: center; padding-left: 75px;">
+	<div class="text-center">
 	
 	<div class="row col-lg-12">
-	<div class="col-xs-2" style="vertical-align: middle;">
+		<div class="col-lg-2"></div>
+		<div class="col-lg-2 col-xs-12" style="vertical-align: middle;">
 				<p>
 					<b>Select Shift:</b>
 					</p>
 			</div>
-			<div class="col-xs-4">
+			<div class="col-lg-4 col-xs-12">
 				<p>
 					
 					<md-select ng-model="shiftValue" md-selected-text="getSelectedShift()" id="shiftValue" style="margin:0px;">
@@ -32,18 +33,19 @@
 				ng-repeat="shiftValue in shifts">{{shiftValue}}</md-option> </md-optgroup> </md-select>
 				</p>
 			</div>
-			<div class="col-xs-2" style="cursor: pointer;" align="right">
+			<div class="col-lg-2 col-xs-12" style="cursor: pointer;" align="right">
 				<md-button class="md-raised md-primary"
 					style="width:100px;background: cadetblue;" ng-click="getShiftDetails()">
 				<i class="fa fa-search fa-2x"
 					style="margin-top: 5px; font-size: 1.5em; float: left"></i> Search</md-button>
 			</div>
+			<div class="col-lg-2"></div>
 		</div>
 	
 	<div class="row col-lg-12" style="height: 15px;"></div>
 	<div class="row col-lg-12">
-		<div class="col-xs-8">
-				<p >
+			<div class="col-lg-12 col-xs-12 text-center">
+				<p>
 					The following <b>{{shiftCount}}</b> employees  work in the shift:<b> {{selectedshiftValue}}</b> 
 				</p>
 			</div>

@@ -1,7 +1,11 @@
 var myApp = angular.module(
 		"myTimeApp",
 		[ "ngRoute", "ngCookies", "ui.grid", "ui.grid.pagination",
+<<<<<<< HEAD
 				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter','ui.grid.edit', 'ui.grid.cellNav','ngIdle' ]).config(
+=======
+				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter', 'ngIdle' ]).config(
+>>>>>>> branch 'master' of https://github.com/srgajula-nisum-com/NisumTime
 		function($mdDateLocaleProvider) {
 			$mdDateLocaleProvider.formatDate = function(date) {
 				var day = date.getDate();
