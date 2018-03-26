@@ -1,12 +1,9 @@
 var myApp = angular.module(
 		"myTimeApp",
 		[ "ngRoute", "ngCookies", "ui.grid", "ui.grid.pagination",
-<<<<<<< HEAD
+
 				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter','ui.grid.edit', 'ui.grid.cellNav','ngIdle' ]).config(
-=======
-				"ngMaterial", "ui.bootstrap", "pdf", 'ui.grid.selection', 'ui.grid.exporter', 'ngIdle' ]).config(
->>>>>>> branch 'master' of https://github.com/srgajula-nisum-com/NisumTime
-		function($mdDateLocaleProvider) {
+function($mdDateLocaleProvider) {
 			$mdDateLocaleProvider.formatDate = function(date) {
 				var day = date.getDate();
 				var month = date.getMonth() + 1;
@@ -19,7 +16,7 @@ var myApp = angular.module(
 //TODO: Replace this appUri with the domain name created
 myApp.constant('appConfig', { 
 			appName: "MyTime", 
-			appUri: "http://192.168.15.17:8080/myTime/", 
+			appUri: "http://localhost:8080/myTime/", 
 			version:"1.0", 
 			empStartId:16001, 
 			empEndId:16999,
