@@ -16,7 +16,7 @@ function($mdDateLocaleProvider) {
 //TODO: Replace this appUri with the domain name created
 myApp.constant('appConfig', { 
 			appName: "MyTime", 
-			appUri: "http://192.168.15.17:8080/myTime/", 
+			appUri: "http://192.168.10.177:8080/myTime/", 
 			version:"1.0", 
 			empStartId:16001, 
 			empEndId:16999,
